@@ -338,7 +338,6 @@ void SusyEventAnalyzer::Data() {
   /////////////////////////////////
   // Miscellaneous histograms
   /////////////////////////////////
-  TH2F * h_met_vs_minDReePF = new TH2F("met_vs_minDReePF", "MET vs min #DeltaR between e-photon and e-PFParticle;MET (GeV);min #DeltaR", 250, 0., 500., 100, -1., 4.);
   TH2F * h_DR_jet_gg = new TH2F("DR_jet_gg", "#DeltaR between jets and lead/trailing #gamma#gamma candidates;#DeltaR_{lead #gamma, jet};#DeltaR_{trail #gamma, jet}", 50, 0, 5, 50, 0, 5);
 
   const int nDivisions_chi2 = 50;
@@ -818,6 +817,8 @@ void SusyEventAnalyzer::Data() {
 	     tagInfos, csvValues, 
 	     pfJets_corrP4, btags_corrP4, 
 	     HT, hadronicSystem);
+
+    for(unsigned int i = 0; i < pfJets_corrP4.size(); i++) h_DR_jet_gg->Fill(deltaR(pfJets_corrP4[i], candidate_pair[0]->caloPosition), deltaR(pfJets_corrP4[i], candidate_pair[1]->caloPosition));
 
     HT_jets_ = HT;
     hadronic_pt_ = hadronicSystem.Pt();
@@ -1335,11 +1336,8 @@ void SusyEventAnalyzer::Acceptance() {
 
   VTH1F h_met = BookTH1FVector("met"+output_code_t, "MET;#slash{E}_{T} (GeV);Events", 400, 0., 2000., nCategories, categories, nChannels, channels);
   
-  Double_t mstBins[31] = {0, 110, 160, 185, 210, 235, 260, 285, 310, 335, 360, 385, 410, 460, 510, 560, 610, 660, 710, 810, 910, 1010, 1110, 1210, 1310, 1410, 1510, 1710, 2010, 5010, 6000};
-  Double_t mBinoBins[33] = {0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 375, 425, 475, 525, 575, 625, 675, 725, 825, 925, 1025, 1125, 1225, 1325, 1425, 1525, 1725, 2025, 2200};
-
-  TH1F * h_ele_dRgamma1 = new TH1F("ele_dRgamma1", "dR between electron and lead photon", 500, 0, 5);
-  TH1F * h_ele_dRgamma2 = new TH1F("ele_dRgamma2", "dR between electron and trail photon", 500, 0, 5);
+  TH2F * h_dR_ele_gamma = new TH2F("dR_ele_gamma", "#DeltaR between gsf electrons and lead/trailing #gamma#gamma candidates;#DeltaR_{lead #gamma, ele};#DeltaR_{trail #gamma, ele}", 50, 0, 5, 50, 0, 5);
+  TH2F * h_dR_mu_gamma = new TH2F("dR_mu_gamma", "#DeltaR between muons and lead/trailing #gamma#gamma candidates;#DeltaR_{lead #gamma, #mu};#DeltaR_{trail #gamma, #mu}", 50, 0, 5, 50, 0, 5);
 
   TH1F * h_jet_lF = new TH1F("jet_lF", "jet loose Full", 2, 0, 2);
   TH1F * h_jet_lS = new TH1F("jet_lS", "jet loose Simple", 2, 0, 2);
@@ -1683,6 +1681,9 @@ void SusyEventAnalyzer::Acceptance() {
     findMuons(event, candidate_pair, isoMuons, looseMuons, HT);
     findElectrons(event, candidate_pair, isoEles, looseEles, HT);
 
+    for(unsigned int i = 0; i < isoMuons.size(); i++) h_dR_mu_gamma->Fill(deltaR(isoMuons[i]->momentum, candidate_pair[0]->caloPosition), deltaR(isoMuons[i]->momentum, candidate_pair[1]->caloPosition));
+    for(unsigned int i = 0; i < isoEles.size(); i++) h_dR_ele_gamma->Fill(deltaR(isoEles[i]->momentum, candidate_pair[0]->caloPosition), deltaR(isoEles[i]->momentum, candidate_pair[1]->caloPosition));
+
     findJets(event, candidate_pair, 
 	     isoMuons, looseMuons,
 	     isoEles, looseEles,
@@ -1792,6 +1793,7 @@ void SusyEventAnalyzer::Acceptance() {
 
     float diJetPt = 0.;
     bool matchingWorked = GetDiJetPt(event, candidate_pair, diJetPt, lead_matched_jetpt_, trail_matched_jetpt_);
+    if(!matchingWorked) nCnt[31][0]++; durp;
     diJetPt_ = diJetPt;
 
     Njets_ = pfJets.size();
@@ -1899,6 +1901,7 @@ void SusyEventAnalyzer::Acceptance() {
   cout << "no passing candidates     : " << nCnt[28][0] << endl;
   cout << "JEC not available         : " << nCnt[29][0] << endl;
   cout << "bad jet                   : " << nCnt[30][0] << endl;
+  cout << "diJet matching failed     : " << nCnt[31][0] << endl;
 
   puFile->Close();
   btagEfficiency->Close();
