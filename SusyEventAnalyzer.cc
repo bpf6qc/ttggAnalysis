@@ -1793,7 +1793,7 @@ void SusyEventAnalyzer::Acceptance() {
 
     float diJetPt = 0.;
     bool matchingWorked = GetDiJetPt(event, candidate_pair, diJetPt, lead_matched_jetpt_, trail_matched_jetpt_);
-    if(!matchingWorked) nCnt[31][0]++; durp;
+    if(!matchingWorked) nCnt[31][0]++;
     diJetPt_ = diJetPt;
 
     Njets_ = pfJets.size();
