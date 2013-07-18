@@ -1,0 +1,12 @@
+universe = vanilla
+Executable = filter.sh
+transfer_input_files=Run2012D.C, ../src.tgz
+should_transfer_files = YES
+WhenToTransferOutput = ON_EXIT
+notification = error
+Output = JobOut/batch_$(cluster)_$(process).stdout
+Error  = JobOut/batch_$(cluster)_$(process).stderr
+Log    = JobOut/batch_$(cluster)_$(process).condor
+Requirements          = Memory >= 199 && OpSys == "LINUX" && (Arch != "DUMMY") && ( TARGET.FileSystemDomain == "fnal.gov" )
+Arguments = Run2012D.C $(process)
+Queue 9
