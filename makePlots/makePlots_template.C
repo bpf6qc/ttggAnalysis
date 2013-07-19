@@ -4,7 +4,6 @@ void makePlots() {
   gSystem->Load("libRooFitCore.so");
   gSystem->SetIncludePath("-I../../../.. -I/uscmst1/prod/sw/cms/slc5_amd64_gcc462/lcg/roofit/5.32.00-cms6/include");
   gSystem->Load("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_3/src/PhysicsTools/lib/libTagAndProbe.so");
-  gSystem->Load("../libSusyEvent.so");
 
   gROOT->LoadMacro("analyze.C+");
 
@@ -25,7 +24,6 @@ void makePlots() {
   bool useMCforQCD = false;
 
   for(int i = 0; i < 7; i++) {
-//  for(int i = 0; i < 1; i++) {
     analyze(input, addMC, i, intLumi, intLumi_int, useFF, useDifferenceSystematic, useTTGJets, useMCforQCD);
   }  
 

@@ -32,7 +32,14 @@ fi
 
 while read file
 do
-  	sed -i '13i chain.Add("'$file'");' ANALYZER
+
+        if [[ $file == /pnfs/* ]];
+        then
+            	sed -i '13i chain.Add("dcap://'$file'");' ANALYZER
+        else
+            	sed -i '13i chain.Add("'$file'");' ANALYZER
+        fi
+
 done < filelist_$JOB_NUMBER
 
 sed -i "s/STAGING/$STAGING/g" ANALYZER

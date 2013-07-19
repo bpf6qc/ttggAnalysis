@@ -7,16 +7,10 @@ if [ $# -ne 1 ]; then
 	exit 0
 fi
 
-cd /uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/ttggAnalysis/
-
 export VO_CMS_SW_DIR=/uscmst1/prod/sw/cms
 source $VO_CMS_SW_DIR/cmsset_default.sh
 export SCRAM_ARCH=slc5_amd64_gcc462
 eval `scramv1 runtime -sh`
-
-cd /uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/ttggAnalysis/makePlots/
-
-_CONDOR_SCRATCH_DIR=.
 
 FILE_TO_RUN=$1
 cat makePlots_template.C | sed s:FILE_TO_RUN:$FILE_TO_RUN: > makePlots.C

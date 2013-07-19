@@ -483,13 +483,9 @@ ratio_ff_2->Write();
 						true);
 
   TH1D * leadMatchedJetPt_460 = SignalHistoFromTree(signalScale_460, true, "leadMatchedJetPt", ggTree_460, "leadMatchedJetPt_460", "leadMatchedJetPt_460", 200, 0., 2000.);
-cout << "1" << endl;
   TH1D * leadMatchedJetPt_800 = SignalHistoFromTree(signalScale_800, true, "leadMatchedJetPt", ggTree_800, "leadMatchedJetPt_800", "leadMatchedJetPt_800", 200, 0., 2000.);
-cout << "2" << endl;
   TH1D * leadMatchedJetPt_qcd30to40 = SignalHistoFromTree(qcd30to40Scale, true, "leadMatchedJetPt", qcd30to40Tree, "leadMatchedJetPt_qcd30to40", "leadMatchedJetPt_qcd30to40", 200, 0., 2000.);
-cout << "3" << endl;
   TH1D * leadMatchedJetPt_qcd40 = SignalHistoFromTree(qcd40Scale, true, "leadMatchedJetPt", qcd40Tree, "leadMatchedJetPt_qcd40", "leadMatchedJetPt_qcd40", 200, 0., 2000.);
-cout << "4" << endl;
 
   prettyPlot(leadMatchedJetPt[0], leadMatchedJetPt[1], leadMatchedJetPt[2], leadMatchedJetPt[3], leadMatchedJetPt[4],
 	     useDifferenceSystematic, useTTGJets, useFF, false,
@@ -1265,8 +1261,6 @@ cout << "4" << endl;
   h_qcd_ff = (TH1D*)DivideByBinWidth(h_qcd_ff);
   h_qcd_ee = (TH1D*)DivideByBinWidth(h_qcd_ee);
 
-cout << "durp 1" << endl;
-
   TH1D * h_sigMET_a = (TH1D*)fSig460->Get("met_mst_460_m1_175_gg_"+channels[channel]);
   Double_t xsec_a = 0.147492;
   Double_t acc_a = 1. / 15000.;
@@ -1274,8 +1268,6 @@ cout << "durp 1" << endl;
   TH1D * h_sigMET_aReb = (TH1D*)h_sigMET_a->Rebin(nBins, "h_sigMET_aReb", xbins);
 
   for(int i = 0; i < h_sigMET_aReb->GetNbinsX(); i++) h_sigMET_aReb->SetBinContent(i+1, h_sigMET_aReb->GetBinContent(i+1) / h_sigMET_aReb->GetBinWidth(i+1));
-
-cout << "durp 2" << endl;
 
   //TH1D * h_sigMET_b = (TH1D*)fSig800->Get("met_mst_560_m1_325_gg_"+channels[channel]);
   TH1D * h_sigMET_b = (TH1D*)fSig800->Get("met_mst_460_m1_175_gg_"+channels[channel]); // DURP
@@ -1286,15 +1278,11 @@ cout << "durp 2" << endl;
 
   for(int i = 0; i < h_sigMET_bReb->GetNbinsX(); i++) h_sigMET_bReb->SetBinContent(i+1, h_sigMET_bReb->GetBinContent(i+1) / h_sigMET_bReb->GetBinWidth(i+1));
 
-cout << "durp 3" << endl;
- 
   met_ttgjets = (TH1D*)met_ttgjets->Rebin(nBins, "met_ttgjets_reb", xbins);
   for(int i = 0; i < met_ttgjets->GetNbinsX(); i++) {
     met_ttgjets->SetBinContent(i+1, met_ttgjets->GetBinContent(i+1) / met_ttgjets->GetBinWidth(i+1));
     met_ttgjets->SetBinError(i+1, met_ttgjets->GetBinError(i+1) / met_ttgjets->GetBinWidth(i+1));
   }
-
-cout << "durp 4" << endl;
 
   TH1D * met_qcd30to40 = SignalHistoFromTree(qcd30to40Scale, true, "pfMET", qcd30to40Tree, "met_qcd30to40", "met_qcd30to40", 400, 0., 2000.);
   met_qcd30to40 = (TH1D*)met_qcd30to40->Rebin(nBins, "met_qcd30to40_reb", xbins);
@@ -1303,16 +1291,12 @@ cout << "durp 4" << endl;
     met_qcd30to40->SetBinError(i+1, met_qcd30to40->GetBinError(i+1) / met_qcd30to40->GetBinWidth(i+1));
   }
 
-cout << "durp 5" << endl;
-
   TH1D * met_qcd40 = SignalHistoFromTree(qcd40Scale, true, "pfMET", qcd40Tree, "met_qcd40", "met_qcd40", 400, 0., 2000.);
   met_qcd40 = (TH1D*)met_qcd40->Rebin(nBins, "met_qcd40_reb", xbins);
   for(int i = 0; i < met_qcd40->GetNbinsX(); i++) {
     met_qcd40->SetBinContent(i+1, met_qcd40->GetBinContent(i+1) / met_qcd40->GetBinWidth(i+1));
     met_qcd40->SetBinError(i+1, met_qcd40->GetBinError(i+1) / met_qcd40->GetBinWidth(i+1));
   }
-
-cout << "durp 6" << endl;
 
   prettyPlot(h_gg, h_ewk, h_qcd_ff, h_qcd_gf, met_ttgjets,
 	     useDifferenceSystematic, useTTGJets, useFF, useMCforQCD,
@@ -1323,8 +1307,6 @@ cout << "durp 6" << endl;
 	     xbins[0], xbins[nBins], 7.e-4, 25000.,
 	     0., 9.1,
 	     true, true, true);
-
-cout << "durp 6" << endl;
 
   // make a ff/ee ratio plot
   TCanvas * can2 = new TCanvas("can2", "Plot", 10, 10, 2000, 2000);
