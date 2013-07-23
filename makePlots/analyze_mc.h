@@ -115,297 +115,6 @@ void formatTable(TH1D * h_gg,
   fclose(tableFile);
 }
 
-// Return the weights (ratio) of diempt
-TH1D * GetWeights(TH1D* ggDiEMpT, TH1D* h_diempt, Float_t gg_test, Float_t other_test) {
-  TH1D * ratio = (TH1D*)ggDiEMpT->Clone();
-  TH1D * diempt = (TH1D*)h_diempt->Clone();
-
-  const int ndiemptbins = 30;
-  Double_t diemptbins[ndiemptbins+1] = {
-    0,
-    5,
-    10,
-    15,
-    20,
-    25,
-    30,
-    35,
-    40,
-    45,
-    50,
-    55,
-    60,
-    65,
-    70,
-    75,
-    80,
-    85,
-    90,
-    95,
-    100,
-    110,
-    120,
-    130,
-    140,
-    150,
-    200,
-    300,
-    400,
-    600,
-    1000};
-
-  TH1D * ratio2 = (TH1D*)ratio->Rebin(ndiemptbins, "ratio2", diemptbins);
-  TH1D * diempt2 = (TH1D*)diempt->Rebin(ndiemptbins, "diempt2", diemptbins);
-
-  ratio2->Scale(1./gg_test);
-  diempt2->Scale(1./other_test);
-
-  ratio2->Divide(diempt2);
-
-  return ratio2;
-}
-
-TH1D * GetAlternativeWeights(TTree * ggtree, TTree * bkgtree, TString variable, bool isAFloat, Int_t nbins, Double_t* xbins, TString name) {
-
-  TH1D * gg = new TH1D("gg_"+variable+"_"+name, "gg_"+variable+"_"+name, nbins, xbins); gg->Sumw2();
-  TH1D * bkg = new TH1D("bkg_"+variable+"_"+name, "bkg_"+variable+"_"+name, nbins, xbins); bkg->Sumw2();
-
-  float met;
-  ggtree->SetBranchAddress("pfMET", &met);
-  bkgtree->SetBranchAddress("pfMET", &met);
-
-  float var;
-  int var_int;
-
-  if(isAFloat) {
-    ggtree->SetBranchAddress(variable, &var);
-    bkgtree->SetBranchAddress(variable, &var);
-  }
-  else {
-    ggtree->SetBranchAddress(variable, &var_int);
-    bkgtree->SetBranchAddress(variable, &var_int);
-  }
-
-  for(int i = 0; i < ggtree->GetEntries(); i++) {
-    ggtree->GetEntry(i);
-    if(met >= 50.) continue;
-    if(isAFloat) gg->Fill(var);
-    else gg->Fill(var_int);
-  }
-
-  for(int i = 0; i < bkgtree->GetEntries(); i++) {
-    bkgtree->GetEntry(i);
-    if(met >= 50.) continue;
-    if(isAFloat) bkg->Fill(var);
-    else bkg->Fill(var_int);
-  }
-
-  //gg->Scale(1./(float)ggtree->GetEntries());
-  //bkg->Scale(1./(float)bkgtree->GetEntries());
-
-  gg->Scale(1./(float)gg->Integral());
-  bkg->Scale(1./(float)bkg->Integral());
-
-  TH1D * weight = (TH1D*)gg->Clone("weights_"+variable+"_"+name);
-  weight->Divide(bkg);
-
-  ggtree->ResetBranchAddresses();
-  bkgtree->ResetBranchAddresses();
-
-  return weight;
-}
-
-// Return a di-em pt reweighted met histogram
-TH1D * Reweight(bool isAFloat, TH1D * h, TString variable, TH1D* ratio_0, TH1D* ratio_1, TH1D* ratio_2, TTree* tree, int type, bool save, TString name, bool isMC) {
-  
-  // type 0 = ff or ee full spectrum
-  //      1 = ee signal (81-101)
-  //      2 = ee low    (71-81)
-  //      3 = ee high   (101-111)
-
-  TH1D * rew = (TH1D*)h->Clone(variable+"_"+name);
-  rew->Reset();
-
-  TH1D * unrew = (TH1D*)rew->Clone(variable+"_"+name+"_unrew");
-
-  float var_, diempt_, invmass_, puWeight_, puWeightErr_;
-  int nJets_, var_int;
-  if(variable != "invmass" && 
-     variable != "Njets" && 
-     variable != "diJetPt") {
-    if(isAFloat) tree->SetBranchAddress(variable, &var_);
-    else tree->SetBranchAddress(variable, &var_int);
-  }
-  //tree->SetBranchAddress("diEMpT", &diempt_);
-  tree->SetBranchAddress("diJetPt", &diempt_);
-  tree->SetBranchAddress("invmass", &invmass_);
-  tree->SetBranchAddress("Njets", &nJets_);
-  if(isMC) {
-    tree->SetBranchAddress("puWeight", &puWeight_);
-    tree->SetBranchAddress("puWeightError", &puWeightErr_);
-  }
-
-  Double_t ratioWeight, ratioWeightErr;
-  Double_t puWeight, puWeightErr;
-
-  for(int i = 0; i < tree->GetEntries(); i++) {
-    tree->GetEntry(i);
-    if(variable == "invmass") var_ = invmass_;
-    if(variable == "diJetPt") var_ = diempt_;
-    if(variable == "Njets") var_int = nJets_;
-
-    Double_t eventWeight = 1.;
-    Double_t eventWeightErr = 0.;
-    if(isMC) {
-      eventWeight = puWeight_;
-      eventWeightErr = puWeightErr_;
-    }
-
-    if(eventWeight == 0.) continue;
-
-    Double_t ratioWeight, ratioWeightErr;
-    if(nJets_ == 0) {
-      ratioWeight = ratio_0->GetBinContent(ratio_0->FindBin(diempt_));
-      ratioWeightErr = ratio_0->GetBinError(ratio_0->FindBin(diempt_));
-    }
-    else if(nJets_ == 1) {
-      ratioWeight = ratio_1->GetBinContent(ratio_1->FindBin(diempt_));
-      ratioWeightErr = ratio_1->GetBinError(ratio_1->FindBin(diempt_));
-    }
-    else {
-      ratioWeight = ratio_2->GetBinContent(ratio_2->FindBin(diempt_));
-      ratioWeightErr = ratio_2->GetBinError(ratio_2->FindBin(diempt_));
-    }
-
-    if(ratioWeight == 0.) continue;
-
-    Double_t oldError = (isAFloat) ? rew->GetBinError(rew->FindBin(var_)) : rew->GetBinError(rew->FindBin(var_int));
-
-    if(
-       (type == 1 && invmass_ > 81.0 && invmass_ < 101.0) ||
-       (type == 2 && invmass_ > 71.0 && invmass_ < 81.0) ||
-       (type == 3 && invmass_ > 101.0 && invmass_ < 111.0) ||
-       (type == 0)
-       ) {
-      
-      if(isAFloat) {
-	rew->Fill(var_, 1.0*ratioWeight*eventWeight);
-	unrew->Fill(var_);
-      }
-      else {
-	rew->Fill(var_int, 1.0*ratioWeight*eventWeight);
-	unrew->Fill(var_int);
-      }
-
-      Double_t newError = ratioWeightErr*ratioWeightErr / (ratioWeight*ratioWeight);
-      newError += eventWeightErr*eventWeightErr / (eventWeight*eventWeight);
-      newError = ratioWeight*eventWeight*sqrt(newError);
-
-      if(isAFloat) rew->SetBinError(rew->FindBin(var_), sqrt(oldError*oldError + newError*newError));
-      else rew->SetBinError(rew->FindBin(var_int), sqrt(oldError*oldError + newError*newError));
-    }
-
-  }  // loop over entries
-
-  if(save) {
-    TCanvas * canv = new TCanvas("canv", "Plot", 10, 10, 2000, 2000);
-
-    if(ratio_0->Integral() > 0.) {
-      ratio_0->Draw();
-      canv->SaveAs("ratio_0_"+name+gifOrPdf);
-    }
-
-    if(ratio_1->Integral() > 0.) {
-      ratio_1->Draw();
-      canv->SaveAs("ratio_1_"+name+gifOrPdf);
-    }
-
-    if(ratio_2->Integral() > 0.) {
-      ratio_2->Draw();
-      canv->SaveAs("ratio_2_"+name+gifOrPdf);
-    }
-
-    //rew->Draw();
-    //canv->SaveAs(name+"CenMETValRew"+gifOrPdf);
-
-    delete canv;
-  }
-
-  tree->ResetBranchAddresses();
-
-  return rew;
-}
-
-TH1D * AlternativeReweight(TString outVariable, bool outIsAFloat,
-			   TString reweightVariable, bool rewByAFloat,
-			   TH1D * h, // dummy to copy
-			   TH1D * ratio, // actual weights
-			   TTree * tree,
-			   int type, bool save, TString name, bool isMC) {
-
-  TH1D * rew = (TH1D*)h->Clone(name);
-  rew->Reset();
-
-  float outVar, rewVar, met;
-  int outVar_int, rewVar_int;
-
-  tree->SetBranchAddress("pfMET", &met);
-
-  if(outVariable != "pfMET") {
-    if(outIsAFloat) tree->SetBranchAddress(outVariable, &outVar);
-    else tree->SetBranchAddress(outVariable, &outVar_int);
-  }
-
-  if(reweightVariable != outVariable) {
-    if(rewByAFloat) tree->SetBranchAddress(reweightVariable, &rewVar);
-    else tree->SetBranchAddress(reweightVariable, &rewVar_int);
-  }
-
-  for(int i = 0; i < tree->GetEntries(); i++) {
-    tree->GetEntry(i);
-
-    if(met >= 50.) continue;
-
-    if(outVariable == "pfMET") outVar = met;
-
-    if(reweightVariable == outVariable) {
-      rewVar = outVar;
-      rewVar_int = outVar_int;
-    }
-
-    Double_t ratioWeight = (rewByAFloat) ? ratio->GetBinContent(ratio->FindBin(rewVar)) : ratio->GetBinContent(ratio->FindBin(rewVar_int));
-    Double_t ratioWeightErr = (rewByAFloat) ? ratio->GetBinError(ratio->FindBin(rewVar)) : ratio->GetBinError(ratio->FindBin(rewVar_int));
-
-    if(ratioWeight == 0.) continue;
-
-    Double_t oldError = (outIsAFloat) ? rew->GetBinError(rew->FindBin(outVar)) : rew->GetBinError(rew->FindBin(outVar_int));
-
-    if(outIsAFloat) rew->Fill(outVar, 1.0*ratioWeight);
-    else rew->Fill(outVar_int, 1.0*ratioWeight);
-
-    Double_t newError = ratioWeightErr*ratioWeightErr / (ratioWeight*ratioWeight);
-
-    if(outIsAFloat) rew->SetBinError(rew->FindBin(outVar), sqrt(oldError*oldError + newError*newError));
-    else rew->SetBinError(rew->FindBin(outVar_int), sqrt(oldError*oldError + newError*newError));
-    
-  }  // loop over entries
-
-  if(save) {
-    TCanvas * canv = new TCanvas("canv", "Plot", 10, 10, 2000, 2000);
-
-    if(ratio->Integral() > 0.) {
-      ratio->Draw();
-      canv->SaveAs("ratio_"+name+gifOrPdf);
-    }
-
-    delete canv;
-  }
-
-  tree->ResetBranchAddresses();
-
-  return rew;
-}
-
 TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t xlo, Double_t xhi, double restrictMet = false) {
 
   TH1D * h = new TH1D(name, title, nBins, xlo, xhi);
@@ -438,9 +147,94 @@ TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name
   return h;
 }
 
+TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t* customBins, double restrictMet = false) {
+
+  TH1D * h = new TH1D(name, title, nBins, customBins);
+  h->Sumw2();
+
+  Float_t met;
+  tree->SetBranchAddress("pfMET", &met);
+
+  Float_t var;
+  Int_t var_int;
+  if(variable != "pfMET") {
+    if(isAFloat) tree->SetBranchAddress(variable, &var);
+    else tree->SetBranchAddress(variable, &var_int);
+  }
+  for(int i = 0; i < tree->GetEntries(); i++) {
+    tree->GetEntry(i);
+
+    if(restrictMet && met >= 50.) continue;
+
+    if(variable != "pfMET") {
+      if(isAFloat) h->Fill(var);
+      else h->Fill(var_int);
+    }
+    else h->Fill(met);
+
+  }
+
+  tree->ResetBranchAddresses();
+
+  return h;
+}
+
 TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t xlo, Double_t xhi) {
 
   TH1D * h = new TH1D(name, title, nBins, xlo, xhi);
+  h->Sumw2();
+
+  Float_t var;
+  Int_t var_int;
+  Float_t puWeight, btagWeight;
+  Float_t puWeightErr, btagWeightErr, btagWeightUp, btagWeightDown;
+  if(isAFloat) tree->SetBranchAddress(variable, &var);
+  else tree->SetBranchAddress(variable, &var_int);
+  tree->SetBranchAddress("pileupWeight", &puWeight);
+  tree->SetBranchAddress("pileupWeightErr", &puWeightErr);
+  tree->SetBranchAddress("btagWeight", &btagWeight);
+  tree->SetBranchAddress("btagWeightErr", &btagWeightErr);
+  tree->SetBranchAddress("btagWeightUp", &btagWeightUp);
+  tree->SetBranchAddress("btagWeightDown", &btagWeightDown);
+  for(int i = 0; i < tree->GetEntries(); i++) {
+    tree->GetEntry(i);
+
+    Float_t olderror = 0.;
+
+    if(isAFloat) {
+      olderror = h->GetBinError(h->FindBin(var));
+      h->Fill(var, puWeight * btagWeight);
+    }
+    else {
+      olderror = h->GetBinError(h->FindBin(var_int));
+      h->Fill(var_int, puWeight * btagWeight);
+    }
+    
+    // protection from weird 1200 weight errors...
+    if(btagWeightErr > 20.) btagWeightErr = btagWeight;
+
+    Float_t btagSFsys = (fabs(btagWeight - btagWeightUp) + fabs(btagWeight - btagWeightDown))/2.;
+    Float_t btag_toterr = sqrt(btagWeightErr*btagWeightErr + btagSFsys*btagSFsys);
+
+    Float_t addError2 = puWeight*puWeight*btag_toterr*btag_toterr + btagWeight*btagWeight*puWeightErr*puWeightErr;
+
+    Float_t newerror = sqrt(olderror*olderror + addError2);
+
+    if(isAFloat) h->SetBinError(h->FindBin(var), newerror);
+    else h->SetBinError(h->FindBin(var_int), newerror);
+      
+  }
+
+  h->Scale(scale);
+
+  tree->ResetBranchAddresses();
+
+  return h;
+}
+
+TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t* customBins) {
+
+  TH1D * h = new TH1D(name, title, nBins, customBins);
   h->Sumw2();
 
   Float_t var;
@@ -589,24 +383,101 @@ void calculateROC(TH1D * sig_a, TH1D * sig_b, TH1D * bkg, TString req, TString t
 
 }
 
-vector<TH1D*> preparePlots(TTree * ggTree, TTree * egTree, TTree * ffTree, TTree * gfTree, TTree * ttgjetsTree,
-			   TH1D * ratio_ff_0, TH1D * ratio_ff_1, TH1D * ratio_ff_2,
-			   TH1D * ratio_gf_0, TH1D * ratio_gf_1, TH1D * ratio_gf_2,
-			   Float_t egScale, Float_t egScaleErr,
-			   Float_t ffScale, Float_t ffScaleErr,
-			   Float_t gfScale, Float_t gfScaleErr, Float_t ttgjetsScale,
-			   TString variable, bool isAFloat,
+class PlotMaker {
+ public:
+  PlotMaker(Int_t lumi,
+	    Float_t fakeRate, Float_t fakeRateErr,
+	    TString requirement);
+  virtual ~PlotMaker();
+
+  void SetTrees(TTree * gg, TTree * eg,
+		TTree * qcd30to40, TTree * qcd40,
+		TTree * gjet20to40, TTree * gjet40,
+		TTree * ttHadronic, TTree * ttSemiLep,
+		TTree * ttgjets,
+		TTree * sig_a, TTree * sig_b);
+
+  void CreatePlot(TString variable, bool isAFloat,
+		  Int_t nBinsX, Float_t bin_lo, Float_t bin_hi,
+		  TString xaxisTitle, TString yaxisTitle,
+		  Float_t ymin, Float_t ymax,
+		  Float_t ratiomin, Float_t ratiomax,
+		  bool drawSignal, bool drawLegend, bool drawPrelim);
+
+  void CreateMETPlot(TString variable, bool isAFloat,
+		     Int_t nBinsX, Double_t* customBins,
+		     TString xaxisTitle, TString yaxisTitle,
+		     Float_t ymin, Float_t ymax,
+		     Float_t ratiomin, Float_t ratiomax,
+		     bool drawSignal, bool drawLegend, bool drawPrelim);
+
+ private:
+  TTree * ggTree;
+  TTree * egTree;
+  
+  TTree * qcd30to40Tree;
+  TTree * qcd40Tree;
+  TTree * gjet20to40Tree;
+  TTree * gjet40Tree;
+  TTree * ttHadronicTree;
+  TTree * ttSemiLepTree;
+  TTree * ttgjetsTree;
+  TTree * sigaTree;
+  TTree * sigbTree;
+
+  Int_t intLumi_int;
+  TString intLumi;
+  Float_t egScale, egScaleErr;
+  TString req;
+
+};
+
+PlotMaker::PlotMaker(Int_t lumi, Float_t fakeRate, Float_t fakeRateErr, TString requirement) :
+  intLumi_int(lumi),
+  egScale(fakeRate),
+  egScaleErr(fakeRateErr),
+  req(requirement)
+{
+  char buffer[50];
+  sprintf(buffer, "%f", (float)intLumi_int / 1000.);
+  intLumi = buffer;
+
+  histograms.clear();
+}
+
+void PlotMaker::SetTrees(TTree * gg, TTree * eg,
+			 TTree * qcd30to40, TTree * qcd40,
+			 TTree * gjet20to40, TTree * gjet40,
+			 TTree * ttHadronic, TTree * ttSemiLep,
+			 TTree * ttgjets,
+			 TTree * sig_a, TTree * sig_b) {
+
+  ggTree = (TTree*)gg->Clone();
+  egTree = (TTree*)eg->Clone();
+  
+  qcd30to40Tree = (TTree*)qcd30to40->Clone();
+  qcd40Tree = (TTree*)qcd40->Clone();
+  gjet20to40Tree = (TTree*)gjet20to40->Clone();
+  gjet40Tree = (TTree*)gjet40->Clone();
+  ttHadronicTree = (TTree*)ttHadronic->Clone();
+  ttSemiLepTree = (TTree*)ttSemiLep->Clone();
+  ttgjetsTree = (TTree*)ttgjets->Clone();
+
+  sigaTree = (TTree*)sig_a->Clone();
+  sigbTree = (TTree*)sig_b->Clone();
+
+}
+
+void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 			   Int_t nBinsX, Float_t bin_lo, Float_t bin_hi,
-			   TString req,
-			   Int_t rebin,
-			   bool compareReweighting) {
+			   TString xaxisTitle, TString yaxisTitle,
+			   Float_t ymin, Float_t ymax,
+			   Float_t ratiomin, Float_t ratiomax,
+			   bool drawSignal, bool drawLegend, bool drawPrelim) {
 
   TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, bin_lo, bin_hi);
   TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, bin_lo, bin_hi);
-  TH1D * ttg = SignalHistoFromTree(ttgjetsScale, isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, bin_lo, bin_hi);
-  TH1D * qcd = Reweight(isAFloat, gg, variable, ratio_ff_0, ratio_ff_1, ratio_ff_2, ffTree, 0, false, "ff_"+req, false);
-  TH1D * qcd_gf = Reweight(isAFloat, gg, variable, ratio_gf_0, ratio_gf_1, ratio_gf_2, gfTree, 0, false, "gf_"+req, false);
- 
+
   TH1D * ewk_noNorm = (TH1D*)ewk->Clone();
   ewk->Scale(egScale);
   for(int i = 0; i < ewk->GetNbinsX(); i++) {
@@ -616,145 +487,49 @@ vector<TH1D*> preparePlots(TTree * ggTree, TTree * egTree, TTree * ffTree, TTree
     ewk->SetBinError(i+1, new_err);
   }
 
-  TH1D * qcd_noNorm = (TH1D*)qcd->Clone();
-  qcd->Scale(ffScale);
-  for(int i = 0; i < qcd->GetNbinsX(); i++) {
-    Float_t normerr = ffScaleErr*(qcd_noNorm->GetBinContent(i+1));
-    Float_t staterr = qcd->GetBinError(i+1);
-    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
-    qcd->SetBinError(i+1, new_err);
-  }
-
-  TH1D * qcd_gf_noNorm = (TH1D*)qcd_gf->Clone();
-  qcd_gf->Scale(gfScale);
-  for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
-    Float_t normerr = gfScaleErr*(qcd_gf_noNorm->GetBinContent(i+1));
-    Float_t staterr = qcd_gf->GetBinError(i+1);
-    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
-    qcd_gf->SetBinError(i+1, new_err);
-  }
-
-  if(rebin >= 2) {
-    gg->Rebin(rebin);
-    ewk->Rebin(rebin);
-    ttg->Rebin(rebin);
-    qcd->Rebin(rebin);
-    qcd_gf->Rebin(rebin);
-  }
-
-  if(compareReweighting) {
-    TH1D * qcd_unrew = HistoFromTree(isAFloat, variable, ffTree, variable+"_ff_unrew_"+req, variable, nBinsX, bin_lo, bin_hi);
-    if(rebin >= 2) qcd_unrew->Rebin(rebin);
-    qcd_unrew->Scale(1./qcd_unrew->Integral());
-
-    TH1D * ratio_compare = (TH1D*)qcd->Clone("ratio_compare_"+variable+"_ff_"+req);
-    ratio_compare->Scale(1./ratio_compare->Integral());
-    ratio_compare->Divide(qcd_unrew);
-
-    float var;
-    int var_int;
-    if(isAFloat) ffTree->SetBranchAddress(variable, &var);
-    else ffTree->SetBranchAddress(variable, &var_int);
-
-    float varmax = -999.;
-    for(int i = 0; i < ffTree->GetEntries(); i++) {
-      ffTree->GetEntry(i);
-      if(isAFloat) {
-	if(var > varmax) varmax = var;
-      }
-      else {
-	if(var_int > varmax) varmax = var_int;
-      }
-    }
-
-    ffTree->ResetBranchAddresses();
-
-    TCanvas * canv = new TCanvas("canv", "Plot", 10, 10, 2000, 2000);
-    ratio_compare->GetXaxis()->SetRangeUser(0, varmax * 1.1);
-    ratio_compare->Draw();
-    canv->SaveAs("avg_weight_ff_"+variable+"_"+req+gifOrPdf);
-    delete canv;
-  }
-
-  vector<TH1D*> vec;
-  vec.push_back(gg);
-  vec.push_back(ewk);
-  vec.push_back(qcd);
-  vec.push_back(qcd_gf);
-  vec.push_back(ttg);
-
-  return vec;
-
-}
-
-void prettyPlot(TH1D* gg_, TH1D* eg_, TH1D* ff_, TH1D* gf_, TH1D* ttgjets,
-		bool useQCDSystematic, bool useTTGJets, bool useFF, bool useMCforQCD,
-                TH1D* sig_a_, TH1D* sig_b_,
-		TH1D * mc_qcd30to40, TH1D * mc_qcd40,
-                TString intLumi, bool ff_failure,
-                TString req, TString title, TString xaxisTitle, TString yaxisTitle,
-                Float_t xmin, Float_t xmax, Float_t ymin, Float_t ymax,
-                Float_t ratiomin, Float_t ratiomax,
-                bool drawMC, bool drawLegend, bool drawPrelim) {
-
-  TH1D * gg = (TH1D*)gg_->Clone("gg");
-  TH1D * ewk = (TH1D*)eg_->Clone("ewk");
-  TH1D * ttg = (TH1D*)ttgjets->Clone("ttg");
-
-  TH1D * qcd;
-  if(!useMCforQCD) {
-    // use FF as data-driven QCD
-    if(useFF) {
-      qcd = (TH1D*)ff_->Clone("qcd");
-      if(useQCDSystematic) {
-	for(int i = 0; i < qcd->GetNbinsX(); i++) {
-	  Double_t syserror = qcd->GetBinContent(i+1) - gf_->GetBinContent(i+1);
-	  Double_t totalerr = qcd->GetBinError(i+1);
-	  qcd->SetBinError(i+1, sqrt(totalerr*totalerr + syserror*syserror));
-	}
-      }
-    }
-    // use GF as data-driven QCD
-    else {
-      qcd = (TH1D*)gf_->Clone("qcd");
-      if(useQCDSystematic) {
-	for(int i = 0; i < qcd->GetNbinsX(); i++) {
-	  Double_t syserror = qcd->GetBinContent(i+1) - ff_->GetBinContent(i+1);
-	  Double_t totalerr = qcd->GetBinError(i+1);
-	  qcd->SetBinError(i+1, sqrt(totalerr*totalerr + syserror*syserror));
-	}
-      }
-    }
-  }
-  // use monte-carlo QCD
-  else {
-    qcd = (TH1D*)mc_qcd30to40->Clone("qcd");
-    qcd->Add(mc_qcd40);
-  } 
+  TH1D * qcd30to40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 2.35E-4 * 1.019 * 1.019 / 6061407., isAFloat, variable, qcd30to40Tree, variable+"_qcd30to40_"+req, variable, nBinsX, bin_lo, bin_hi);
+  TH1D * qcd40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 0.002175 * 1.019 * 1.019 / 9782735., isAFloat, variable, qcd40Tree, variable+"_qcd40_"+req, variable, nBinsX, bin_lo, bin_hi);
+  TH1D * gjet20to40 = SignalHistoFromTree(intLumi_int * 81930.0 * 0.001835 * 1.019 * 1.019 / 5907942., isAFloat, variable, gjet20to40Tree, variable+"_gjet20to40_"+req, variable, nBinsX, bin_lo, bin_hi);
+  TH1D * gjet40 = SignalHistoFromTree(intLumi_int * 8884.0 * 0.05387 * 1.019 * 1.019 / 5956149., isAFloat, variable, gjet40Tree, variable+"_gjet40_"+req, variable, nBinsX, bin_lo, bin_hi);
+  TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, bin_lo, bin_hi);
+  TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, bin_lo, bin_hi);
+  TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, bin_lo, bin_hi);
 
   TH1D * bkg = (TH1D*)ewk->Clone("bkg");
-  if(useTTGJets) bkg->Add(ttg);
-  bkg->Add(qcd);  
-  TH1D * errors = (TH1D*)bkg->Clone("errors");
 
-  ttg->Add(ewk);
+  bkg->Add(qcd);
+  bkg->Add(gjet);
+  bkg->Add(ttbar);
+  bkg->Add(ttg);
+
+  qcd->Add(gjet);
+  qcd->Add(ttbar);
+  qcd->Add(ttg);
+
+  gjet->Add(ttbar);
+  gjet->Add(ttg);
+  
+  ttbar->Add(ttg);
+
+  TH1D * errors = (TH1D*)ewk->Clone("errors");
 
   TH1D * sig_a;
   TH1D * sig_b;
-  if(drawMC) {
-    sig_a = (TH1D*)sig_a_->Clone("sig_a");
-    sig_b= (TH1D*)sig_b_->Clone("sig_b");
+  if(drawSignal) {
+    sig_a = SignalHistoFromTree(0.147492 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigaTree, variable+"_a", variable, nBinsX, bin_lo, bin_hi);
+    sig_b = SignalHistoFromTree(0.0399591 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigbTree, variable+"_b", variable, nBinsX, bin_lo, bin_hi);
   }
 
-  if(drawMC) calculateROC(sig_a, sig_b, bkg, req, title);
+  if(drawSignal) calculateROC(sig_a, sig_b, bkg, req, variable);
 
   TLegend * leg = new TLegend(0.50, 0.65, 0.85, 0.85, NULL, "brNDC");
   leg->AddEntry(gg, "#gamma#gamma Candidate Sample", "LP");
   leg->AddEntry(errors, "Total Background Uncertainty", "F");
-  if(!ff_failure) leg->AddEntry(bkg, "QCD", "F");
-  else leg->AddEntry(bkg, "QCD (UN-NORMALIZED)", "F");
-  if(useTTGJets) leg->AddEntry(ttg, "t#bar{t}#gamma+jets MC", "F");
-  leg->AddEntry(ewk, "Electroweak", "F");
+  leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
+  leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
+  leg->AddEntry(gjet, "#gamma + jets", "F");
+  leg->AddEntry(qcd, "QCD", "F");
+  leg->AddEntry(bkg, "Electroweak", "F");
   leg->SetFillColor(0);
   leg->SetTextSize(0.028);
 
@@ -774,17 +549,26 @@ void prettyPlot(TH1D* gg_, TH1D* eg_, TH1D* ff_, TH1D* gf_, TH1D* ttgjets,
   errors->SetFillStyle(3154);
   errors->SetMarkerSize(0);
 
-  ewk->SetFillColor(8);
-  ewk->SetMarkerSize(0);
-  ewk->SetLineColor(1);
-  
-  ttg->SetFillColor(kOrange-3);
-  ttg->SetMarkerSize(0);
-  ttg->SetLineColor(1);
-
-  bkg->SetFillColor(kGray);
+  // new stack: ewk, qcd, gjet, ttbar, ttg
+  bkg->SetFillColor(kAzure);
   bkg->SetMarkerSize(0);
   bkg->SetLineColor(1);
+
+  qcd->SetFillColor(kGray);
+  qcd->SetMarkerSize(0);
+  qcd->SetLineColor(1);
+
+  gjet->SetFillColor(kOrange-3);
+  gjet->SetMarkerSize(0);
+  gjet->SetLineColor(1);
+
+  ttbar->SetFillColor(kGray);
+  ttbar->SetMarkerSize(0);
+  ttbar->SetLineColor(1);
+
+  ttg->SetFillColor(8);
+  ttg->SetMarkerSize(0);
+  ttg->SetLineColor(1);
 
   TCanvas * can = new TCanvas("can", "Plot", 10, 10, 2000, 2000);
 
@@ -802,7 +586,7 @@ void prettyPlot(TH1D* gg_, TH1D* eg_, TH1D* ff_, TH1D* gf_, TH1D* ttgjets,
   //padhi->SetGridy(true);
   padhi->SetBottomMargin(0);
 
-  bkg->SetTitle(title);
+  bkg->SetTitle(variable);
   bkg->GetXaxis()->SetTitle(xaxisTitle);
   bkg->GetYaxis()->SetTitle(yaxisTitle);
 
@@ -810,11 +594,13 @@ void prettyPlot(TH1D* gg_, TH1D* eg_, TH1D* ff_, TH1D* gf_, TH1D* ttgjets,
   bkg->GetYaxis()->SetRangeUser(ymin, ymax);
 
   bkg->Draw("hist");
-  if(useTTGJets) ttg->Draw("same hist");
-  ewk->Draw("same hist");
+  qcd->Draw("same hist");
+  gjet->Draw("same hist");
+  ttbar->Draw("same hist");
+  ttg->Draw("same hist");
   errors->Draw("same e2");
   gg->Draw("same e1");
-  ewk->Draw("same axis");
+  bkg->Draw("same axis");
 
   if(drawMC) {
     sig_a->SetLineColor(kMagenta);
@@ -883,7 +669,225 @@ void prettyPlot(TH1D* gg_, TH1D* eg_, TH1D* ff_, TH1D* gf_, TH1D* ttgjets,
 
   padhi->cd();
   padhi->SetLogy(true);
-  can->SaveAs(title+"_"+req+".pdf");
+  can->SaveAs(filename+"_"+req+".pdf");
+
+  delete can;
+
+}
+
+void PlotMaker::CreateMETPlot(TString variable, bool isAFloat,
+			   Int_t nBinsX, Double_t* customBins,
+			   TString xaxisTitle, TString yaxisTitle,
+			   Float_t ymin, Float_t ymax,
+			   Float_t ratiomin, Float_t ratiomax,
+			   bool drawSignal, bool drawLegend, bool drawPrelim) {
+
+  TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins);
+  gg = (TH1D*)DivideByBinWidth(gg);
+  TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, customBins);
+  
+  TH1D * ewk_noNorm = (TH1D*)ewk->Clone();
+  ewk->Scale(egScale);
+  for(int i = 0; i < ewk->GetNbinsX(); i++) {
+    Float_t normerr = egScaleErr*(ewk_noNorm->GetBinContent(i+1));
+    Float_t staterr = ewk->GetBinError(i+1);
+    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+    ewk->SetBinError(i+1, new_err);
+  }
+  ewk = (TH1D*)DivideByBinWidth(ewk);
+
+  TH1D * qcd30to40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 2.35E-4 * 1.019 * 1.019 / 6061407., isAFloat, variable, qcd30to40Tree, variable+"_qcd30to40_"+req, variable, nBinsX, customBins);
+  qcd30to40 = (TH1D*)DivideByBinWidth(qcd30to40);
+  TH1D * qcd40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 0.002175 * 1.019 * 1.019 / 9782735., isAFloat, variable, qcd40Tree, variable+"_qcd40_"+req, variable, nBinsX, customBins);
+  qcd40 = (TH1D*)DivideByBinWidth(qcd40);
+  TH1D * gjet20to40 = SignalHistoFromTree(intLumi_int * 81930.0 * 0.001835 * 1.019 * 1.019 / 5907942., isAFloat, variable, gjet20to40Tree, variable+"_gjet20to40_"+req, variable, nBinsX, customBins);
+  gjet20to40 = (TH1D*)DivideByBinWidth(gjet20to40);
+  TH1D * gjet40 = SignalHistoFromTree(intLumi_int * 8884.0 * 0.05387 * 1.019 * 1.019 / 5956149., isAFloat, variable, gjet40Tree, variable+"_gjet40_"+req, variable, nBinsX, customBins);
+  gjet40 = (TH1D*)DivideByBinWidth(gjet40);
+  TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, customBins);
+  ttHadronic = (TH1D*)DivideByBinWidth(ttHadronic);
+  TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, customBins);
+  ttSemiLep = (TH1D*)DivideByBinWidth(ttSemiLep);
+  TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, customBins);
+  ttg = (TH1D*)DivideByBinWidth(ttg);
+
+  TH1D * bkg = (TH1D*)ewk->Clone("bkg");
+
+  bkg->Add(qcd);
+  bkg->Add(gjet);
+  bkg->Add(ttbar);
+  bkg->Add(ttg);
+
+  qcd->Add(gjet);
+  qcd->Add(ttbar);
+  qcd->Add(ttg);
+
+  gjet->Add(ttbar);
+  gjet->Add(ttg);
+  
+  ttbar->Add(ttg);
+
+  TH1D * errors = (TH1D*)ewk->Clone("errors");
+
+  TH1D * sig_a;
+  TH1D * sig_b;
+  if(drawSignal) {
+    sig_a = SignalHistoFromTree(0.147492 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigaTree, variable+"_a", variable, nBinsX, customBins);
+    sig_a = (TH1D*)DivideByBinWidth(sig_a);
+    sig_b = SignalHistoFromTree(0.0399591 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigbTree, variable+"_b", variable, nBinsX, customBins);
+    sig_b = (TH1D*)DivideByBinWidth(sig_b);
+  }
+
+  if(drawSignal) calculateROC(sig_a, sig_b, bkg, req, variable);
+
+  TLegend * leg = new TLegend(0.50, 0.65, 0.85, 0.85, NULL, "brNDC");
+  leg->AddEntry(gg, "#gamma#gamma Candidate Sample", "LP");
+  leg->AddEntry(errors, "Total Background Uncertainty", "F");
+  leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
+  leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
+  leg->AddEntry(gjet, "#gamma + jets", "F");
+  leg->AddEntry(qcd, "QCD", "F");
+  leg->AddEntry(bkg, "Electroweak", "F");
+  leg->SetFillColor(0);
+  leg->SetTextSize(0.028);
+
+  TPaveText * prelim = new TPaveText(0.50, 0.42, 0.85, 0.62, "NDC");
+  prelim->SetFillColor(0);
+  prelim->SetFillStyle(0);
+  prelim->SetLineColor(0);
+  prelim->AddText("CMS Preliminary 2013");
+  prelim->AddText(" ");
+  prelim->AddText("#sqrt{s} = 8 TeV, #intL = "+intLumi+" fb^{-1}");
+  prelim->AddText(req+" Requirement");
+
+  gg->SetMarkerStyle(20); 
+  gg->SetMarkerSize(1.5);
+
+  errors->SetFillColor(kOrange+10);
+  errors->SetFillStyle(3154);
+  errors->SetMarkerSize(0);
+
+  // new stack: ewk, qcd, gjet, ttbar, ttg
+  bkg->SetFillColor(kAzure);
+  bkg->SetMarkerSize(0);
+  bkg->SetLineColor(1);
+
+  qcd->SetFillColor(kGray);
+  qcd->SetMarkerSize(0);
+  qcd->SetLineColor(1);
+
+  gjet->SetFillColor(kOrange-3);
+  gjet->SetMarkerSize(0);
+  gjet->SetLineColor(1);
+
+  ttbar->SetFillColor(kGray);
+  ttbar->SetMarkerSize(0);
+  ttbar->SetLineColor(1);
+
+  ttg->SetFillColor(8);
+  ttg->SetMarkerSize(0);
+  ttg->SetLineColor(1);
+
+  TCanvas * can = new TCanvas("can", "Plot", 10, 10, 2000, 2000);
+
+  TPad * padhi = new TPad("padhi", "padhi", 0, 0.3, 1, 1);
+  TPad * padlo = new TPad("padlo", "padlo", 0, 0, 1, 0.3);
+
+  padhi->Draw();
+  padlo->Draw();
+  padhi->cd();
+
+  padhi->SetLogy(false);
+  padhi->SetTickx(true);
+  padhi->SetTicky(true);
+  //padhi->SetGridx(true);
+  //padhi->SetGridy(true);
+  padhi->SetBottomMargin(0);
+
+  bkg->SetTitle(variable);
+  bkg->GetXaxis()->SetTitle(xaxisTitle);
+  bkg->GetYaxis()->SetTitle(yaxisTitle);
+
+  if(xmax > xmin) bkg->GetXaxis()->SetRangeUser(xmin, xmax);
+  bkg->GetYaxis()->SetRangeUser(ymin, ymax);
+
+  bkg->Draw("hist");
+  qcd->Draw("same hist");
+  gjet->Draw("same hist");
+  ttbar->Draw("same hist");
+  ttg->Draw("same hist");
+  errors->Draw("same e2");
+  gg->Draw("same e1");
+  bkg->Draw("same axis");
+
+  if(drawMC) {
+    sig_a->SetLineColor(kMagenta);
+    sig_a->SetLineWidth(3);
+    leg->AddEntry(sig_a, "GGM #gamma#gamma (460_175)", "L");
+    sig_a->Draw("same hist");
+    
+    sig_b->SetLineColor(kBlue);
+    sig_b->SetLineWidth(3);
+    leg->AddEntry(sig_b, "GGM #gamma#gamma (560_325)", "L");
+    sig_b->Draw("same hist");
+  }
+
+  if(drawLegend) leg->Draw("same");
+  if(drawPrelim && drawLegend) prelim->Draw("same");
+
+  padlo->cd();
+  padlo->SetTopMargin(0);
+  padlo->SetBottomMargin(0.2);
+
+  TH1D * ratio = (TH1D*)gg->Clone("ratio");
+  ratio->Reset();
+  ratio->SetTitle("Data / Background");
+  for(int i = 0; i < ratio->GetNbinsX(); i++) {
+    if(bkg->GetBinContent(i+1) == 0.) continue;
+    ratio->SetBinContent(i+1, gg->GetBinContent(i+1) / bkg->GetBinContent(i+1));
+    ratio->SetBinError(i+1, gg->GetBinError(i+1) / bkg->GetBinContent(i+1));
+  }
+
+  TH1D * ratio_sys;
+  ratio_sys = (TH1D*)bkg->Clone("ratio_sys");
+  for(int i = 0; i < ratio_sys->GetNbinsX(); i++) {
+    ratio_sys->SetBinContent(i+1, 1.);
+    if(bkg->GetBinContent(i+1) == 0.) ratio_sys->SetBinError(i+1, 0.);
+    else ratio_sys->SetBinError(i+1, ratio_sys->GetBinError(i+1) / bkg->GetBinContent(i+1));
+  }
+
+  if(xmax > xmin) ratio->GetXaxis()->SetRangeUser(xmin, xmax);
+
+  ratio_sys->SetFillStyle(1001);
+  ratio_sys->SetFillColor(kGray);
+  ratio_sys->SetLineColor(kGray);
+  ratio_sys->SetMarkerColor(kGray);
+
+  ratio->GetXaxis()->SetTitle(xaxisTitle);
+  ratio->GetXaxis()->SetLabelFont(63);
+  ratio->GetXaxis()->SetLabelSize(48);
+  ratio->GetXaxis()->SetTitleSize(0.12);
+  ratio->GetXaxis()->SetTitleOffset(0.6);
+  ratio->GetYaxis()->SetTitle("Data / Background");
+  ratio->GetYaxis()->SetLabelFont(63);
+  ratio->GetYaxis()->SetLabelSize(48);
+  ratio->GetYaxis()->SetTitleSize(0.08);
+  ratio->GetYaxis()->SetTitleOffset(0.5);
+  ratio->GetYaxis()->SetRangeUser(ratiomin, ratiomax);
+  ratio->GetYaxis()->SetNdivisions(508);
+
+  ratio->Draw("e1");
+  ratio_sys->Draw("e2 same");
+  ratio->Draw("e1 same");
+  ratio->Draw("axis same");
+
+  TLine * oneLine = new TLine(xmin, 1, xmax, 1);
+  oneLine->SetLineStyle(2);
+  oneLine->Draw();  
+
+  padhi->cd();
+  padhi->SetLogy(true);
+  can->SaveAs(variable+"_"+req+".pdf");
 
   delete can;
 

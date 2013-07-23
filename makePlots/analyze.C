@@ -15,14 +15,6 @@
 #include "TGraphAsymmErrors.h"
 #include "TGraphErrors.h"
 
-#include "RooRealVar.h"
-#include "RooDataHist.h"
-#include "RooPolynomial.h"
-#include "RooCBShape.h"
-#include "RooAddPdf.h"
-#include "RooPlot.h"
-#include "/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_3/src/PhysicsTools/TagAndProbe/interface/RooCMSShape.h"
-
 #include <vector>
 #include <iostream>
 #include <map>
@@ -39,7 +31,6 @@
 #include "rootRoutines.h"
 
 using namespace std;
-using namespace RooFit;
 
 const TString ffColor = "kOrange+10";
 const TString eeColor = "kBlue";
