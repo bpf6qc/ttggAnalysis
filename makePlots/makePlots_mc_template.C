@@ -1,22 +1,16 @@
 void makePlots() {
 
-  gROOT->LoadMacro("analyze.C+");
+  gROOT->LoadMacro("analyze_mc.C+");
 
   TStopwatch ts;
   ts.Start();
 
   TString input = "FILE_TO_RUN";
   bool addMC = true;
-  TString intLumi = "19.789";
-  int intLumi_int = 19789;
-  
-  bool useFF = true;
-  bool useDifferenceSystematic = false;
-  bool useTTGJets = false;
-  bool useMCforQCD = false;
+  int intLumi = 19789;
 
   for(int i = 0; i < 7; i++) {
-    analyze(input, addMC, i, intLumi, intLumi_int, useFF, useDifferenceSystematic, useTTGJets, useMCforQCD);
+    analyze(input, addMC, i, intLumi)
   }  
 
   ts.Stop();

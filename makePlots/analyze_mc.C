@@ -27,7 +27,7 @@
 #include <stdarg.h>
 #include <exception>
 
-#include "analyze.h"
+#include "analyze_mc.h"
 #include "rootRoutines.h"
 
 using namespace std;
@@ -36,7 +36,7 @@ const TString ffColor = "kOrange+10";
 const TString eeColor = "kBlue";
 const TString egColor = "kGreen";
 
-void analyze_mc(TString input, bool addMC, int channel, int intLumi_int) {
+void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 
   gROOT->Reset();
   gROOT->SetBatch(true);
