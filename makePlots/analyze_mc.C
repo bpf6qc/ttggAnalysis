@@ -28,7 +28,6 @@
 #include <exception>
 
 #include "analyze_mc.h"
-#include "rootRoutines.h"
 
 using namespace std;
 
@@ -167,49 +166,14 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
     can->SetLogz(false);
   }
 
-  PlotMaker * pMaker = new PlotMaker(intLumi_int, egScale, egScaleErr, req);
-  pMaker->SetTrees(gg, eg,
+  PlotMaker * pMaker = new PlotMaker(intLumi_int, egScale, egScaleErr, channels[channel]);
+  pMaker->SetTrees(ggTree, egTree,
 		   qcd30to40Tree, qcd40Tree,
 		   gjet20to40Tree, gjet40Tree,
 		   ttHadronicTree, ttSemiLepTree,
 		   ttgjetsTree,
 		   sigaTree, sigbTree);
 
-  pMaker->CreatePlot("leadMatchedJetPt", true,
-		     200, 0., 2000.,
-		     "lead #gamma's matched jet Pt", "Number of Events",
-		     0., 1400., 1.e-2, 3.e6,
-		     0., 1.9,
-		     false, true, true);
-
-  pMaker->CreatePlot("trailMatchedJetPt", true,
-		     200, 0., 2000.,
-		     "trail #gamma's matched jet Pt", "Number of Events",
-		     0., 1400., 1.e-2, 3.e6,
-		     0., 1.9,
-		     false, true, true);
-
-  pMaker->CreatePlot("leadPtOverInvmass", true,
-		     100, 0., 6.,
-		     "lead Photon Pt / m(gg)", "Number of Events",
-		     0., 6., 1.e-2, 3.e6,
-		     0., 1.9,
-		     true, true, true);
-
-  pMaker->CreatePlot("trailPtOverInvmass", true,
-		     100, 0., 6.,
-		     "trail Photon Pt / m(gg)", "Number of Events",
-		     0., 6., 1.e-2, 3.e6,
-		     0., 1.9,
-		     true, true, true);
-  
-  pMaker->CreatePlot("minDPhi_gMET", true,
-		     85, 0., 3.2,
-		     "min dPhi between photons and MET", "Number of Events",
-		     0., 3.2, 1.e-2, 3.e6,
-		     0., 4.5,
-		     true, false, false);
-		     
   const int nMetBins = 16;
   Double_t xbins_met[nBins+1] = {
     0,
@@ -235,6 +199,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 			durp;
 			nMetBins, xbins_met,
 			"#slash{E}_{T} (GeV)", "Number of Events / GeV",
+			xbins[0], xbins[nBins],
 			7.e-4, 25000.,
 			0., 9.1,
 			true, true, true);

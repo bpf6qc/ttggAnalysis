@@ -27,6 +27,8 @@
 #include <stdarg.h>
 #include <exception>
 
+#include "rootRoutines.h"
+
 using namespace std;
 
 const TString gifOrPdf = ".pdf";
@@ -469,6 +471,7 @@ void PlotMaker::SetTrees(TTree * gg, TTree * eg,
 void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 			   Int_t nBinsX, Float_t bin_lo, Float_t bin_hi,
 			   TString xaxisTitle, TString yaxisTitle,
+			   Float_t xmin, Float_t xmax,
 			   Float_t ymin, Float_t ymax,
 			   Float_t ratiomin, Float_t ratiomax,
 			   bool drawSignal, bool drawLegend, bool drawPrelim) {
@@ -609,7 +612,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gg->Draw("same e1");
   bkg->Draw("same axis");
 
-  if(drawMC) {
+  if(drawSignal) {
     sig_a->SetLineColor(kMagenta);
     sig_a->SetLineWidth(3);
     leg->AddEntry(sig_a, "GGM #gamma#gamma (460_175)", "L");
@@ -676,18 +679,19 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   padhi->cd();
   padhi->SetLogy(true);
-  can->SaveAs(filename+"_"+req+".pdf");
+  can->SaveAs(variable+"_"+req+".pdf");
 
   delete can;
 
 }
 
 void PlotMaker::CreateMETPlot(TString variable, bool isAFloat,
-			   Int_t nBinsX, Double_t* customBins,
-			   TString xaxisTitle, TString yaxisTitle,
-			   Float_t ymin, Float_t ymax,
-			   Float_t ratiomin, Float_t ratiomax,
-			   bool drawSignal, bool drawLegend, bool drawPrelim) {
+			      Int_t nBinsX, Double_t* customBins,
+			      TString xaxisTitle, TString yaxisTitle,
+			      Float_t xmin, Float_t xmax,
+			      Float_t ymin, Float_t ymax,
+			      Float_t ratiomin, Float_t ratiomax,
+			      bool drawSignal, bool drawLegend, bool drawPrelim) {
 
   TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins);
   gg = (TH1D*)DivideByBinWidth(gg);
@@ -829,7 +833,7 @@ void PlotMaker::CreateMETPlot(TString variable, bool isAFloat,
   gg->Draw("same e1");
   bkg->Draw("same axis");
 
-  if(drawMC) {
+  if(drawSignal) {
     sig_a->SetLineColor(kMagenta);
     sig_a->SetLineWidth(3);
     leg->AddEntry(sig_a, "GGM #gamma#gamma (460_175)", "L");
@@ -1082,258 +1086,5 @@ void plotReducedChi2(vector<TH1D*> gg, vector<TH1D*> gf, vector<TH1D*> ff,
   }
   chi2_all /= nBins_all;
   ff_chi2->SetBinContent(ff_chi2->FindBin(binx, 10), chi2_all);
-
-}
-
-void analyzeReweighting(TTree * ggtree, TTree * fftree, TTree * gftree) {
-
-  TString fVars[7] = {"leadPhotonEt", "trailPhotonEt", "invmass", "HT", "HT_jets", "diEMpT", "diJetPt"};
-  TString iVars[2] = {"Njets", "Nbtags"};
-
-  TH2D * gf_chi2 = new TH2D("gf_chi2", "gf_chi2;Reweighting Variable;#chi^{2} Evaluatation Variable", 10, 0, 10, 11, 0, 11);
-  TH2D * ff_chi2 = new TH2D("ff_chi2", "ff_chi2;Reweighting Variable;#chi^{2} Evaluatation Variable", 10, 0, 10, 11, 0, 11);
-
-  vector<TH1D*> gg;
-  for(int i = 0; i < 7; i++) gg.push_back((TH1D*)HistoFromTree(true, fVars[i], ggtree, "gg_"+fVars[i]+"_anaRew", "gg_"+fVars[i]+"_anaRew", 200, 0., 2000., true));
-  gg.push_back((TH1D*)HistoFromTree(true, "pfMET", ggtree, "gg_pfMET_anaRew", "gg_pfMET_anaRew", 10, 0., 50., true));
-  for(int i = 0; i < 2; i++) gg.push_back((TH1D*)HistoFromTree(false, iVars[i], ggtree, "gg_"+iVars[i]+"_anaRew", "gg_"+iVars[i]+"_anaRew", 20, 0., 20., true));
-
-  vector<TH1D*> gf;
-  for(int i = 0; i < 7; i++) gf.push_back((TH1D*)HistoFromTree(true, fVars[i], gftree, "gf_"+fVars[i]+"_anaRew", "gf_"+fVars[i]+"_anaRew", 200, 0., 2000., true));
-  gf.push_back((TH1D*)HistoFromTree(true, "pfMET", gftree, "gf_pfMET_anaRew", "gf_pfMET_anaRew", 10, 0., 50., true));
-  for(int i = 0; i < 2; i++) gf.push_back((TH1D*)HistoFromTree(false, iVars[i], gftree, "gf_"+iVars[i]+"_anaRew", "gf_"+iVars[i]+"_anaRew", 20, 0., 20., true));
-
-  vector<TH1D*> ff;
-  for(int i = 0; i < 7; i++) ff.push_back((TH1D*)HistoFromTree(true, fVars[i], fftree, "ff_"+fVars[i]+"_anaRew", "ff_"+fVars[i]+"_anaRew", 200, 0., 2000., true));
-  ff.push_back((TH1D*)HistoFromTree(true, "pfMET", fftree, "ff_pfMET_anaRew", "ff_pfMET_anaRew", 10, 0., 50., true));
-  for(int i = 0; i < 2; i++) ff.push_back((TH1D*)HistoFromTree(false, iVars[i], fftree, "ff_"+iVars[i]+"_anaRew", "ff_"+iVars[i]+"_anaRew", 20, 0., 20., true));
-
-  plotReducedChi2(gg, gf, ff,
-		  gf_chi2,
-		  ff_chi2,
-		  0);
-
-  const Int_t nBins_photonEt = 16;
-  Double_t bins_photonEt[nBins_photonEt+1] = {25, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 250, 300, 400};
-  TH1D * gf_weight_leadPhotonEt = GetAlternativeWeights(ggtree, gftree, "leadPhotonEt", true, nBins_photonEt, bins_photonEt, "gf");
-  TH1D * ff_weight_leadPhotonEt = GetAlternativeWeights(ggtree, fftree, "leadPhotonEt", true, nBins_photonEt, bins_photonEt, "ff");
-  
-  vector<TH1D*> gf_leadPhotonEt;
-  for(int i = 0; i < 7; i++) gf_leadPhotonEt.push_back((TH1D*)AlternativeReweight(fVars[i], true, "leadPhotonEt", true, gg[i], gf_weight_leadPhotonEt, gftree, 0, false, "gf_"+fVars[i]+"_rewLeadPhotonEt", false));
-  gf_leadPhotonEt.push_back((TH1D*)AlternativeReweight("pfMET", true, "leadPhotonEt", true, gg[7], gf_weight_leadPhotonEt, gftree, 0, false, "gf_pfMET_rewLeadPhotonEt", false));
-  for(int i = 0; i < 2; i++) gf_leadPhotonEt.push_back((TH1D*)AlternativeReweight(iVars[i], false, "leadPhotonEt", true, gg[i+8], gf_weight_leadPhotonEt, gftree, 0, false, "gf_"+iVars[i]+"_rewLeadPhotonEt", false));
-
-  vector<TH1D*> ff_leadPhotonEt;
-  for(int i = 0; i < 7; i++) ff_leadPhotonEt.push_back((TH1D*)AlternativeReweight(fVars[i], true, "leadPhotonEt", true, gg[i], ff_weight_leadPhotonEt, fftree, 0, false, "ff_"+fVars[i]+"_rewLeadPhotonEt", false));
-  ff_leadPhotonEt.push_back((TH1D*)AlternativeReweight("pfMET", true, "leadPhotonEt", true, gg[7], ff_weight_leadPhotonEt, fftree, 0, false, "ff_pfMET_rewLeadPhotonEt", false));
-  for(int i = 0; i < 2; i++) ff_leadPhotonEt.push_back((TH1D*)AlternativeReweight(iVars[i], false, "leadPhotonEt", true, gg[i+8], ff_weight_leadPhotonEt, fftree, 0, false, "ff_"+iVars[i]+"_rewLeadPhotonEt", false));
-
-  plotReducedChi2(gg, gf_leadPhotonEt, ff_leadPhotonEt,
-		  gf_chi2,
-		  ff_chi2,
-		  1);
-
-  TH1D * gf_weight_trailPhotonEt = GetAlternativeWeights(ggtree, gftree, "trailPhotonEt", true, nBins_photonEt, bins_photonEt, "gf");
-  TH1D * ff_weight_trailPhotonEt = GetAlternativeWeights(ggtree, fftree, "trailPhotonEt", true, nBins_photonEt, bins_photonEt, "ff");
-
-  vector<TH1D*> gf_trailPhotonEt;
-  for(int i = 0; i < 7; i++) gf_trailPhotonEt.push_back((TH1D*)AlternativeReweight(fVars[i], true, "trailPhotonEt", true, gg[i], gf_weight_trailPhotonEt, gftree, 0, false, "gf_"+fVars[i]+"_rewTrailPhotonEt", false));
-  gf_trailPhotonEt.push_back((TH1D*)AlternativeReweight("pfMET", true, "trailPhotonEt", true, gg[7], gf_weight_trailPhotonEt, gftree, 0, false, "gf_pfMET_rewTrailPhotonEt", false));
-  for(int i = 0; i < 2; i++) gf_trailPhotonEt.push_back((TH1D*)AlternativeReweight(iVars[i], false, "trailPhotonEt", true, gg[i+8], gf_weight_trailPhotonEt, gftree, 0, false, "gf_"+iVars[i]+"_rewTrailPhotonEt", false));
-
-  vector<TH1D*> ff_trailPhotonEt;
-  for(int i = 0; i < 7; i++) ff_trailPhotonEt.push_back((TH1D*)AlternativeReweight(fVars[i], true, "trailPhotonEt", true, gg[i], ff_weight_trailPhotonEt, fftree, 0, false, "ff_"+fVars[i]+"_rewTrailPhotonEt", false));
-  ff_trailPhotonEt.push_back((TH1D*)AlternativeReweight("pfMET", true, "trailPhotonEt", true, gg[7], ff_weight_trailPhotonEt, fftree, 0, false, "ff_pfMET_rewTrailPhotonEt", false));
-  for(int i = 0; i < 2; i++) ff_trailPhotonEt.push_back((TH1D*)AlternativeReweight(iVars[i], false, "trailPhotonEt", true, gg[i+8], ff_weight_trailPhotonEt, fftree, 0, false, "ff_"+iVars[i]+"_rewTrailPhotonEt", false));
-
-    plotReducedChi2(gg, gf_trailPhotonEt, ff_trailPhotonEt,
-		    gf_chi2,
-		    ff_chi2,
-		    2);
-
-  const Int_t nBins_invmass = 26;
-  Double_t bins_invmass[nBins_invmass+1] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 160, 180, 200, 225, 250, 275, 300, 350, 400, 500, 600, 800};
-  TH1D * gf_weight_invmass = GetAlternativeWeights(ggtree, gftree, "invmass", true, nBins_invmass, bins_invmass, "gf");
-  TH1D * ff_weight_invmass = GetAlternativeWeights(ggtree, fftree, "invmass", true, nBins_invmass, bins_invmass, "ff");
-
-  vector<TH1D*> gf_invmass;
-  for(int i = 0; i < 7; i++) gf_invmass.push_back((TH1D*)AlternativeReweight(fVars[i], true, "invmass", true, gg[i], gf_weight_invmass, gftree, 0, false, "gf_"+fVars[i]+"_rewInvmass", false));
-  gf_invmass.push_back((TH1D*)AlternativeReweight("pfMET", true, "invmass", true, gg[7], gf_weight_invmass, gftree, 0, false, "gf_pfMET_rewInvmass", false));
-  for(int i = 0; i < 2; i++) gf_invmass.push_back((TH1D*)AlternativeReweight(iVars[i], false, "invmass", true, gg[i+8], gf_weight_invmass, gftree, 0, false, "gf_"+iVars[i]+"_rewInvmass", false));
-
-  vector<TH1D*> ff_invmass;
-  for(int i = 0; i < 7; i++) ff_invmass.push_back((TH1D*)AlternativeReweight(fVars[i], true, "invmass", true, gg[i], ff_weight_invmass, fftree, 0, false, "ff_"+fVars[i]+"_rewInvmass", false));
-  ff_invmass.push_back((TH1D*)AlternativeReweight("pfMET", true, "invmass", true, gg[7], ff_weight_invmass, fftree, 0, false, "ff_pfMET_rewInvmass", false));
-  for(int i = 0; i < 2; i++) ff_invmass.push_back((TH1D*)AlternativeReweight(iVars[i], false, "invmass", true, gg[i+8], ff_weight_invmass, fftree, 0, false, "ff_"+iVars[i]+"_rewInvmass", false));
-
-  plotReducedChi2(gg, gf_invmass, ff_invmass,
-		  gf_chi2,
-		  ff_chi2,
-		  3);
-
-  const Int_t nBins_HT = 32;
-  Double_t bins_HT[nBins_HT+1] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 160, 180, 200, 220, 240, 260, 280, 300, 325, 350, 375, 400, 450, 500, 550, 600, 800, 1100};
-  TH1D * gf_weight_HT = GetAlternativeWeights(ggtree, gftree, "HT", true, nBins_HT, bins_HT, "gf");
-  TH1D * ff_weight_HT = GetAlternativeWeights(ggtree, fftree, "HT", true, nBins_HT, bins_HT, "ff");
-
-  vector<TH1D*> gf_HT;
-  for(int i = 0; i < 7; i++) gf_HT.push_back((TH1D*)AlternativeReweight(fVars[i], true, "HT", true, gg[i], gf_weight_HT, gftree, 0, false, "gf_"+fVars[i]+"_rewHT", false));
-  gf_HT.push_back((TH1D*)AlternativeReweight("pfMET", true, "HT", true, gg[7], gf_weight_HT, gftree, 0, false, "gf_pfMET_rewHT", false));
-  for(int i = 0; i < 2; i++) gf_HT.push_back((TH1D*)AlternativeReweight(iVars[i], false, "HT", true, gg[i+8], gf_weight_HT, gftree, 0, false, "gf_"+iVars[i]+"_rewHT", false));
-
-  vector<TH1D*> ff_HT;
-  for(int i = 0; i < 7; i++) ff_HT.push_back((TH1D*)AlternativeReweight(fVars[i], true, "HT", true, gg[i], ff_weight_HT, fftree, 0, false, "ff_"+fVars[i]+"_rewHT", false));
-  ff_HT.push_back((TH1D*)AlternativeReweight("pfMET", true, "HT", true, gg[7], ff_weight_HT, fftree, 0, false, "ff_pfMET_rewHT", false));
-  for(int i = 0; i < 2; i++) ff_HT.push_back((TH1D*)AlternativeReweight(iVars[i], false, "HT", true, gg[i+8], ff_weight_HT, fftree, 0, false, "ff_"+iVars[i]+"_rewHT", false));
-
-  plotReducedChi2(gg, gf_HT, ff_HT,
-		  gf_chi2,
-		  ff_chi2,
-		  4);
-
-  TH1D * gf_weight_HT_jets = GetAlternativeWeights(ggtree, gftree, "HT_jets", true, nBins_HT, bins_HT, "gf");
-  TH1D * ff_weight_HT_jets = GetAlternativeWeights(ggtree, fftree, "HT_jets", true, nBins_HT, bins_HT, "ff");
-  
-  vector<TH1D*> gf_HT_jets;
-  for(int i = 0; i < 7; i++) gf_HT_jets.push_back((TH1D*)AlternativeReweight(fVars[i], true, "HT_jets", true, gg[i], gf_weight_HT_jets, gftree, 0, false, "gf_"+fVars[i]+"_rewHT_jets", false));
-  gf_HT_jets.push_back((TH1D*)AlternativeReweight("pfMET", true, "HT_jets", true, gg[7], gf_weight_HT_jets, gftree, 0, false, "gf_pfMET_rewHT_jets", false));
-  for(int i = 0; i < 2; i++) gf_HT_jets.push_back((TH1D*)AlternativeReweight(iVars[i], false, "HT_jets", true, gg[i+8], gf_weight_HT_jets, gftree, 0, false, "gf_"+iVars[i]+"_rewHT_jets", false));
-
-  vector<TH1D*> ff_HT_jets;
-  for(int i = 0; i < 7; i++) ff_HT_jets.push_back((TH1D*)AlternativeReweight(fVars[i], true, "HT_jets", true, gg[i], ff_weight_HT_jets, fftree, 0, false, "ff_"+fVars[i]+"_rewHT_jets", false));
-  ff_HT_jets.push_back((TH1D*)AlternativeReweight("pfMET", true, "HT_jets", true, gg[7], ff_weight_HT_jets, fftree, 0, false, "ff_pfMET_rewHT_jets", false));
-  for(int i = 0; i < 2; i++) ff_HT_jets.push_back((TH1D*)AlternativeReweight(iVars[i], false, "HT_jets", true, gg[i+8], ff_weight_HT_jets, fftree, 0, false, "ff_"+iVars[i]+"_rewHT_jets", false));
-
-  plotReducedChi2(gg, gf_HT_jets, ff_HT_jets,
-		  gf_chi2,
-		  ff_chi2,
-		  5);
-
-  const Int_t nBins_diEMpT = 30;
-  Double_t bins_diEMpT[nBins_diEMpT+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 200, 300, 400, 600, 1000};
-  TH1D * gf_weight_diEMpT = GetAlternativeWeights(ggtree, gftree, "diEMpT", true, nBins_diEMpT, bins_diEMpT, "gf");
-  TH1D * ff_weight_diEMpT = GetAlternativeWeights(ggtree, fftree, "diEMpT", true, nBins_diEMpT, bins_diEMpT, "ff");
-
-  vector<TH1D*> gf_diEMpT;
-  for(int i = 0; i < 7; i++) gf_diEMpT.push_back((TH1D*)AlternativeReweight(fVars[i], true, "diEMpT", true, gg[i], gf_weight_diEMpT, gftree, 0, false, "gf_"+fVars[i]+"_rewdiEMpT", false));
-  gf_diEMpT.push_back((TH1D*)AlternativeReweight("pfMET", true, "diEMpT", true, gg[7], gf_weight_diEMpT, gftree, 0, false, "gf_pfMET_rewdiEMpT", false));
-  for(int i = 0; i < 2; i++) gf_diEMpT.push_back((TH1D*)AlternativeReweight(iVars[i], false, "diEMpT", true, gg[i+8], gf_weight_diEMpT, gftree, 0, false, "gf_"+iVars[i]+"_rewdiEMpT", false));
-
-  vector<TH1D*> ff_diEMpT;
-  for(int i = 0; i < 7; i++) ff_diEMpT.push_back((TH1D*)AlternativeReweight(fVars[i], true, "diEMpT", true, gg[i], ff_weight_diEMpT, fftree, 0, false, "ff_"+fVars[i]+"_rewdiEMpT", false));
-  ff_diEMpT.push_back((TH1D*)AlternativeReweight("pfMET", true, "diEMpT", true, gg[7], ff_weight_diEMpT, fftree, 0, false, "ff_pfMET_rewdiEMpT", false));
-  for(int i = 0; i < 2; i++) ff_diEMpT.push_back((TH1D*)AlternativeReweight(iVars[i], false, "diEMpT", true, gg[i+8], ff_weight_diEMpT, fftree, 0, false, "ff_"+iVars[i]+"_rewdiEMpT", false));
-
-  plotReducedChi2(gg, gf_diEMpT, ff_diEMpT,
-		  gf_chi2,
-		  ff_chi2,
-		  6);
-
-  TH1D * gf_weight_diJetPt = GetAlternativeWeights(ggtree, gftree, "diJetPt", true, nBins_diEMpT, bins_diEMpT, "gf");
-  TH1D * ff_weight_diJetPt = GetAlternativeWeights(ggtree, fftree, "diJetPt", true, nBins_diEMpT, bins_diEMpT, "ff");
-
-  vector<TH1D*> gf_diJetPt;
-  for(int i = 0; i < 7; i++) gf_diJetPt.push_back((TH1D*)AlternativeReweight(fVars[i], true, "diJetPt", true, gg[i], gf_weight_diJetPt, gftree, 0, false, "gf_"+fVars[i]+"_rewdiJetPt", false));
-  gf_diJetPt.push_back((TH1D*)AlternativeReweight("pfMET", true, "diJetPt", true, gg[7], gf_weight_diJetPt, gftree, 0, false, "gf_pfMET_rewdiJetPt", false));
-  for(int i = 0; i < 2; i++) gf_diJetPt.push_back((TH1D*)AlternativeReweight(iVars[i], false, "diJetPt", true, gg[i+8], gf_weight_diJetPt, gftree, 0, false, "gf_"+iVars[i]+"_rewdiJetPt", false));
-
-  vector<TH1D*> ff_diJetPt;
-  for(int i = 0; i < 7; i++) ff_diJetPt.push_back((TH1D*)AlternativeReweight(fVars[i], true, "diJetPt", true, gg[i], ff_weight_diJetPt, fftree, 0, false, "ff_"+fVars[i]+"_rewdiJetPt", false));
-  ff_diJetPt.push_back((TH1D*)AlternativeReweight("pfMET", true, "diJetPt", true, gg[7], ff_weight_diJetPt, fftree, 0, false, "ff_pfMET_rewdiJetPt", false));
-  for(int i = 0; i < 2; i++) ff_diJetPt.push_back((TH1D*)AlternativeReweight(iVars[i], false, "diJetPt", true, gg[i+8], ff_weight_diJetPt, fftree, 0, false, "ff_"+iVars[i]+"_rewdiJetPt", false));
-
-  plotReducedChi2(gg, gf_diJetPt, ff_diJetPt,
-		  gf_chi2,
-		  ff_chi2,
-		  7);
-
-  const Int_t nBins_Njets = 9;
-  Double_t bins_Njets[nBins_Njets+1] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-  TH1D * gf_weight_Njets = GetAlternativeWeights(ggtree, gftree, "Njets", false, nBins_Njets, bins_Njets, "gf");
-  TH1D * ff_weight_Njets = GetAlternativeWeights(ggtree, fftree, "Njets", false, nBins_Njets, bins_Njets, "ff");
-
-  vector<TH1D*> gf_Njets;
-  for(int i = 0; i < 7; i++) gf_Njets.push_back((TH1D*)AlternativeReweight(fVars[i], true, "Njets", false, gg[i], gf_weight_Njets, gftree, 0, false, "gf_"+fVars[i]+"_rewNjets", false));
-  gf_Njets.push_back((TH1D*)AlternativeReweight("pfMET", true, "Njets", false, gg[7], gf_weight_Njets, gftree, 0, false, "gf_pfMET_rewNjets", false));
-  for(int i = 0; i < 2; i++) gf_Njets.push_back((TH1D*)AlternativeReweight(iVars[i], false, "Njets", false, gg[i+8], gf_weight_Njets, gftree, 0, false, "gf_"+iVars[i]+"_rewNjets", false));
-
-  vector<TH1D*> ff_Njets;
-  for(int i = 0; i < 7; i++) ff_Njets.push_back((TH1D*)AlternativeReweight(fVars[i], true, "Njets", false, gg[i], ff_weight_Njets, fftree, 0, false, "ff_"+fVars[i]+"_rewNjets", false));
-  ff_Njets.push_back((TH1D*)AlternativeReweight("pfMET", true, "Njets", false, gg[7], ff_weight_Njets, fftree, 0, false, "ff_pfMET_rewNjets", false));
-  for(int i = 0; i < 2; i++) ff_Njets.push_back((TH1D*)AlternativeReweight(iVars[i], false, "Njets", false, gg[i+8], ff_weight_Njets, fftree, 0, false, "ff_"+iVars[i]+"_rewNjets", false));
-
-  plotReducedChi2(gg, gf_Njets, ff_Njets,
-		  gf_chi2,
-		  ff_chi2,
-		  8);
-
-  const Int_t nBins_Nbtags = 4;
-  Double_t bins_Nbtags[nBins_Nbtags+1] = {0, 1, 2, 3, 4};
-  TH1D * gf_weight_Nbtags = GetAlternativeWeights(ggtree, gftree, "Nbtags", false, nBins_Nbtags, bins_Nbtags, "gf");
-  TH1D * ff_weight_Nbtags = GetAlternativeWeights(ggtree, fftree, "Nbtags", false, nBins_Nbtags, bins_Nbtags, "ff");
-
-  vector<TH1D*> gf_Nbtags;
-  for(int i = 0; i < 7; i++) gf_Nbtags.push_back((TH1D*)AlternativeReweight(fVars[i], true, "Nbtags", false, gg[i], gf_weight_Nbtags, gftree, 0, false, "gf_"+fVars[i]+"_rewNbtags", false));
-  gf_Nbtags.push_back((TH1D*)AlternativeReweight("pfMET", true, "Nbtags", false, gg[7], gf_weight_Nbtags, gftree, 0, false, "gf_pfMET_rewNbtags", false));
-  for(int i = 0; i < 2; i++) gf_Nbtags.push_back((TH1D*)AlternativeReweight(iVars[i], false, "Nbtags", false, gg[i+8], gf_weight_Nbtags, gftree, 0, false, "gf_"+iVars[i]+"_rewNbtags", false));
-
-  vector<TH1D*> ff_Nbtags;
-  for(int i = 0; i < 7; i++) ff_Nbtags.push_back((TH1D*)AlternativeReweight(fVars[i], true, "Nbtags", false, gg[i], ff_weight_Nbtags, fftree, 0, false, "ff_"+fVars[i]+"_rewNbtags", false));
-  ff_Nbtags.push_back((TH1D*)AlternativeReweight("pfMET", true, "Nbtags", false, gg[7], ff_weight_Nbtags, fftree, 0, false, "ff_pfMET_rewNbtags", false));
-  for(int i = 0; i < 2; i++) ff_Nbtags.push_back((TH1D*)AlternativeReweight(iVars[i], false, "Nbtags", false, gg[i+8], ff_weight_Nbtags, fftree, 0, false, "ff_"+iVars[i]+"_rewNbtags", false));
-
-  plotReducedChi2(gg, gf_Nbtags, ff_Nbtags,
-		  gf_chi2,
-		  ff_chi2,
-		  9);
-
-  ggtree->ResetBranchAddresses();
-  gftree->ResetBranchAddresses();
-  fftree->ResetBranchAddresses();
-
-  TString xlabels[10] = {"No reweighting", "leadPhotonEt", "trailPhotonEt", "invmass", "HT", "HT_jets", "di-EM Pt", "di-Jet Pt", "nJets", "nBtags"};
-  TString ylabels[11] = {"leadPhotonEt", "trailPhotonEt", "invmass", "HT", "HT_jets", "di-EM Pt", "di-Jet Pt", "pfMET", "nJets", "nBtags", "all"};
-
-  for(int i = 0; i < 10; i++) {
-    gf_chi2->GetXaxis()->SetBinLabel(i+1, xlabels[i]);
-    ff_chi2->GetXaxis()->SetBinLabel(i+1, xlabels[i]);
-  }
-
-  for(int i = 0; i < 11; i++) {
-    gf_chi2->GetYaxis()->SetBinLabel(i+1, ylabels[i]);
-    ff_chi2->GetYaxis()->SetBinLabel(i+1, ylabels[i]);
-  }
-
-  gf_chi2->GetXaxis()->SetLabelSize(0.035);
-  gf_chi2->GetXaxis()->SetTitleSize(0.02);
-  gf_chi2->GetXaxis()->SetTitleOffset(1.5);
-  gf_chi2->GetYaxis()->SetLabelSize(0.022);
-  gf_chi2->GetYaxis()->SetTitleSize(0.02);
-  gf_chi2->GetYaxis()->SetTitleOffset(1.5);
-  gf_chi2->GetZaxis()->SetLabelSize(0.02);
-  
-  ff_chi2->GetXaxis()->SetLabelSize(0.035);
-  ff_chi2->GetXaxis()->SetTitleSize(0.02);
-  ff_chi2->GetXaxis()->SetTitleOffset(1.5);
-  ff_chi2->GetYaxis()->SetLabelSize(0.022);
-  ff_chi2->GetYaxis()->SetTitleSize(0.02);
-  ff_chi2->GetYaxis()->SetTitleOffset(1.5);
-  ff_chi2->GetZaxis()->SetLabelSize(0.02);
-
-  TCanvas * can = new TCanvas("can_reweight_gf", "can_reweight_gf", 10, 10, 2000, 2000);
-  //can->SetLogz(true);
-  gf_chi2->Draw("colz");
-  gf_chi2->SetMarkerColor(kWhite);
-  gf_chi2->Draw("text same");
-  can->SaveAs("analyze_reweighting_gf.pdf");
-
-  TCanvas * can2 = new TCanvas("can_reweight_ff", "can_reweight_ff", 10, 10, 2000, 2000);
-  //can2->SetLogz(true);
-  ff_chi2->Draw("colz");
-  ff_chi2->SetMarkerColor(kWhite);
-  ff_chi2->Draw("text same");
-  can2->SaveAs("analyze_reweighting_ff.pdf");
-
-  return;
 
 }
