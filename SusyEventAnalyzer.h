@@ -662,7 +662,7 @@ void SusyEventAnalyzer::findJets(susy::Event& ev, vector<susy::Photon*> candidat
   } // if the jet coll exists
   sort(pfJets.begin(), pfJets.end(), EtGreater<susy::PFJet>);
   sort(btags.begin(), btags.end(), EtGreater<susy::PFJet>);
-  sort(csvValues.begin(), csvValues.end(), greater<int>());
+  sort(csvValues.begin(), csvValues.end(), greater<float>());
   sort(pfJets_corrP4.begin(), pfJets_corrP4.end(), CorrPtGreater);
   sort(btags_corrP4.begin(), btags_corrP4.end(), CorrPtGreater);
 
