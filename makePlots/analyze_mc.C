@@ -83,17 +83,17 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
   TFile * fQCD40 = new TFile("inputs/signal_contamination_qcd40.root", "READ");
   TTree * qcd40Tree = (TTree*)fQCD40->Get("gg_"+channels[channel]+"_EvtTree_qcd40");
 
-  TFile * fGJet20to40 = new TFile("inputs/signal_contamination_gjet20to40.root", "READ");
-  TTree * gjet20to40Tree = (TTree*)fGJet20to40->Get("gg_"+channels[channel]+"_EvtTree_gjet20to40");
+  TFile * fGJet20to40 = new TFile("inputs/signal_contamination_GJet20to40.root", "READ");
+  TTree * gjet20to40Tree = (TTree*)fGJet20to40->Get("gg_"+channels[channel]+"_EvtTree_GJet20to40");
 
-  TFile * fGJet40 = new TFile("inputs/signal_contamination_gjet40.root", "READ");
-  TTree * gjet40Tree = (TTree*)fGJet20to40->Get("gg_"+channels[channel]+"_EvtTree_gjet40");
+  TFile * fGJet40 = new TFile("inputs/signal_contamination_GJet40.root", "READ");
+  TTree * gjet40Tree = (TTree*)fGJet20to40->Get("gg_"+channels[channel]+"_EvtTree_GJet40");
 
-  TFile * fTTHadronic = new TFile("inputs/signal_contamination_ttHadronic", "READ");
-  TTree * ttHadronicTree = (TTree*)fTTHadronic->Get("gg_"+channels[channel]+"_EvtTree_ttHadronic");
+  TFile * fTTHadronic = new TFile("inputs/signal_contamination_ttJetsHadronic", "READ");
+  TTree * ttHadronicTree = (TTree*)fTTHadronic->Get("gg_"+channels[channel]+"_EvtTree_ttJetsHadronic");
   
-  TFile * fTTSemiLep = new TFile("inputs/signal_contamination_ttSemiLep", "READ");
-  TTree * ttSemiLepTree = (TTree*)fTTSemiLep->Get("gg_"+channels[channel]+"_EvtTree_ttSemiLep");
+  TFile * fTTSemiLep = new TFile("inputs/signal_contamination_ttJetsSemiLep", "READ");
+  TTree * ttSemiLepTree = (TTree*)fTTSemiLep->Get("gg_"+channels[channel]+"_EvtTree_ttJetsSemiLep");
 
   TFile * fSigA = new TFile("../acceptance/signal_contamination_mst_460_m1_175.root", "READ");
   TTree * sigaTree = (TTree*)fSigA->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175");

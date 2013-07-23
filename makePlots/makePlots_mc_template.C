@@ -10,7 +10,7 @@ void makePlots() {
   int intLumi = 19789;
 
   for(int i = 0; i < 7; i++) {
-    analyze(input, addMC, i, intLumi)
+    analyze(input, addMC, i, intLumi);
   }  
 
   ts.Stop();
