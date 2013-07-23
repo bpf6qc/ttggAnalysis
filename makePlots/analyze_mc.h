@@ -385,12 +385,15 @@ void calculateROC(TH1D * sig_a, TH1D * sig_b, TH1D * bkg, TString req, TString t
 
 }
 
-class PlotMaker {
+class PlotMaker : public TObject {
+  
+  ClassDef(PlotMaker, 1);
+
  public:
   PlotMaker(Int_t lumi,
 	    Float_t fakeRate, Float_t fakeRateErr,
 	    TString requirement);
-  virtual ~PlotMaker();
+  virtual ~PlotMaker() { ; }
 
   void SetTrees(TTree * gg, TTree * eg,
 		TTree * qcd30to40, TTree * qcd40,
