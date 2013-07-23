@@ -74,31 +74,31 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
   TTree * ggTree = (TTree*)in->Get("gg_"+channels[channel]+"_EvtTree");
   TTree * egTree = (TTree*)in->Get("eg_"+channels[channel]+"_EvtTree");
 
-  TFile * fTTGJets = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/signal_contamination_ttgjets.root", "READ");
+  TFile * fTTGJets = new TFile("inputs/signal_contamination_ttgjets.root", "READ");
   TTree * ttgjetsTree = (TTree*)fTTGJets->Get("gg_"+channels[channel]+"_EvtTree_ttgjets");
 
-  TFile * fQCD30to40 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/signal_contamination_qcd30to40.root", "READ");
+  TFile * fQCD30to40 = new TFile("inputs/signal_contamination_qcd30to40.root", "READ");
   TTree * qcd30to40Tree = (TTree*)fQCD30to40->Get("gg_"+channels[channel]+"_EvtTree_qcd30to40");
 
-  TFile * fQCD40 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/signal_contamination_qcd40.root", "READ");
+  TFile * fQCD40 = new TFile("inputs/signal_contamination_qcd40.root", "READ");
   TTree * qcd40Tree = (TTree*)fQCD40->Get("gg_"+channels[channel]+"_EvtTree_qcd40");
 
-  TFile * fGJet20to40 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/signal_contamination_gjet20to40.root", "READ");
+  TFile * fGJet20to40 = new TFile("inputs/signal_contamination_gjet20to40.root", "READ");
   TTree * gjet20to40Tree = (TTree*)fGJet20to40->Get("gg_"+channels[channel]+"_EvtTree_gjet20to40");
 
-  TFile * fGJet40 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/signal_contamination_gjet40.root", "READ");
+  TFile * fGJet40 = new TFile("inputs/signal_contamination_gjet40.root", "READ");
   TTree * gjet40Tree = (TTree*)fGJet20to40->Get("gg_"+channels[channel]+"_EvtTree_gjet40");
 
-  TFile * fTTHadronic = new TFile("", "READ");
+  TFile * fTTHadronic = new TFile("inputs/signal_contamination_ttHadronic", "READ");
   TTree * ttHadronicTree = (TTree*)fTTHadronic->Get("gg_"+channels[channel]+"_EvtTree_ttHadronic");
   
-  TFile * fTTSemiLep = new TFile("", "READ");
+  TFile * fTTSemiLep = new TFile("inputs/signal_contamination_ttSemiLep", "READ");
   TTree * ttSemiLepTree = (TTree*)fTTSemiLep->Get("gg_"+channels[channel]+"_EvtTree_ttSemiLep");
 
-  TFile * fSigA = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/acceptance/signal_contamination_mst_460_m1_175.root", "READ");
+  TFile * fSigA = new TFile("../acceptance/signal_contamination_mst_460_m1_175.root", "READ");
   TTree * sigaTree = (TTree*)fSigA->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175");
 
-  TFile * fSigB = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/acceptance/signal_contamination_mst_560_m1_325.root", "READ");
+  TFile * fSigB = new TFile("../acceptance/signal_contamination_mst_560_m1_325.root", "READ");
   //TTree * sigbTree = (TTree*)fSigB->Get("gg_"+channels[channel]+"_EvtTree_mst_560_m1_325");
   TTree * sigbTree = (TTree*)fSigB->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175"); // DURP
 
