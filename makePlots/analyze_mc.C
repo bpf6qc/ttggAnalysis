@@ -89,10 +89,10 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
   TFile * fGJet40 = new TFile("inputs/signal_contamination_GJet40.root", "READ");
   TTree * gjet40Tree = (TTree*)fGJet20to40->Get("gg_"+channels[channel]+"_EvtTree_GJet40");
 
-  TFile * fTTHadronic = new TFile("inputs/signal_contamination_ttJetsHadronic", "READ");
+  TFile * fTTHadronic = new TFile("inputs/signal_contamination_ttJetsHadronic.root", "READ");
   TTree * ttHadronicTree = (TTree*)fTTHadronic->Get("gg_"+channels[channel]+"_EvtTree_ttJetsHadronic");
   
-  TFile * fTTSemiLep = new TFile("inputs/signal_contamination_ttJetsSemiLep", "READ");
+  TFile * fTTSemiLep = new TFile("inputs/signal_contamination_ttJetsSemiLep.root", "READ");
   TTree * ttSemiLepTree = (TTree*)fTTSemiLep->Get("gg_"+channels[channel]+"_EvtTree_ttJetsSemiLep");
 
   TFile * fSigA = new TFile("../acceptance/signal_contamination_mst_460_m1_175.root", "READ");
