@@ -402,6 +402,7 @@ class PlotMaker {
   void CreatePlot(TString variable, bool isAFloat,
 		  Int_t nBinsX, Float_t bin_lo, Float_t bin_hi,
 		  TString xaxisTitle, TString yaxisTitle,
+		  Float_t xmin, Float_t xmax,
 		  Float_t ymin, Float_t ymax,
 		  Float_t ratiomin, Float_t ratiomax,
 		  bool drawSignal, bool drawLegend, bool drawPrelim);
@@ -409,6 +410,7 @@ class PlotMaker {
   void CreateMETPlot(TString variable, bool isAFloat,
 		     Int_t nBinsX, Double_t* customBins,
 		     TString xaxisTitle, TString yaxisTitle,
+		     Float_t xmin, Float_t xmax,
 		     Float_t ymin, Float_t ymax,
 		     Float_t ratiomin, Float_t ratiomax,
 		     bool drawSignal, bool drawLegend, bool drawPrelim);

@@ -175,7 +175,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		   sigaTree, sigbTree);
 
   const int nMetBins = 16;
-  Double_t xbins_met[nBins+1] = {
+  Double_t xbins_met[nMetBins+1] = {
     0,
     5,
     10,
@@ -196,10 +196,9 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
   //650};
 
   pMaker->CreateMETPlot("pfMET", true,
-			durp;
 			nMetBins, xbins_met,
 			"#slash{E}_{T} (GeV)", "Number of Events / GeV",
-			xbins[0], xbins[nBins],
+			xbins_met[0], xbins_met[nBins],
 			7.e-4, 25000.,
 			0., 9.1,
 			true, true, true);
