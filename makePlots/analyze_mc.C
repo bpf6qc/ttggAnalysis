@@ -195,9 +195,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
     300};
   //650};
 
-  pMaker->CreateMETPlot("pfMET", true,
-			nMetBins, xbins_met,
-			"#slash{E}_{T} (GeV)", "Number of Events / GeV",
+  pMaker->CreateMETPlot(nMetBins, xbins_met,
 			xbins_met[0], xbins_met[nMetBins],
 			7.e-4, 25000.,
 			0., 9.1,

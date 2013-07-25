@@ -410,9 +410,7 @@ class PlotMaker : public TObject {
 		  Float_t ratiomin, Float_t ratiomax,
 		  bool drawSignal, bool drawLegend, bool drawPrelim);
 
-  void CreateMETPlot(TString variable, bool isAFloat,
-		     Int_t nBinsX, Double_t* customBins,
-		     TString xaxisTitle, TString yaxisTitle,
+  void CreateMETPlot(Int_t nBinsX, Double_t* customBins,
 		     Float_t xmin, Float_t xmax,
 		     Float_t ymin, Float_t ymax,
 		     Float_t ratiomin, Float_t ratiomax,
@@ -446,7 +444,7 @@ PlotMaker::PlotMaker(Int_t lumi, Float_t fakeRate, Float_t fakeRateErr, TString 
   req(requirement)
 {
   char buffer[50];
-  sprintf(buffer, "%f", (float)intLumi_int / 1000.);
+  sprintf(buffer, "%.3f", (float)intLumi_int / 1000.);
   intLumi = buffer;
 }
 
@@ -457,19 +455,19 @@ void PlotMaker::SetTrees(TTree * gg, TTree * eg,
 			 TTree * ttgjets,
 			 TTree * sig_a, TTree * sig_b) {
 
-  ggTree = (TTree*)gg->Clone();
-  egTree = (TTree*)eg->Clone();
+  ggTree = gg;
+  egTree = eg;
   
-  qcd30to40Tree = (TTree*)qcd30to40->Clone();
-  qcd40Tree = (TTree*)qcd40->Clone();
-  gjet20to40Tree = (TTree*)gjet20to40->Clone();
-  gjet40Tree = (TTree*)gjet40->Clone();
-  ttHadronicTree = (TTree*)ttHadronic->Clone();
-  ttSemiLepTree = (TTree*)ttSemiLep->Clone();
-  ttgjetsTree = (TTree*)ttgjets->Clone();
+  qcd30to40Tree = qcd30to40;
+  qcd40Tree = qcd40;
+  gjet20to40Tree = gjet20to40;
+  gjet40Tree = gjet40;
+  ttHadronicTree = ttHadronic;
+  ttSemiLepTree = ttSemiLep;
+  ttgjetsTree = ttgjets;
 
-  sigaTree = (TTree*)sig_a->Clone();
-  sigbTree = (TTree*)sig_b->Clone();
+  sigaTree = sig_a;
+  sigbTree = sig_b;
 
 }
 
@@ -510,29 +508,29 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, bin_lo, bin_hi);
 
-  TH1D * bkg = (TH1D*)ewk->Clone("bkg");
+  TH1D * bkg = (TH1D*)qcd->Clone("bkg");
 
-  bkg->Add(qcd);
   bkg->Add(gjet);
-  bkg->Add(ttbar);
+  bkg->Add(ewk);
   bkg->Add(ttg);
+  bkg->Add(ttbar);
 
-  qcd->Add(gjet);
-  qcd->Add(ttbar);
-  qcd->Add(ttg);
-
-  gjet->Add(ttbar);
+  gjet->Add(ewk);
   gjet->Add(ttg);
-  
-  ttbar->Add(ttg);
+  gjet->Add(ttbar);
 
-  TH1D * errors = (TH1D*)ewk->Clone("errors");
+  ewk->Add(ttg);
+  ewk->Add(ttbar);
+  
+  ttg->Add(ttbar);
+
+  TH1D * errors = (TH1D*)bkg->Clone("errors");
 
   TH1D * sig_a;
   TH1D * sig_b;
   if(drawSignal) {
-    sig_a = SignalHistoFromTree(0.147492 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigaTree, variable+"_a", variable, nBinsX, bin_lo, bin_hi);
-    sig_b = SignalHistoFromTree(0.0399591 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigbTree, variable+"_b", variable, nBinsX, bin_lo, bin_hi);
+    sig_a = SignalHistoFromTree(0.147492 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigaTree, variable+"_a_"+req, variable, nBinsX, bin_lo, bin_hi);
+    sig_b = SignalHistoFromTree(0.0399591 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigbTree, variable+"_b_"+req, variable, nBinsX, bin_lo, bin_hi);
   }
 
   if(drawSignal) calculateROC(sig_a, sig_b, bkg, req, variable);
@@ -540,11 +538,11 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TLegend * leg = new TLegend(0.50, 0.65, 0.85, 0.85, NULL, "brNDC");
   leg->AddEntry(gg, "#gamma#gamma Candidate Sample", "LP");
   leg->AddEntry(errors, "Total Background Uncertainty", "F");
+  leg->AddEntry(qcd, "QCD", "F");
+  leg->AddEntry(gjet, "#gamma + jets", "F");
+  leg->AddEntry(bkg, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
   leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
-  leg->AddEntry(gjet, "#gamma + jets", "F");
-  leg->AddEntry(qcd, "QCD", "F");
-  leg->AddEntry(bkg, "Electroweak", "F");
   leg->SetFillColor(0);
   leg->SetTextSize(0.028);
 
@@ -564,26 +562,26 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   errors->SetFillStyle(3154);
   errors->SetMarkerSize(0);
 
-  // new stack: ewk, qcd, gjet, ttbar, ttg
-  bkg->SetFillColor(kAzure);
+  // new stack: qcd, gjet, ewk, ttg, ttbar
+  bkg->SetFillColor(kGray);
   bkg->SetMarkerSize(0);
   bkg->SetLineColor(1);
-
-  qcd->SetFillColor(kGray);
-  qcd->SetMarkerSize(0);
-  qcd->SetLineColor(1);
 
   gjet->SetFillColor(kOrange-3);
   gjet->SetMarkerSize(0);
   gjet->SetLineColor(1);
 
-  ttbar->SetFillColor(kGray);
-  ttbar->SetMarkerSize(0);
-  ttbar->SetLineColor(1);
+  ewk->SetFillColor(kAzure);
+  ewk->SetMarkerSize(0);
+  ewk->SetLineColor(1);
 
   ttg->SetFillColor(8);
   ttg->SetMarkerSize(0);
   ttg->SetLineColor(1);
+
+  ttbar->SetFillColor(kBlue);
+  ttbar->SetMarkerSize(0);
+  ttbar->SetLineColor(1);
 
   TCanvas * can = new TCanvas("can", "Plot", 10, 10, 2000, 2000);
 
@@ -690,17 +688,19 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
 }
 
-void PlotMaker::CreateMETPlot(TString variable, bool isAFloat,
-			      Int_t nBinsX, Double_t* customBins,
-			      TString xaxisTitle, TString yaxisTitle,
+void PlotMaker::CreateMETPlot(Int_t nBinsX, Double_t* customBins,
 			      Float_t xmin, Float_t xmax,
 			      Float_t ymin, Float_t ymax,
 			      Float_t ratiomin, Float_t ratiomax,
 			      bool drawSignal, bool drawLegend, bool drawPrelim) {
 
-  TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins);
+  TString variable = "pfMET";
+  TString xaxisTitle = "#slash{E}_{T} (GeV)";
+  TString yaxisTitle = "Number of Events / GeV";
+
+  TH1D * gg = HistoFromTree(true, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins);
   gg = (TH1D*)DivideByBinWidth(gg);
-  TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, customBins);
+  TH1D * ewk = HistoFromTree(true, variable, egTree, variable+"_eg_"+req, variable, nBinsX, customBins);
   
   TH1D * ewk_noNorm = (TH1D*)ewk->Clone();
   ewk->Scale(egScale);
@@ -712,22 +712,22 @@ void PlotMaker::CreateMETPlot(TString variable, bool isAFloat,
   }
   ewk = (TH1D*)DivideByBinWidth(ewk);
 
-  TH1D * qcd30to40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 2.35E-4 * 1.019 * 1.019 / 6061407., isAFloat, variable, qcd30to40Tree, variable+"_qcd30to40_"+req, variable, nBinsX, customBins);
-  TH1D * qcd40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 0.002175 * 1.019 * 1.019 / 9782735., isAFloat, variable, qcd40Tree, variable+"_qcd40_"+req, variable, nBinsX, customBins);
+  TH1D * qcd30to40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 2.35E-4 * 1.019 * 1.019 / 6061407., true, variable, qcd30to40Tree, variable+"_qcd30to40_"+req, variable, nBinsX, customBins);
+  TH1D * qcd40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 0.002175 * 1.019 * 1.019 / 9782735., true, variable, qcd40Tree, variable+"_qcd40_"+req, variable, nBinsX, customBins);
   TH1D * qcd = (TH1D*)qcd30to40->Clone("qcd");
   qcd->Add(qcd40);
 
-  TH1D * gjet20to40 = SignalHistoFromTree(intLumi_int * 81930.0 * 0.001835 * 1.019 * 1.019 / 5907942., isAFloat, variable, gjet20to40Tree, variable+"_gjet20to40_"+req, variable, nBinsX, customBins);
-  TH1D * gjet40 = SignalHistoFromTree(intLumi_int * 8884.0 * 0.05387 * 1.019 * 1.019 / 5956149., isAFloat, variable, gjet40Tree, variable+"_gjet40_"+req, variable, nBinsX, customBins);
+  TH1D * gjet20to40 = SignalHistoFromTree(intLumi_int * 81930.0 * 0.001835 * 1.019 * 1.019 / 5907942., true, variable, gjet20to40Tree, variable+"_gjet20to40_"+req, variable, nBinsX, customBins);
+  TH1D * gjet40 = SignalHistoFromTree(intLumi_int * 8884.0 * 0.05387 * 1.019 * 1.019 / 5956149., true, variable, gjet40Tree, variable+"_gjet40_"+req, variable, nBinsX, customBins);
   TH1D * gjet = (TH1D*)gjet20to40->Clone("gjet");
   gjet->Add(gjet40);
 
-  TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, customBins);
-  TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, customBins);
+  TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., true, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, customBins);
+  TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., true, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, customBins);
   TH1D * ttbar = (TH1D*)ttHadronic->Clone("ttbar");
   ttbar->Add(ttSemiLep);
 
-  TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, customBins);
+  TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., true, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, customBins);
 
   TH1D * bkg = (TH1D*)ewk->Clone("bkg");
 
@@ -745,14 +745,14 @@ void PlotMaker::CreateMETPlot(TString variable, bool isAFloat,
   
   ttbar->Add(ttg);
 
-  TH1D * errors = (TH1D*)ewk->Clone("errors");
+  TH1D * errors = (TH1D*)bkg->Clone("errors");
 
   TH1D * sig_a;
   TH1D * sig_b;
   if(drawSignal) {
-    sig_a = SignalHistoFromTree(0.147492 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigaTree, variable+"_a", variable, nBinsX, customBins);
+    sig_a = SignalHistoFromTree(0.147492 * intLumi_int * 1.019 * 1.019 / 15000., true, variable, sigaTree, variable+"_a_"+req, variable, nBinsX, customBins);
     sig_a = (TH1D*)DivideByBinWidth(sig_a);
-    sig_b = SignalHistoFromTree(0.0399591 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigbTree, variable+"_b", variable, nBinsX, customBins);
+    sig_b = SignalHistoFromTree(0.0399591 * intLumi_int * 1.019 * 1.019 / 15000., true, variable, sigbTree, variable+"_b_"+req, variable, nBinsX, customBins);
     sig_b = (TH1D*)DivideByBinWidth(sig_b);
   }
 
