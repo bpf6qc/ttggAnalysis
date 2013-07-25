@@ -606,11 +606,12 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   if(xmax > xmin) bkg->GetXaxis()->SetRangeUser(xmin, xmax);
   bkg->GetYaxis()->SetRangeUser(ymin, ymax);
 
+  // new stack: qcd, gjet, ewk, ttg, ttbar
   bkg->Draw("hist");
-  qcd->Draw("same hist");
   gjet->Draw("same hist");
-  ttbar->Draw("same hist");
+  ewk->Draw("same hist");
   ttg->Draw("same hist");
+  ttbar->Draw("same hist");
   errors->Draw("same e2");
   gg->Draw("same e1");
   bkg->Draw("same axis");
@@ -729,21 +730,21 @@ void PlotMaker::CreateMETPlot(Int_t nBinsX, Double_t* customBins,
 
   TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., true, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, customBins);
 
-  TH1D * bkg = (TH1D*)ewk->Clone("bkg");
+  TH1D * bkg = (TH1D*)qcd->Clone("bkg");
 
-  bkg->Add(qcd);
   bkg->Add(gjet);
-  bkg->Add(ttbar);
+  bkg->Add(ewk);
   bkg->Add(ttg);
+  bkg->Add(ttbar);
 
-  qcd->Add(gjet);
-  qcd->Add(ttbar);
-  qcd->Add(ttg);
-
-  gjet->Add(ttbar);
+  gjet->Add(ewk);
   gjet->Add(ttg);
+  gjet->Add(ttbar);
+
+  ewk->Add(ttg);
+  ewk->Add(ttbar);
   
-  ttbar->Add(ttg);
+  ttg->Add(ttbar);
 
   TH1D * errors = (TH1D*)bkg->Clone("errors");
 
@@ -785,26 +786,26 @@ void PlotMaker::CreateMETPlot(Int_t nBinsX, Double_t* customBins,
   errors->SetFillStyle(3154);
   errors->SetMarkerSize(0);
 
-  // new stack: ewk, qcd, gjet, ttbar, ttg
-  bkg->SetFillColor(kAzure);
+  // new stack: qcd, gjet, ewk, ttg, ttbar
+  bkg->SetFillColor(kGray);
   bkg->SetMarkerSize(0);
   bkg->SetLineColor(1);
-
-  qcd->SetFillColor(kGray);
-  qcd->SetMarkerSize(0);
-  qcd->SetLineColor(1);
 
   gjet->SetFillColor(kOrange-3);
   gjet->SetMarkerSize(0);
   gjet->SetLineColor(1);
 
-  ttbar->SetFillColor(kGray);
-  ttbar->SetMarkerSize(0);
-  ttbar->SetLineColor(1);
+  ewk->SetFillColor(kAzure);
+  ewk->SetMarkerSize(0);
+  ewk->SetLineColor(1);
 
   ttg->SetFillColor(8);
   ttg->SetMarkerSize(0);
   ttg->SetLineColor(1);
+
+  ttbar->SetFillColor(kBlue);
+  ttbar->SetMarkerSize(0);
+  ttbar->SetLineColor(1);
 
   TCanvas * can = new TCanvas("can", "Plot", 10, 10, 2000, 2000);
 
@@ -829,11 +830,12 @@ void PlotMaker::CreateMETPlot(Int_t nBinsX, Double_t* customBins,
   if(xmax > xmin) bkg->GetXaxis()->SetRangeUser(xmin, xmax);
   bkg->GetYaxis()->SetRangeUser(ymin, ymax);
 
+  // new stack: qcd, gjet, ewk, ttg, ttbar
   bkg->Draw("hist");
-  qcd->Draw("same hist");
   gjet->Draw("same hist");
-  ttbar->Draw("same hist");
+  ewk->Draw("same hist");
   ttg->Draw("same hist");
+  ttbar->Draw("same hist");
   errors->Draw("same e2");
   gg->Draw("same e1");
   bkg->Draw("same axis");
