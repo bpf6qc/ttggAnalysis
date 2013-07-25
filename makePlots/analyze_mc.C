@@ -182,6 +182,38 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     0., 11.5,
 		     true, true, true);
 
+  pMaker->CreatePlot("jet1_pt", true,
+		     200, 0., 2000.,
+		     "Pt of leading jet", "Number of Events",
+		     0, 1400, 
+		     1.e-2, 3.e6,
+		     0., 4.5,
+		     true, true, true);
+
+  pMaker->CreatePlot("jet2_pt", true,
+		     200, 0., 2000.,
+		     "Pt of sub-leading jet", "Number of Events",
+		     0, 1400, 
+		     1.e-2, 3.e6,
+		     0., 4.5,
+		     true, true, true);
+
+  pMaker->CreatePlot("leadPhotonEt", true,
+		     200, 0., 2000.,
+		     "Et of leading #gamma", "Number of Events",
+		     0, 1200, 
+		     1.e-2, 3.e6,
+		     0., 5.1,
+		     true, true, true);
+
+  pMaker->CreatePlot("trailPhotonEt", true,
+		     200, 0., 2000.,
+		     "Et of trailing #gamma", "Number of Events",
+		     0, 1200, 
+		     1.e-2, 3.e6,
+		     0., 5.1,
+		     true, true, true);
+
   const int nMetBins = 16;
   Double_t xbins_met[nMetBins+1] = {
     0,
