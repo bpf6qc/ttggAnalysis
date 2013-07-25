@@ -538,9 +538,9 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TLegend * leg = new TLegend(0.50, 0.65, 0.85, 0.85, NULL, "brNDC");
   leg->AddEntry(gg, "#gamma#gamma Candidate Sample", "LP");
   leg->AddEntry(errors, "Total Background Uncertainty", "F");
-  leg->AddEntry(qcd, "QCD", "F");
+  leg->AddEntry(bkg, "QCD", "F");
   leg->AddEntry(gjet, "#gamma + jets", "F");
-  leg->AddEntry(bkg, "Electroweak", "F");
+  leg->AddEntry(ewk, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
   leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
   leg->SetFillColor(0);
@@ -766,11 +766,11 @@ void PlotMaker::CreateMETPlot(Int_t nBinsX, Double_t* customBins,
   TLegend * leg = new TLegend(0.50, 0.65, 0.85, 0.85, NULL, "brNDC");
   leg->AddEntry(gg, "#gamma#gamma Candidate Sample", "LP");
   leg->AddEntry(errors, "Total Background Uncertainty", "F");
+  leg->AddEntry(bkg, "QCD", "F");
+  leg->AddEntry(gjet, "#gamma + jets", "F");
+  leg->AddEntry(ewk, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
   leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
-  leg->AddEntry(gjet, "#gamma + jets", "F");
-  leg->AddEntry(qcd, "QCD", "F");
-  leg->AddEntry(bkg, "Electroweak", "F");
   leg->SetFillColor(0);
   leg->SetTextSize(0.028);
 
