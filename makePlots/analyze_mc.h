@@ -571,7 +571,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gjet->SetMarkerSize(0);
   gjet->SetLineColor(1);
 
-  ewk->SetFillColor(kAzure);
+  ewk->SetFillColor(kYellow);
   ewk->SetMarkerSize(0);
   ewk->SetLineColor(1);
 
@@ -579,7 +579,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   ttg->SetMarkerSize(0);
   ttg->SetLineColor(1);
 
-  ttbar->SetFillColor(kBlue);
+  ttbar->SetFillColor(kRed-3);
   ttbar->SetMarkerSize(0);
   ttbar->SetLineColor(1);
 
@@ -799,7 +799,7 @@ void PlotMaker::CreateMETPlot(Int_t nBinsX, Double_t* customBins,
   gjet->SetMarkerSize(0);
   gjet->SetLineColor(1);
 
-  ewk->SetFillColor(kAzure);
+  ewk->SetFillColor(kYellow);
   ewk->SetMarkerSize(0);
   ewk->SetLineColor(1);
 
@@ -807,7 +807,7 @@ void PlotMaker::CreateMETPlot(Int_t nBinsX, Double_t* customBins,
   ttg->SetMarkerSize(0);
   ttg->SetLineColor(1);
 
-  ttbar->SetFillColor(kBlue);
+  ttbar->SetFillColor(kRed-3);
   ttbar->SetMarkerSize(0);
   ttbar->SetLineColor(1);
 

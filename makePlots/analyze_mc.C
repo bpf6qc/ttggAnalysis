@@ -174,6 +174,14 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		   ttgjetsTree,
 		   sigaTree, sigbTree);
 
+  pMaker->CreatePlot("invmass", true,
+		     100, 0., 2000.,
+		     "m_{#gamma#gamma} (GeV/c^{2})", "Number of Events",
+		     0, 2000, 
+		     1.e-2, 3.e6,
+		     0., 11.5,
+		     true, true, true);
+
   const int nMetBins = 16;
   Double_t xbins_met[nMetBins+1] = {
     0,
