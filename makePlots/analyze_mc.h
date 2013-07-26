@@ -416,7 +416,7 @@ class PlotMaker : public TObject {
 		  Float_t xmin, Float_t xmax,
 		  Float_t ymin, Float_t ymax,
 		  Float_t ratiomin, Float_t ratiomax,
-		  bool drawSignal, bool drawLegend, bool drawPrelim, bool divideByWidth);
+		  bool drawSignal, bool drawLegend, bool drawPrelim, bool divideByWidth = false);
 
  private:
   TTree * ggTree;
@@ -697,7 +697,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 			   Float_t xmin, Float_t xmax,
 			   Float_t ymin, Float_t ymax,
 			   Float_t ratiomin, Float_t ratiomax,
-			   bool drawSignal, bool drawLegend, bool drawPrelim, bool divideByWidth = false) {
+			   bool drawSignal, bool drawLegend, bool drawPrelim, bool divideByWidth) {
 
   TH1D * gg = HistoFromTree(true, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins);
   if(divideByWidth) gg = (TH1D*)DivideByBinWidth(gg);
