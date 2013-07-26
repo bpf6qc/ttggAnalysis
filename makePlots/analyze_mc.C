@@ -182,7 +182,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     nKinematicBins, xbins_kinematic,
 		     "m_{#gamma#gamma} (GeV/c^{2})",
 		     0, 2000, 
-		     1.e-2, 3.e6,
+		     2.e-3, 3.e4,
 		     0., 11.5,
 		     true, true, true);
 
@@ -190,7 +190,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     nKinematicBins, xbins_kinematic,
 		     "Pt of leading jet",
 		     0, 1400, 
-		     1.e-2, 3.e6,
+		     2.e-3, 8.e3,
 		     0., 4.5,
 		     true, true, true);
 
@@ -198,7 +198,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     nKinematicBins, xbins_kinematic,
 		     "Pt of sub-leading jet",
 		     0, 1400, 
-		     1.e-2, 3.e6,
+		     2.e-3, 8.e3,
 		     0., 4.5,
 		     true, true, true);
 
@@ -206,7 +206,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     nKinematicBins, xbins_kinematic,
 		     "Et of leading #gamma",
 		     0, 1200, 
-		     1.e-2, 3.e6,
+		     2.e-3, 5.e4,
 		     0., 5.1,
 		     true, true, true);
 
@@ -214,7 +214,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     nKinematicBins, xbins_kinematic,
 		     "Et of trailing #gamma",
 		     0, 1200, 
-		     1.e-2, 3.e6,
+		     2.e-3, 5.e4,
 		     0., 5.1,
 		     true, true, true);
 
