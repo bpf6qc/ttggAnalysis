@@ -180,7 +180,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 
   pMaker->CreatePlot("invmass", true,
 		     nKinematicBins, xbins_kinematic,
-		     "m_{#gamma#gamma} (GeV/c^{2})", "Number of Events",
+		     "m_{#gamma#gamma} (GeV/c^{2})",
 		     0, 2000, 
 		     1.e-2, 3.e6,
 		     0., 11.5,
@@ -188,7 +188,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 
   pMaker->CreatePlot("jet1_pt", true,
 		     nKinematicBins, xbins_kinematic,
-		     "Pt of leading jet", "Number of Events",
+		     "Pt of leading jet",
 		     0, 1400, 
 		     1.e-2, 3.e6,
 		     0., 4.5,
@@ -196,7 +196,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 
   pMaker->CreatePlot("jet2_pt", true,
 		     nKinematicBins, xbins_kinematic,
-		     "Pt of sub-leading jet", "Number of Events",
+		     "Pt of sub-leading jet",
 		     0, 1400, 
 		     1.e-2, 3.e6,
 		     0., 4.5,
@@ -204,7 +204,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 
   pMaker->CreatePlot("leadPhotonEt", true,
 		     nKinematicBins, xbins_kinematic,
-		     "Et of leading #gamma", "Number of Events",
+		     "Et of leading #gamma",
 		     0, 1200, 
 		     1.e-2, 3.e6,
 		     0., 5.1,
@@ -212,7 +212,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 
   pMaker->CreatePlot("trailPhotonEt", true,
 		     nKinematicBins, xbins_kinematic,
-		     "Et of trailing #gamma", "Number of Events",
+		     "Et of trailing #gamma",
 		     0, 1200, 
 		     1.e-2, 3.e6,
 		     0., 5.1,
@@ -241,11 +241,11 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 
   pMaker->CreatePlot("pfMET", true,
 		     nMetBins, xbins_met,
-		     "#slash{E}_{T} (GeV)", "Number of Events / GeV",
+		     "#slash{E}_{T} (GeV)",
 		     xbins_met[0], xbins_met[nMetBins],
 		     7.e-4, 25000.,
 		     0., 9.1,
-		     true, true, true, true);
+		     true, true, true);
     
   in->Close();
   fTTGJets->Close();
