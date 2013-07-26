@@ -174,8 +174,12 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		   ttgjetsTree,
 		   sigaTree, sigbTree);
 
+  const int nKinematicBins = 41;
+  Double_t xbins_kinematic[nKinematicBins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
+						110, 120, 130, 140, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1250, 1500, 2000};
+
   pMaker->CreatePlot("invmass", true,
-		     100, 0., 2000.,
+		     nKinematicBins, xbins_kinematic,
 		     "m_{#gamma#gamma} (GeV/c^{2})", "Number of Events",
 		     0, 2000, 
 		     1.e-2, 3.e6,
@@ -183,7 +187,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     true, true, true);
 
   pMaker->CreatePlot("jet1_pt", true,
-		     200, 0., 2000.,
+		     nKinematicBins, xbins_kinematic,
 		     "Pt of leading jet", "Number of Events",
 		     0, 1400, 
 		     1.e-2, 3.e6,
@@ -191,7 +195,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     true, true, true);
 
   pMaker->CreatePlot("jet2_pt", true,
-		     200, 0., 2000.,
+		     nKinematicBins, xbins_kinematic,
 		     "Pt of sub-leading jet", "Number of Events",
 		     0, 1400, 
 		     1.e-2, 3.e6,
@@ -199,7 +203,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     true, true, true);
 
   pMaker->CreatePlot("leadPhotonEt", true,
-		     200, 0., 2000.,
+		     nKinematicBins, xbins_kinematic,
 		     "Et of leading #gamma", "Number of Events",
 		     0, 1200, 
 		     1.e-2, 3.e6,
@@ -207,7 +211,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     true, true, true);
 
   pMaker->CreatePlot("trailPhotonEt", true,
-		     200, 0., 2000.,
+		     nKinematicBins, xbins_kinematic,
 		     "Et of trailing #gamma", "Number of Events",
 		     0, 1200, 
 		     1.e-2, 3.e6,
@@ -235,11 +239,13 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
     300};
   //650};
 
-  pMaker->CreateMETPlot(nMetBins, xbins_met,
+  pMaker->CreateMETPlot("pfMET", true,
+			nMetBins, xbins_met,
+			"#slash{E}_{T} (GeV)", "Number of Events / GeV",
 			xbins_met[0], xbins_met[nMetBins],
 			7.e-4, 25000.,
 			0., 9.1,
-			true, true, true);
+			true, true, true, true);
     
   in->Close();
   fTTGJets->Close();
