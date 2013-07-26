@@ -410,13 +410,13 @@ class PlotMaker : public TObject {
 		  Float_t ratiomin, Float_t ratiomax,
 		  bool drawSignal, bool drawLegend, bool drawPrelim);
 
-  CreatePlot(TString variable, bool isAFloat,
-	     Int_t nBinsX, Double_t* customBins,
-	     TString xaxisTitle, TString yaxisTitle,
-	     Float_t xmin, Float_t xmax,
-	     Float_t ymin, Float_t ymax,
-	     Float_t ratiomin, Float_t ratiomax,
-	     bool drawSignal, bool drawLegend, bool drawPrelim, bool divideByWidth) {
+  void CreatePlot(TString variable, bool isAFloat,
+		  Int_t nBinsX, Double_t* customBins,
+		  TString xaxisTitle, TString yaxisTitle,
+		  Float_t xmin, Float_t xmax,
+		  Float_t ymin, Float_t ymax,
+		  Float_t ratiomin, Float_t ratiomax,
+		  bool drawSignal, bool drawLegend, bool drawPrelim, bool divideByWidth);
 
  private:
   TTree * ggTree;
@@ -698,10 +698,6 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 			   Float_t ymin, Float_t ymax,
 			   Float_t ratiomin, Float_t ratiomax,
 			   bool drawSignal, bool drawLegend, bool drawPrelim, bool divideByWidth = false) {
-
-  TString variable = "pfMET";
-  TString xaxisTitle = "#slash{E}_{T} (GeV)";
-  TString yaxisTitle = "Number of Events / GeV";
 
   TH1D * gg = HistoFromTree(true, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins);
   if(divideByWidth) gg = (TH1D*)DivideByBinWidth(gg);
