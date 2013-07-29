@@ -149,25 +149,25 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   TFile * out = new TFile("mcPlots_"+channels[channel]+".root", "RECREATE");
 
   pMaker->CreatePlot("leadPhotonEta", true,
-		     160, -1.5, 1.5,
+		     40, -1.5, 1.5,
 		     "#eta of leading #gamma", "Number of Events",
 		     -1.5, 1.5, 
 		     2.e-3, 3.e4,
 		     0., 2.1,
-		     true, false, false,
+		     false, false, false,
 		     out, metCut);
 
   pMaker->CreatePlot("trailPhotonEta", true,
-		     160, -1.5, 1.5,
+		     40, -1.5, 1.5,
 		     "#eta of trailing #gamma", "Number of Events",
 		     -1.5, 1.5, 
 		     2.e-3, 3.e4,
 		     0., 2.1,
-		     true, false, false,
+		     false, false, false,
 		     out, metCut);
 
   pMaker->CreatePlot("leadPhotonPhi", true,
-		     126, -3.14159, 3.14159,
+		     63, -3.14159, 3.14159,
 		     "#phi of leading #gamma", "Number of Events",
 		     -3.2, 3.2, 
 		     2.e-3, 3.e4,
@@ -176,7 +176,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     out, metCut);
 
   pMaker->CreatePlot("trailPhotonPhi", true,
-		     126, -3.14159, 3.14159,
+		     63, -3.14159, 3.14159,
 		     "#phi of trailing #gamma", "Number of Events",
 		     -3.2, 3.2, 
 		     2.e-3, 3.e4,
@@ -188,7 +188,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     20, 0., 20.,
 		     "nJets", "Number of Events",
 		     0, 9, 
-		     2.e-3, 3.e4,
+		     2.e-3, 3.e6,
 		     0., 2.1,
 		     true, true, false,
 		     out, metCut);
@@ -197,7 +197,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     20, 0., 20.,
 		     "nBtags", "Number of Events",
 		     0, 4, 
-		     2.e-3, 3.e4,
+		     2.e-3, 3.e6,
 		     0., 2.1,
 		     true, true, false,
 		     out, metCut);
