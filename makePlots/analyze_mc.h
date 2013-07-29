@@ -394,12 +394,9 @@ class PlotMaker : public TObject {
 	    Float_t fakeRate, Float_t fakeRateErr,
 	    TString requirement);
   virtual ~PlotMaker() { 
-    out->Write();
-    out->Close();
 
     delete ggTree;
     delete egTree;
-    
     delete qcd30to40Tree;
     delete qcd40Tree;
     delete gjet20to40Tree;
