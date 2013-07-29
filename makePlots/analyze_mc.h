@@ -743,19 +743,19 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   TH1D * qcd30to40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 2.35E-4 * 1.019 * 1.019 / 6061407., isAFloat, variable, qcd30to40Tree, variable+"_qcd30to40_"+req, variable, nBinsX, customBins);
   TH1D * qcd40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 0.002175 * 1.019 * 1.019 / 9782735., isAFloat, variable, qcd40Tree, variable+"_qcd40_"+req, variable, nBinsX, customBins);
-  TH1D * qcd = (TH1D*)qcd30to40->Clone("qcd");
+  TH1D * qcd = (TH1D*)qcd30to40->Clone(variable+"_qcd_"+req);
   qcd->Add(qcd40);
   qcd = (TH1D*)DivideByBinWidth(qcd);
 
   TH1D * gjet20to40 = SignalHistoFromTree(intLumi_int * 81930.0 * 0.001835 * 1.019 * 1.019 / 5907942., isAFloat, variable, gjet20to40Tree, variable+"_gjet20to40_"+req, variable, nBinsX, customBins);
   TH1D * gjet40 = SignalHistoFromTree(intLumi_int * 8884.0 * 0.05387 * 1.019 * 1.019 / 5956149., isAFloat, variable, gjet40Tree, variable+"_gjet40_"+req, variable, nBinsX, customBins);
-  TH1D * gjet = (TH1D*)gjet20to40->Clone("gjet");
+  TH1D * gjet = (TH1D*)gjet20to40->Clone(variable+"_gjet_"+req);
   gjet->Add(gjet40);
   gjet = (TH1D*)DivideByBinWidth(gjet);
 
   TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, customBins);
   TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, customBins);
-  TH1D * ttbar = (TH1D*)ttHadronic->Clone("ttbar");
+  TH1D * ttbar = (TH1D*)ttHadronic->Clone(variable"_ttbar_"+req);
   ttbar->Add(ttSemiLep);
   ttbar = (TH1D*)DivideByBinWidth(ttbar);
 
