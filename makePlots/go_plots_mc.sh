@@ -21,6 +21,7 @@ file=`date +"%b%d"`
 
 rm signal_contamination_stop.root
 rm contamination_stop.root
+rm plots_*.root
 
 #for x in nojet j b jj bj bb jjj bjj bbj 4j 4j1b 4j2b 5j 5j1b 5j2b 6j 6j1b 6j2b l lj lb ljj lbj lbb ljjj lbjj lbbj ljjjj lbjjj lbbjj ll llj llb lljj llbj llbb
 for x in nojet j b bj muJets eleJets hadronic
