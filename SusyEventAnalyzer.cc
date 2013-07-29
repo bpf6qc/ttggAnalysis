@@ -747,7 +747,15 @@ void SusyEventAnalyzer::Data() {
     if(useJson && event.isRealData && !IsGoodLumi(event.runNumber, event.luminosityBlockNumber)) continue;
     nCnt[1][0]++;
 
-    if(event.passMetFilters() != 1 && event.isRealData) {nCnt[21][0]++; continue;}
+    if(event.isRealData) {
+      if(event.passMetFilters() != 1 ||
+	 event.passMetFilter(susy::kEcalLaserCorr) != 1 ||
+	 event.passMetFilter(susy::kManyStripClus53X) != 1 ||
+	 event.passMetFilter(susy::kTooManyStripClus53X) != 1) {
+	nCnt[21][0]++;
+	continue;
+      }
+    }
 
     vector<susy::Photon*> candidate_pair;
     vector<susy::PFJet*> pfJets, btags;
@@ -1604,8 +1612,6 @@ void SusyEventAnalyzer::Acceptance() {
     }
 
     nCnt[0][0]++; // events
-
-    //if(event.passMetFilters() != 1 && event.isRealData) {nCnt[21][0]++; continue;}
 
     float numTrueInt = -1.;
     susy::PUSummaryInfoCollection::const_iterator iBX = event.pu.begin();

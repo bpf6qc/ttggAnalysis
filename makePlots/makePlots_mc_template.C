@@ -9,8 +9,10 @@ void makePlots() {
   bool addMC = true;
   int intLumi = 19789;
 
+  double metCut = -1.;
+
   for(int i = 0; i < 7; i++) {
-    analyze(input, addMC, i, intLumi);
+    analyze(input, addMC, i, intLumi, metCut);
   }  
 
   ts.Stop();

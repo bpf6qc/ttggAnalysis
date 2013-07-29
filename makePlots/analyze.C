@@ -398,27 +398,6 @@ ratio_ff_2->Write();
   // Make the correlation plot for MET filters
   TH2D * metFilter = (TH2D*)in->Get("metFilter");
   if(channel == 0) {
-    metFilter->GetXaxis()->SetBinLabel(1, "CSCBeamHalo");
-    metFilter->GetYaxis()->SetBinLabel(1, "CSCBeamHalo");
-    metFilter->GetXaxis()->SetBinLabel(2, "HcalNoise");
-    metFilter->GetYaxis()->SetBinLabel(2, "HcalNoise");
-    metFilter->GetXaxis()->SetBinLabel(3, "EcalDeadCellTP");
-    metFilter->GetYaxis()->SetBinLabel(3, "EcalDeadCellTP");
-    metFilter->GetXaxis()->SetBinLabel(4, "EcalDeadCellBE");
-    metFilter->GetYaxis()->SetBinLabel(4, "EcalDeadCellBE");
-    metFilter->GetXaxis()->SetBinLabel(5, "HcalLaser");
-    metFilter->GetYaxis()->SetBinLabel(5, "HcalLaser");
-    metFilter->GetXaxis()->SetBinLabel(6, "TrackingFailure");
-    metFilter->GetYaxis()->SetBinLabel(6, "TrackingFailure");
-    metFilter->GetXaxis()->SetBinLabel(7, "EEBadSC");
-    metFilter->GetYaxis()->SetBinLabel(7, "EEBadSC");
-    metFilter->GetXaxis()->SetBinLabel(8, "EERingOfFire");
-    metFilter->GetYaxis()->SetBinLabel(8, "EERingOfFire");
-    metFilter->GetXaxis()->SetBinLabel(9, "InconsistentMuon");
-    metFilter->GetYaxis()->SetBinLabel(9, "InconsistentMuon");
-    metFilter->GetXaxis()->SetBinLabel(10, "GreedyMuon");
-    metFilter->GetYaxis()->SetBinLabel(10, "GreedyMuon");
-
     metFilter->GetXaxis()->SetLabelSize(0.035);
     metFilter->GetYaxis()->SetLabelSize(0.015);
     metFilter->GetZaxis()->SetLabelSize(0.02);
