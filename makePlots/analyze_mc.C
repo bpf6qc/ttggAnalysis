@@ -148,6 +148,60 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   // Now save the met plots out to file -- use these later for the limit-setting
   TFile * out = new TFile("mcPlots_"+channels[channel]+".root", "RECREATE");
 
+  pMaker->CreatePlot("leadPhotonEta", true,
+		     160, -1.5, 1.5,
+		     "#eta of leading #gamma", "Number of Events",
+		     -1.5, 1.5, 
+		     2.e-3, 3.e4,
+		     0., 2.1,
+		     true, false, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("trailPhotonEta", true,
+		     160, -1.5, 1.5,
+		     "#eta of trailing #gamma", "Number of Events",
+		     -1.5, 1.5, 
+		     2.e-3, 3.e4,
+		     0., 2.1,
+		     true, false, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("leadPhotonPhi", true,
+		     126, -3.14159, 3.14159,
+		     "#phi of leading #gamma", "Number of Events",
+		     -3.2, 3.2, 
+		     2.e-3, 3.e4,
+		     0., 2.1,
+		     false, false, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("trailPhotonPhi", true,
+		     126, -3.14159, 3.14159,
+		     "#phi of trailing #gamma", "Number of Events",
+		     -3.2, 3.2, 
+		     2.e-3, 3.e4,
+		     0., 2.1,
+		     false, false, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("Njets", false,
+		     20, 0., 20.,
+		     "nJets", "Number of Events",
+		     0, 9, 
+		     2.e-3, 3.e4,
+		     0., 2.1,
+		     true, true, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("Nbtags", false,
+		     20, 0., 20.,
+		     "nBtags", "Number of Events",
+		     0, 4, 
+		     2.e-3, 3.e4,
+		     0., 2.1,
+		     true, true, false,
+		     out, metCut);
+
   const int nKinematicBins = 41;
   Double_t xbins_kinematic[nKinematicBins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
 						110, 120, 130, 140, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1250, 1500, 2000};
@@ -158,6 +212,15 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     0, 2000, 
 		     2.e-3, 3.e4,
 		     0., 11.5,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("HT", true,
+		     nKinematicBins, xbins_kinematic,
+		     "HT (GeV)",
+		     0, 2000, 
+		     2.e-3, 3.e4,
+		     0., 5.1,
 		     true, true, true,
 		     out, metCut);
 
