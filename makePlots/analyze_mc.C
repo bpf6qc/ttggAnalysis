@@ -102,14 +102,6 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
   //TTree * sigbTree = (TTree*)fSigB->Get("gg_"+channels[channel]+"_EvtTree_mst_560_m1_325");
   TTree * sigbTree = (TTree*)fSigB->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175"); // DURP
 
-  // Now save the met plots out to file -- use these later for the limit-setting
-  TFile * out = new TFile("met_reweighted_"+channels[channel]+".root", "RECREATE");
-
-  // durp
-
-  out->Write();
-  out->Close();
-
   TCanvas * can = new TCanvas("canvas", "Plot", 10, 10, 2000, 2000);
 
   // Make the correlation plot for MET filters
@@ -174,6 +166,9 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		   ttgjetsTree,
 		   sigaTree, sigbTree);
 
+  // Now save the met plots out to file -- use these later for the limit-setting
+  TFile * out = new TFile("mcPlots_"+channels[channel]+".root", "RECREATE");
+
   const int nKinematicBins = 41;
   Double_t xbins_kinematic[nKinematicBins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
 						110, 120, 130, 140, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1250, 1500, 2000};
@@ -184,7 +179,8 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     0, 2000, 
 		     2.e-3, 3.e4,
 		     0., 11.5,
-		     true, true, true);
+		     true, true, true,
+		     out);
 
   pMaker->CreatePlot("jet1_pt", true,
 		     nKinematicBins, xbins_kinematic,
@@ -192,7 +188,8 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     0, 1400, 
 		     2.e-3, 8.e3,
 		     0., 4.5,
-		     true, true, true);
+		     true, true, true,
+		     out);
 
   pMaker->CreatePlot("jet2_pt", true,
 		     nKinematicBins, xbins_kinematic,
@@ -200,7 +197,8 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     0, 1400, 
 		     2.e-3, 8.e3,
 		     0., 4.5,
-		     true, true, true);
+		     true, true, true,
+		     out);
 
   pMaker->CreatePlot("leadPhotonEt", true,
 		     nKinematicBins, xbins_kinematic,
@@ -208,7 +206,8 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     0, 1200, 
 		     2.e-3, 5.e4,
 		     0., 5.1,
-		     true, true, true);
+		     true, true, true,
+		     out);
 
   pMaker->CreatePlot("trailPhotonEt", true,
 		     nKinematicBins, xbins_kinematic,
@@ -216,7 +215,8 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     0, 1200, 
 		     2.e-3, 5.e4,
 		     0., 5.1,
-		     true, true, true);
+		     true, true, true,
+		     out);
 
   const int nMetBins = 16;
   Double_t xbins_met[nMetBins+1] = {
@@ -245,10 +245,13 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     xbins_met[0], xbins_met[nMetBins],
 		     7.e-4, 25000.,
 		     0., 9.1,
-		     true, true, true);
+		     true, true, true,
+		     out);
 
   delete pMaker;
     
+  out->Close();
+
   in->Close();
   fTTGJets->Close();
   fQCD30to40->Close();

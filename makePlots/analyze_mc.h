@@ -422,7 +422,8 @@ class PlotMaker : public TObject {
 		  Float_t xmin, Float_t xmax,
 		  Float_t ymin, Float_t ymax,
 		  Float_t ratiomin, Float_t ratiomax,
-		  bool drawSignal, bool drawLegend, bool drawPrelim);
+		  bool drawSignal, bool drawLegend, bool drawPrelim,
+		  TFile*& out);
 
   void CreatePlot(TString variable, bool isAFloat,
 		  Int_t nBinsX, Double_t* customBins,
@@ -430,7 +431,8 @@ class PlotMaker : public TObject {
 		  Float_t xmin, Float_t xmax,
 		  Float_t ymin, Float_t ymax,
 		  Float_t ratiomin, Float_t ratiomax,
-		  bool drawSignal, bool drawLegend, bool drawPrelim);
+		  bool drawSignal, bool drawLegend, bool drawPrelim,
+		  TFile*& out);
 
  private:
   TTree * ggTree;
@@ -493,7 +495,8 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 			   Float_t xmin, Float_t xmax,
 			   Float_t ymin, Float_t ymax,
 			   Float_t ratiomin, Float_t ratiomax,
-			   bool drawSignal, bool drawLegend, bool drawPrelim) {
+			   bool drawSignal, bool drawLegend, bool drawPrelim,
+			   TFile*& out) {
 
   TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, bin_lo, bin_hi);
   TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, bin_lo, bin_hi);
@@ -524,7 +527,6 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, bin_lo, bin_hi);
 
-  TFile * out = new TFile("plots_"+req+".root", "UPDATE");
   out->cd();
   gg->Write();
   ewk->Write();
@@ -532,7 +534,6 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gjet->Write();
   ttg->Write();
   ttbar->Write();
-  out->Close();
 
   TH1D * bkg = (TH1D*)qcd->Clone("bkg");
 
@@ -721,13 +722,14 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 			   Float_t xmin, Float_t xmax,
 			   Float_t ymin, Float_t ymax,
 			   Float_t ratiomin, Float_t ratiomax,
-			   bool drawSignal, bool drawLegend, bool drawPrelim) {
+			   bool drawSignal, bool drawLegend, bool drawPrelim,
+			   TFile*& out) {
 
   TString yaxisTitle = "Number of Events / GeV";
 
-  TH1D * gg = HistoFromTree(true, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins);
+  TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins);
   gg = (TH1D*)DivideByBinWidth(gg);
-  TH1D * ewk = HistoFromTree(true, variable, egTree, variable+"_eg_"+req, variable, nBinsX, customBins);
+  TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, customBins);
   
   TH1D * ewk_noNorm = (TH1D*)ewk->Clone();
   ewk->Scale(egScale);
@@ -739,28 +741,27 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   }
   ewk = (TH1D*)DivideByBinWidth(ewk);
 
-  TH1D * qcd30to40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 2.35E-4 * 1.019 * 1.019 / 6061407., true, variable, qcd30to40Tree, variable+"_qcd30to40_"+req, variable, nBinsX, customBins);
-  TH1D * qcd40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 0.002175 * 1.019 * 1.019 / 9782735., true, variable, qcd40Tree, variable+"_qcd40_"+req, variable, nBinsX, customBins);
+  TH1D * qcd30to40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 2.35E-4 * 1.019 * 1.019 / 6061407., isAFloat, variable, qcd30to40Tree, variable+"_qcd30to40_"+req, variable, nBinsX, customBins);
+  TH1D * qcd40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 0.002175 * 1.019 * 1.019 / 9782735., isAFloat, variable, qcd40Tree, variable+"_qcd40_"+req, variable, nBinsX, customBins);
   TH1D * qcd = (TH1D*)qcd30to40->Clone("qcd");
   qcd->Add(qcd40);
   qcd = (TH1D*)DivideByBinWidth(qcd);
 
-  TH1D * gjet20to40 = SignalHistoFromTree(intLumi_int * 81930.0 * 0.001835 * 1.019 * 1.019 / 5907942., true, variable, gjet20to40Tree, variable+"_gjet20to40_"+req, variable, nBinsX, customBins);
-  TH1D * gjet40 = SignalHistoFromTree(intLumi_int * 8884.0 * 0.05387 * 1.019 * 1.019 / 5956149., true, variable, gjet40Tree, variable+"_gjet40_"+req, variable, nBinsX, customBins);
+  TH1D * gjet20to40 = SignalHistoFromTree(intLumi_int * 81930.0 * 0.001835 * 1.019 * 1.019 / 5907942., isAFloat, variable, gjet20to40Tree, variable+"_gjet20to40_"+req, variable, nBinsX, customBins);
+  TH1D * gjet40 = SignalHistoFromTree(intLumi_int * 8884.0 * 0.05387 * 1.019 * 1.019 / 5956149., isAFloat, variable, gjet40Tree, variable+"_gjet40_"+req, variable, nBinsX, customBins);
   TH1D * gjet = (TH1D*)gjet20to40->Clone("gjet");
   gjet->Add(gjet40);
   gjet = (TH1D*)DivideByBinWidth(gjet);
 
-  TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., true, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, customBins);
-  TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., true, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, customBins);
+  TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, customBins);
+  TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, customBins);
   TH1D * ttbar = (TH1D*)ttHadronic->Clone("ttbar");
   ttbar->Add(ttSemiLep);
   ttbar = (TH1D*)DivideByBinWidth(ttbar);
 
-  TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., true, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, customBins);
+  TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, customBins);
   ttg = (TH1D*)DivideByBinWidth(ttg);
 
-  TFile * out = new TFile("plots_"+req+".root", "UPDATE");
   out->cd();
   gg->Write();
   ewk->Write();
@@ -768,7 +769,6 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gjet->Write();
   ttg->Write();
   ttbar->Write();
-  out->Close();
 
   TH1D * bkg = (TH1D*)qcd->Clone("bkg");
 
