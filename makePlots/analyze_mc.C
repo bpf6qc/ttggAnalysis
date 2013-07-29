@@ -159,7 +159,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     2.e-3, 3.e4,
 		     0., 11.5,
 		     true, true, true,
-		     out);
+		     out, metCut);
 
   pMaker->CreatePlot("jet1_pt", true,
 		     nKinematicBins, xbins_kinematic,
@@ -168,7 +168,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     2.e-3, 8.e3,
 		     0., 4.5,
 		     true, true, true,
-		     out);
+		     out, metCut);
 
   pMaker->CreatePlot("jet2_pt", true,
 		     nKinematicBins, xbins_kinematic,
@@ -177,7 +177,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     2.e-3, 8.e3,
 		     0., 4.5,
 		     true, true, true,
-		     out);
+		     out, metCut);
 
   pMaker->CreatePlot("leadPhotonEt", true,
 		     nKinematicBins, xbins_kinematic,
@@ -186,7 +186,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     2.e-3, 5.e4,
 		     0., 5.1,
 		     true, true, true,
-		     out);
+		     out, metCut);
 
   pMaker->CreatePlot("trailPhotonEt", true,
 		     nKinematicBins, xbins_kinematic,
@@ -195,7 +195,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     2.e-3, 5.e4,
 		     0., 5.1,
 		     true, true, true,
-		     out);
+		     out, metCut);
 
   const int nMetBins = 16;
   Double_t xbins_met[nMetBins+1] = {
@@ -225,7 +225,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     7.e-4, 25000.,
 		     0., 9.1,
 		     true, true, true,
-		     out);
+		     out, metCut);
 
   delete pMaker;
     
