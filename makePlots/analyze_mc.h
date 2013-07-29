@@ -468,7 +468,7 @@ PlotMaker::PlotMaker(Int_t lumi, Float_t fakeRate, Float_t fakeRateErr, TString 
   sprintf(buffer, "%.3f", (float)intLumi_int / 1000.);
   intLumi = buffer;
 
-  TFile * out = new TFile("plots_"+requirement+".root", "RECREATE");
+  out = new TFile("plots_"+requirement+".root", "RECREATE");
 
 }
 
