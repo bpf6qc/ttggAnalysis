@@ -246,6 +246,8 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int) {
 		     7.e-4, 25000.,
 		     0., 9.1,
 		     true, true, true);
+
+  delete pMaker;
     
   in->Close();
   fTTGJets->Close();

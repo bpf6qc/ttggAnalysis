@@ -393,7 +393,24 @@ class PlotMaker : public TObject {
   PlotMaker(Int_t lumi,
 	    Float_t fakeRate, Float_t fakeRateErr,
 	    TString requirement);
-  virtual ~PlotMaker() { ; }
+  virtual ~PlotMaker() { 
+    out->Write();
+    out->Close();
+
+    delete ggTree;
+    delete egTree;
+    
+    delete qcd30to40Tree;
+    delete qcd40Tree;
+    delete gjet20to40Tree;
+    delete gjet40Tree;
+    delete ttHadronicTree;
+    delete ttSemiLepTree;
+    delete ttgjetsTree;
+    delete sigaTree;
+    delete sigbTree;
+    
+  }
 
   void SetTrees(TTree * gg, TTree * eg,
 		TTree * qcd30to40, TTree * qcd40,
@@ -437,6 +454,8 @@ class PlotMaker : public TObject {
   Float_t egScale, egScaleErr;
   TString req;
 
+  TFile * out;
+
 };
 
 PlotMaker::PlotMaker(Int_t lumi, Float_t fakeRate, Float_t fakeRateErr, TString requirement) :
@@ -448,6 +467,9 @@ PlotMaker::PlotMaker(Int_t lumi, Float_t fakeRate, Float_t fakeRateErr, TString 
   char buffer[50];
   sprintf(buffer, "%.3f", (float)intLumi_int / 1000.);
   intLumi = buffer;
+
+  TFile * out = new TFile("plots_"+requirement+".root", "RECREATE");
+
 }
 
 void PlotMaker::SetTrees(TTree * gg, TTree * eg,
@@ -509,6 +531,14 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   ttbar->Add(ttSemiLep);
 
   TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, bin_lo, bin_hi);
+
+  out->cd();
+  gg->Write();
+  ewk->Write();
+  qcd->Write();
+  gjet->Write();
+  ttg->Write();
+  ttbar->Write();
 
   TH1D * bkg = (TH1D*)qcd->Clone("bkg");
 
@@ -735,6 +765,14 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., true, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, customBins);
   ttg = (TH1D*)DivideByBinWidth(ttg);
+
+  out->cd();
+  gg->Write();
+  ewk->Write();
+  qcd->Write();
+  gjet->Write();
+  ttg->Write();
+  ttbar->Write();
 
   TH1D * bkg = (TH1D*)qcd->Clone("bkg");
 
