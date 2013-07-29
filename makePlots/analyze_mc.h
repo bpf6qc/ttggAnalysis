@@ -755,7 +755,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, customBins);
   TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, customBins);
-  TH1D * ttbar = (TH1D*)ttHadronic->Clone(variable"_ttbar_"+req);
+  TH1D * ttbar = (TH1D*)ttHadronic->Clone(variable+"_ttbar_"+req);
   ttbar->Add(ttSemiLep);
   ttbar = (TH1D*)DivideByBinWidth(ttbar);
 
