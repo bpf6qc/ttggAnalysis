@@ -432,6 +432,7 @@ class PlotMaker : public TObject {
   void SetTrees(TTree * gg, TTree * eg,
 		TTree * qcd30to40, TTree * qcd40,
 		TTree * gjet20to40, TTree * gjet40,
+		TTree * diphotonjets,
 		TTree * ttHadronic, TTree * ttSemiLep,
 		TTree * ttgjets,
 		TTree * sig_a, TTree * sig_b);
