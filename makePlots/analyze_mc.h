@@ -420,6 +420,7 @@ class PlotMaker : public TObject {
     delete qcd40Tree;
     delete gjet20to40Tree;
     delete gjet40Tree;
+    delete diphotonjetsTree;
     delete ttHadronicTree;
     delete ttSemiLepTree;
     delete ttgjetsTree;
@@ -461,6 +462,7 @@ class PlotMaker : public TObject {
   TTree * qcd40Tree;
   TTree * gjet20to40Tree;
   TTree * gjet40Tree;
+  TTree * diphotonjetsTree;
   TTree * ttHadronicTree;
   TTree * ttSemiLepTree;
   TTree * ttgjetsTree;
@@ -488,6 +490,7 @@ PlotMaker::PlotMaker(Int_t lumi, Float_t fakeRate, Float_t fakeRateErr, TString 
 void PlotMaker::SetTrees(TTree * gg, TTree * eg,
 			 TTree * qcd30to40, TTree * qcd40,
 			 TTree * gjet20to40, TTree * gjet40,
+			 TTree * diphotonjets,
 			 TTree * ttHadronic, TTree * ttSemiLep,
 			 TTree * ttgjets,
 			 TTree * sig_a, TTree * sig_b) {
@@ -499,6 +502,7 @@ void PlotMaker::SetTrees(TTree * gg, TTree * eg,
   qcd40Tree = qcd40;
   gjet20to40Tree = gjet20to40;
   gjet40Tree = gjet40;
+  diphotonjetsTree = diphotonjets;
   ttHadronicTree = ttHadronic;
   ttSemiLepTree = ttSemiLep;
   ttgjetsTree = ttgjets;
@@ -539,6 +543,8 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TH1D * gjet = (TH1D*)gjet20to40->Clone("gjet");
   gjet->Add(gjet40);
 
+  TH1D * diphotonjets = SignalHistoFromTree(intLumi_int * 75.39 * 1.019 * 1.019 / 1156030., isAFloat, variable, diphotonjetsTree, variable+"_diphotonjets_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+  
   TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
   TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
   TH1D * ttbar = (TH1D*)ttHadronic->Clone("ttbar");
@@ -551,19 +557,26 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   ewk->Write();
   qcd->Write();
   gjet->Write();
+  diphotonjets->Write();
   ttg->Write();
   ttbar->Write();
 
   TH1D * bkg = (TH1D*)qcd->Clone("bkg");
 
   bkg->Add(gjet);
+  bkg->Add(diphotonjets);
   bkg->Add(ewk);
   bkg->Add(ttg);
   bkg->Add(ttbar);
 
+  gjet->Add(diphotonjets);
   gjet->Add(ewk);
   gjet->Add(ttg);
   gjet->Add(ttbar);
+
+  diphotonjets->Add(ewk);
+  diphotonjets->Add(ttg);
+  diphotonjets->Add(ttbar);
 
   ewk->Add(ttg);
   ewk->Add(ttbar);
@@ -586,6 +599,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   leg->AddEntry(errors, "Total Background Uncertainty", "F");
   leg->AddEntry(bkg, "QCD", "F");
   leg->AddEntry(gjet, "#gamma + jets", "F");
+  leg->AddEntry(diphotonjets, "#gamma#gamma + jets", "F");
   leg->AddEntry(ewk, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
   leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
@@ -608,7 +622,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   errors->SetFillStyle(3154);
   errors->SetMarkerSize(0);
 
-  // new stack: qcd, gjet, ewk, ttg, ttbar
+  // new stack: qcd, gjet, diphotonjets, ewk, ttg, ttbar
   bkg->SetFillColor(kGray);
   bkg->SetMarkerSize(0);
   bkg->SetLineColor(1);
@@ -617,15 +631,19 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gjet->SetMarkerSize(0);
   gjet->SetLineColor(1);
 
-  ewk->SetFillColor(kYellow);
+  diphotonjets->SetFillColor(kYellow);
+  diphotonjets->SetMarkerSize(0);
+  diphotonjets->SetLineColor(1);
+
+  ewk->SetFillColor(8);
   ewk->SetMarkerSize(0);
   ewk->SetLineColor(1);
 
-  ttg->SetFillColor(8);
+  ttg->SetFillColor(kRed-3);
   ttg->SetMarkerSize(0);
   ttg->SetLineColor(1);
 
-  ttbar->SetFillColor(kRed-3);
+  ttbar->SetFillColor(kMagenta-2);
   ttbar->SetMarkerSize(0);
   ttbar->SetLineColor(1);
 
@@ -652,9 +670,10 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   if(xmax > xmin) bkg->GetXaxis()->SetRangeUser(xmin, xmax);
   bkg->GetYaxis()->SetRangeUser(ymin, ymax);
 
-  // new stack: qcd, gjet, ewk, ttg, ttbar
+  // new stack: qcd, gjet, diphotonjets, ewk, ttg, ttbar
   bkg->Draw("hist");
   gjet->Draw("same hist");
+  diphotonjets->Draw("same hist");
   ewk->Draw("same hist");
   ttg->Draw("same hist");
   ttbar->Draw("same hist");
@@ -772,6 +791,9 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gjet->Add(gjet40);
   gjet = (TH1D*)DivideByBinWidth(gjet);
 
+   TH1D * diphotonjets = SignalHistoFromTree(intLumi_int * 75.39 * 1.019 * 1.019 / 1156030., isAFloat, variable, diphotonjetsTree, variable+"_diphotonjets_"+req, variable, nBinsX, customBins, metCut);
+   diphotonjets = (TH1D*)DivideByBinWidth(diphotonjets);
+
   TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, customBins, metCut);
   TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, customBins, metCut);
   TH1D * ttbar = (TH1D*)ttHadronic->Clone(variable+"_ttbar_"+req);
@@ -786,19 +808,26 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   ewk->Write();
   qcd->Write();
   gjet->Write();
+  diphotonjets->Write();
   ttg->Write();
   ttbar->Write();
 
   TH1D * bkg = (TH1D*)qcd->Clone("bkg");
 
   bkg->Add(gjet);
+  bkg->Add(diphotonjets);
   bkg->Add(ewk);
   bkg->Add(ttg);
   bkg->Add(ttbar);
 
+  gjet->Add(diphotonjets);
   gjet->Add(ewk);
   gjet->Add(ttg);
   gjet->Add(ttbar);
+
+  diphotonjets->Add(ewk);
+  diphotonjets->Add(ttg);
+  diphotonjets->Add(ttbar);
 
   ewk->Add(ttg);
   ewk->Add(ttbar);
@@ -823,6 +852,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   leg->AddEntry(errors, "Total Background Uncertainty", "F");
   leg->AddEntry(bkg, "QCD", "F");
   leg->AddEntry(gjet, "#gamma + jets", "F");
+  leg->AddEntry(diphotonjets, "#gamma#gamma + jets", "F");
   leg->AddEntry(ewk, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
   leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
@@ -854,15 +884,19 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gjet->SetMarkerSize(0);
   gjet->SetLineColor(1);
 
-  ewk->SetFillColor(kYellow);
+  diphotonjets->SetFillColor(kYellow);
+  diphotonjets->SetMarkerSize(0);
+  diphotonjets->SetLineColor(1);
+
+  ewk->SetFillColor(8);
   ewk->SetMarkerSize(0);
   ewk->SetLineColor(1);
 
-  ttg->SetFillColor(8);
+  ttg->SetFillColor(kRed-3);
   ttg->SetMarkerSize(0);
   ttg->SetLineColor(1);
 
-  ttbar->SetFillColor(kRed-3);
+  ttbar->SetFillColor(kMagenta-2);
   ttbar->SetMarkerSize(0);
   ttbar->SetLineColor(1);
 
@@ -889,9 +923,10 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   if(xmax > xmin) bkg->GetXaxis()->SetRangeUser(xmin, xmax);
   bkg->GetYaxis()->SetRangeUser(ymin, ymax);
 
-  // new stack: qcd, gjet, ewk, ttg, ttbar
+  // new stack: qcd, gjet, diphotonjets, ewk, ttg, ttbar
   bkg->Draw("hist");
   gjet->Draw("same hist");
+  diphotonjets->Draw("same hist");
   ewk->Draw("same hist");
   ttg->Draw("same hist");
   ttbar->Draw("same hist");

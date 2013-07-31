@@ -89,6 +89,9 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   TFile * fGJet40 = new TFile("inputs/signal_contamination_GJet40.root", "READ");
   TTree * gjet40Tree = (TTree*)fGJet40->Get("gg_"+channels[channel]+"_EvtTree_GJet40");
 
+  TFile * fDiPhotonJets = new TFile("inputs/signal_contamination_DiPhotonJets.root", "READ");
+  TTree * diphotonjetsTree = (TTree*)fDiPhotonJets->Get("gg_"+channels[channel]+"_EvtTree_DiPhotonJets");
+
   TFile * fTTHadronic = new TFile("inputs/signal_contamination_ttJetsHadronic.root", "READ");
   TTree * ttHadronicTree = (TTree*)fTTHadronic->Get("gg_"+channels[channel]+"_EvtTree_ttJetsHadronic");
   
@@ -141,6 +144,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   pMaker->SetTrees(ggTree, egTree,
 		   qcd30to40Tree, qcd40Tree,
 		   gjet20to40Tree, gjet40Tree,
+		   diphotonjetsTree,
 		   ttHadronicTree, ttSemiLepTree,
 		   ttgjetsTree,
 		   sigaTree, sigbTree);
