@@ -364,6 +364,12 @@ void SusyEventAnalyzer::Data() {
   /////////////////////////////////
 
   float pfMET_ = 0.;
+  float pfMET_t1_ = 0.;
+  float pfMET_t1p2_ = 0.;
+  float pfMET_t01_ = 0.;
+  float pfMET_t01p2_ = 0.;
+  float pfNoPUMET_ = 0.;
+  float pfMVAMET_ = 0.;
   float diEMpT_ = 0.;
   float diJetPt_ = 0.;
   int Njets_ = 0;
@@ -427,6 +433,12 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("ff_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
+    tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
+    tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
+    tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
+    tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
+    tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -482,6 +494,12 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("ee_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
+    tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
+    tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
+    tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
+    tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
+    tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -537,6 +555,12 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("gf_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
+    tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
+    tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
+    tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
+    tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
+    tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -592,6 +616,12 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("gg_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
+    tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
+    tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
+    tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
+    tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
+    tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -647,6 +677,12 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("eg_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
+    tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
+    tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
+    tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
+    tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
+    tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -770,8 +806,13 @@ void SusyEventAnalyzer::Data() {
     int nPVertex = GetNumberPV(event);
     if(nPVertex == 0) continue;
 
-    map<TString, susy::MET>::iterator met_it = event.metMap.find("pfMet");
-    susy::MET* pfMet = &(met_it->second);
+    susy::MET* pfMet         = &(event.metMap.find("pfMet")->second);
+    susy::MET* pfMetType1    = &(event.metMap.find("pfType1CorrectedMet")->second);
+    susy::MET* pfMetType1p2  = &(event.metMap.find("pfType1p2CorrectedMet")->second);
+    susy::MET* pfMetType01   = &(event.metMap.find("pfType01CorrectedMet")->second);
+    susy::MET* pfMetType01p2 = &(event.metMap.find("pfType01p2CorrectedMet")->second);
+    susy::MET* pfNoPileUpMet = &(event.metMap.find("pfNoPileUpMet")->second);
+    susy::MET* pfMVAMet      = &(event.metMap.find("pfMVAMet")->second);
 
     findPhotons_prioritizeCount(event, candidate_pair, event_type);
     //findPhotons_prioritizeEt(event, candidate_pair, event_type);
@@ -846,6 +887,14 @@ void SusyEventAnalyzer::Data() {
     btag1_pt_ = (btags_corrP4.size() >= 1) ? btags_corrP4[0].Pt() : -1.;
     btag2_pt_ = (btags_corrP4.size() >= 2) ? btags_corrP4[1].Pt() : -1.;
     
+    pfMET_       = pfMet->met();
+    pfMET_t1_    = pfMetType1->met();
+    pfMET_t1p2_  = pfMetType1p2->met();
+    pfMET_t01_   = pfMetType01->met();
+    pfMET_t01p2_ = pfMetType01p2->met();
+    pfNoPUMET_   = pfNoPileUpMet->met();
+    pfMVAMET_    = pfMVAMet->met();
+
     // Calculate dPhi_min(g, MET)
     float dPhi_gMET_lead = TVector2::Phi_mpi_pi(candidate_pair[0]->caloPosition.Phi() - pfMet->mEt.Phi());
     float dPhi_gMET_trail = TVector2::Phi_mpi_pi(candidate_pair[1]->caloPosition.Phi() - pfMet->mEt.Phi());
@@ -909,7 +958,6 @@ void SusyEventAnalyzer::Data() {
 		  
 	  diJetPt_ = diJetPt;
 	  
-	  pfMET_ = pfMet->met();
 	  diEMpT_ = (candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt();
 	  Njets_ = pfJets.size();
 	  Nbtags_ = btags.size();
@@ -965,7 +1013,6 @@ void SusyEventAnalyzer::Data() {
 	  if(!matchingWorked) nCnt[46][chan]++;
 
 	  diJetPt_ = diJetPt;
-	  pfMET_ = pfMet->met();
 	  diEMpT_ = (candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt();
 	  Njets_ = pfJets.size();
 	  Nbtags_ = btags.size();
@@ -992,7 +1039,6 @@ void SusyEventAnalyzer::Data() {
 	  if(!matchingWorked) nCnt[46][chan]++;
 
 	  diJetPt_ = diJetPt;
-	  pfMET_ = pfMet->met();
 	  diEMpT_ = (candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt();
 	  Njets_ = pfJets.size();
 	  Nbtags_ = btags.size();
@@ -1040,7 +1086,6 @@ void SusyEventAnalyzer::Data() {
 	  
 	  diJetPt_ = diJetPt;
 	  
-	  pfMET_ = pfMet->met();
 	  diEMpT_ = (candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt();
 	  Njets_ = pfJets.size();
 	  Nbtags_ = btags.size();
@@ -1073,7 +1118,6 @@ void SusyEventAnalyzer::Data() {
 	  h_dijetpt[2][chan]->Fill(diJetPt, pfJets.size());
 
 	  diJetPt_ = diJetPt;
-	  pfMET_ = pfMet->met();
 	  diEMpT_ = (candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt();
 	  Njets_ = pfJets.size();
 	  Nbtags_ = btags.size();
@@ -1132,7 +1176,6 @@ void SusyEventAnalyzer::Data() {
 	  h_dijetpt[7][chan]->Fill(diJetPt, pfJets.size());
 
 	  diJetPt_ = diJetPt;
-	  pfMET_ = pfMet->met();
 	  diEMpT_ = (candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt();
 	  Njets_ = pfJets.size();
 	  Nbtags_ = btags.size();
@@ -1368,6 +1411,12 @@ void SusyEventAnalyzer::Acceptance() {
   TH1F * h_btag_tC = new TH1F("btag_tC", "btag tight CutBased", 2, 0, 2);
 
   float pfMET_ = 0.;
+  float pfMET_t1_ = 0.;
+  float pfMET_t1p2_ = 0.;
+  float pfMET_t01_ = 0.;
+  float pfMET_t01p2_ = 0.;
+  float pfNoPUMET_ = 0.;
+  float pfMVAMET_ = 0.;
   float diEMpT_ = 0.;
   float diJetPt_ = 0.;
   int Njets_ = 0;
@@ -1430,6 +1479,12 @@ void SusyEventAnalyzer::Acceptance() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("gg_"+channels[i]+"_EvtTree"+output_code_t, "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
+    tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
+    tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
+    tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
+    tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
+    tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -1485,6 +1540,12 @@ void SusyEventAnalyzer::Acceptance() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("ff_"+channels[i]+"_EvtTree"+output_code_t, "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
+    tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
+    tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
+    tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
+    tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
+    tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -1540,6 +1601,12 @@ void SusyEventAnalyzer::Acceptance() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("gf_"+channels[i]+"_EvtTree"+output_code_t, "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
+    tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
+    tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
+    tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
+    tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
+    tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -1650,8 +1717,13 @@ void SusyEventAnalyzer::Acceptance() {
     int nPVertex = GetNumberPV(event);
     if(nPVertex == 0) continue;
 
-    map<TString, susy::MET>::iterator met_it = event.metMap.find("pfMet");
-    susy::MET* pfMet = &(met_it->second);
+    susy::MET* pfMet         = &(event.metMap.find("pfMet")->second);
+    susy::MET* pfMetType1    = &(event.metMap.find("pfType1CorrectedMet")->second);
+    susy::MET* pfMetType1p2  = &(event.metMap.find("pfType1p2CorrectedMet")->second);
+    susy::MET* pfMetType01   = &(event.metMap.find("pfType01CorrectedMet")->second);
+    susy::MET* pfMetType01p2 = &(event.metMap.find("pfType01p2CorrectedMet")->second);
+    susy::MET* pfNoPileUpMet = &(event.metMap.find("pfNoPileUpMet")->second);
+    susy::MET* pfMVAMet      = &(event.metMap.find("pfMVAMet")->second);
 
     findPhotons_prioritizeCount(event, candidate_pair, event_type);
     //findPhotons_prioritizeEt(event, candidate_pair, event_type);
@@ -1796,7 +1868,14 @@ void SusyEventAnalyzer::Acceptance() {
     pileupWeight_ = eventWeight;
     pileupWeightErr_ = eventWeightErr;
         
-    pfMET_ = pfMet->met();
+    pfMET_       = pfMet->met();
+    pfMET_t1_    = pfMetType1->met();
+    pfMET_t1p2_  = pfMetType1p2->met();
+    pfMET_t01_   = pfMetType01->met();
+    pfMET_t01p2_ = pfMetType01p2->met();
+    pfNoPUMET_   = pfNoPileUpMet->met();
+    pfMVAMET_    = pfMVAMet->met();
+
     diEMpT_ = (candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt();
 
     float diJetPt = 0.;
