@@ -833,8 +833,8 @@ bool SusyEventAnalyzer::PhotonMatchesElectron(susy::Event& ev, vector<susy::Phot
   for(vector<susy::Particle>::iterator it = event.genParticles.begin(); it != event.genParticles.end(); it++) {
 
     if(it->status == 3 && fabs(it->pdgId) == 11) {
-      if(deltaR(it->momentum, candidate[0]->caloPosition) < 0.1) matchesLead = true;
-      if(deltaR(it->momentum, candidate[1]->caloPosition) < 0.1) matchesTrail = true;
+      if(deltaR(it->momentum, candidates[0]->caloPosition) < 0.1) matchesLead = true;
+      if(deltaR(it->momentum, candidates[1]->caloPosition) < 0.1) matchesTrail = true;
     }
 
   }

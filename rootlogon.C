@@ -1,5 +1,5 @@
 {
 
-  gSystem->Load("../macro/libSusyEvent.so");
+  gSystem->Load("libSusyEvent.so");
 
 }
