@@ -38,6 +38,8 @@ void ana_data(TString discriminant = "CSVM", bool isMC = false) {
   f_types.push_back(4);
   sea->AddHlt(f_names, f_types);
 
+  sea->SetUseTrigger(true);
+
   sea->SetProcessNEvents(-1);      	  // number of events to be processed
   
   sea->IncludeAJson("JSON");

@@ -44,6 +44,8 @@ void ana_mc(TString scan = "DATASETNAME", TString discriminant = "CSVM", bool is
   f_types.push_back(4);
   sea->AddHlt(f_names, f_types);
 
+  sea->SetUseTrigger(true);
+
   sea->SetProcessNEvents(-1);      	  // number of events to be processed
   
   sea->SetIsMC(isMC);
@@ -53,6 +55,8 @@ void ana_mc(TString scan = "DATASETNAME", TString discriminant = "CSVM", bool is
   sea->SetUseJson(false);
   sea->SetDoBtagScaling(false);
   sea->SetBtagTechnicalStop("ABCD");  
+
+  sea->SetRejectFakeElectrons(true);
 
   sea->SetUseSyncFile(false);
   //sea->IncludeSyncFile("synchro/dmorse_ff.txt_not_brian_ff_nojet.txt");

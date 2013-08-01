@@ -101,6 +101,7 @@ class SusyEventAnalyzer {
     }
     else isFastSim = v;
   }
+  void SetRejectFakeElectrons(bool v)  { rejectFakeElectrons = v;}
   void SetDoBtagScaling(bool v)        { doBtagScaling = v; }
   void SetBtagTechnicalStop(TString t) { btagTechnicalStop = t; }
   void SetDoPileupReweighting(bool v)  { doPileupReweighting = v; }
@@ -136,6 +137,7 @@ class SusyEventAnalyzer {
   void findMuons(susy::Event& ev, vector<susy::Photon*> candidates, vector<susy::Muon*>& isoMuons, vector<susy::Muon*>& looseMuons, float& HT);
   void findElectrons(susy::Event& ev, vector<susy::Photon*> candidates, vector<susy::Electron*>& isoEles, vector<susy::Electron*>& looseElese, float& HT);
   bool GetDiJetPt(susy::Event& ev, vector<susy::Photon*> candidates, float& diJetPt, float& leadpt, float& trailpt);
+  bool PhotonMatchesElectron(susy::Event& ev, vector<susy::Photon*> candidates, int& bothMatchCounter);
 
   // lazy junk
   void FillMetFilter2D(susy::Event& ev, TH2F*& h);
@@ -173,6 +175,7 @@ class SusyEventAnalyzer {
 
   bool isMC;
   bool isFastSim;
+  bool rejectFakeElectrons;
   bool doBtagScaling;
   TString btagTechnicalStop;
   bool doPileupReweighting;
@@ -193,7 +196,8 @@ SusyEventAnalyzer::SusyEventAnalyzer(TTree& tree) :
   copyEvents(false),
   goodLumiList(),
   currentLumi(0, 0),
-  currentLumiIsGood(true)
+  currentLumiIsGood(true),
+  rejectFakeElectrons(false)  
 {
   event.setInput(tree);
 }
@@ -817,6 +821,27 @@ bool SusyEventAnalyzer::GetDiJetPt(susy::Event& ev, vector<susy::Photon*> candid
   trailpt = jetP4s[1].Pt();
 
   return worked;
+}
+
+bool SusyEventAnalyzer::PhotonMatchesElectron(susy::Event& ev, vector<susy::Photon*> candidates, int& bothMatchCounter) {
+
+  if(ev.isRealData) return false;
+
+  bool matchesLead = false;
+  bool matchesTrail = false;
+
+  for(vector<susy::Particle>::iterator it = event.genParticles.begin(); it != event.genParticles.end(); it++) {
+
+    if(it->status == 3 && fabs(it->pdgId) == 11) {
+      if(deltaR(it->momentum, candidate[0]->caloPosition) < 0.1) matchesLead = true;
+      if(deltaR(it->momentum, candidate[1]->caloPosition) < 0.1) matchesTrail = true;
+    }
+
+  }
+
+  if(matchesLead && matchesTrail) bothMatchCounter++;
+
+  return (matchesLead || matchesTrail);
 }
 
 void SusyEventAnalyzer::IncludeSyncFile(char* file) {

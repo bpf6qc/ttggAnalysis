@@ -1661,6 +1661,8 @@ void SusyEventAnalyzer::Acceptance() {
       continue;
     }
 
+    if(rejectFakeElectrons && PhotonMatchesElectron(event, candidate_pair, nCnt[32][0])) continue;
+
     lead_Et_ = candidate_pair[0]->momentum.Et();
     lead_Eta_ = candidate_pair[0]->caloPosition.Eta();
     lead_Phi_ = candidate_pair[0]->caloPosition.Phi();
@@ -1908,6 +1910,7 @@ void SusyEventAnalyzer::Acceptance() {
   cout << "JEC not available         : " << nCnt[29][0] << endl;
   cout << "bad jet                   : " << nCnt[30][0] << endl;
   cout << "diJet matching failed     : " << nCnt[31][0] << endl;
+  if(rejectFakeElectrons) cout << "double fake ee --> gg     : " << nCnt[32][0] << endl;
 
   puFile->Close();
   btagEfficiency->Close();
