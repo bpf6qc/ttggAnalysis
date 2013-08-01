@@ -1417,6 +1417,7 @@ void SusyEventAnalyzer::Acceptance() {
   float pfMET_t01p2_ = 0.;
   float pfNoPUMET_ = 0.;
   float pfMVAMET_ = 0.;
+  float genMET_ = 0.;
   float diEMpT_ = 0.;
   float diJetPt_ = 0.;
   int Njets_ = 0;
@@ -1485,6 +1486,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
     tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
     tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
+    tree->Branch("genMET", &genMET_, "genMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -1546,6 +1548,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
     tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
     tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
+    tree->Branch("genMET", &genMET_, "genMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -1607,6 +1610,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
     tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
     tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
+    tree->Branch("genMET", &genMET_, "genMET_/F");
     tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
     tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
     tree->Branch("Njets", &Njets_, "Njets_/I");
@@ -1724,6 +1728,7 @@ void SusyEventAnalyzer::Acceptance() {
     susy::MET* pfMetType01p2 = &(event.metMap.find("pfType01p2CorrectedMet")->second);
     susy::MET* pfNoPileUpMet = &(event.metMap.find("pfNoPileUpMet")->second);
     susy::MET* pfMVAMet      = &(event.metMap.find("pfMVAMet")->second);
+    susy::MET* genMet        = &(event.metMap.find("genMet")->second);
 
     findPhotons_prioritizeCount(event, candidate_pair, event_type);
     //findPhotons_prioritizeEt(event, candidate_pair, event_type);
@@ -1875,6 +1880,7 @@ void SusyEventAnalyzer::Acceptance() {
     pfMET_t01p2_ = pfMetType01p2->met();
     pfNoPUMET_   = pfNoPileUpMet->met();
     pfMVAMET_    = pfMVAMet->met();
+    genMET_      = genMet->met();
 
     diEMpT_ = (candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt();
 
