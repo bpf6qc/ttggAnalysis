@@ -10,17 +10,15 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 export SCRAM_ARCH=slc5_amd64_gcc462
 scramv1 project CMSSW CMSSW_5_3_8_patch3
 
-cd CMSSW_5_3_8_patch3/
+cd CMSSW_5_3_8_patch3/src/
 mv $WORK_DIR/src.tgz .
 tar -xzf src.tgz
-cd src/SusyAnalysis/SusyNtuplizer/ttggAnalysis
+cd SUSYPhotonAnalysis/SusyNtuplizer/ttggAnalysis/
 eval `scramv1 runtime -sh`
 make
 
 mv $WORK_DIR/ANALYZER .
 mv $WORK_DIR/filelist_$JOB_NUMBER .
-mv $WORK_DIR/JSON .
-mv $WORK_DIR/SusyEventAnalyzer.cc .
 
 while read file
 do

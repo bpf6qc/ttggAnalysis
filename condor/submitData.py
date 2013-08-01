@@ -129,7 +129,7 @@ path_ana = baseOutdir+"/"+name_ana
 
 commandList = []
 commandList.append("cp "+jdlBase+" "+baseOutdir)
-commandList.append("cp "+json+" "+baseOutdir)
+#commandList.append("cp "+json+" "+baseOutdir)
 commandList.append("cp "+scriptBase+" "+baseOutdir)
 commandList.append("cp "+anaBase+" "+baseOutdir)
 
@@ -145,6 +145,9 @@ commandList.append('replace JSON  '+json+' -- '+path_ana)
 for command in commandList:
     os.system(command)
 if not test:
+
+    os.system('./scripts/remakeTarball.sh')
+    
     os.chdir(baseOutdir)
 
     tar = tarfile.open('fileLists.tgz', 'w:gz')

@@ -178,6 +178,9 @@ for command in commandList:
     os.system(command)
 
 if not test:
+
+    os.system('./scripts/remakeTarball.sh')
+    
     os.chdir(baseOutdir)
 
     tar = tarfile.open('fileLists.tgz', 'w:gz')
