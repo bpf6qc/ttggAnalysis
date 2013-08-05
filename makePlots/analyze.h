@@ -27,6 +27,8 @@
 #include <stdarg.h>
 #include <exception>
 
+#include "rootRoutines.h"
+
 using namespace std;
 
 const TString gifOrPdf = ".pdf";

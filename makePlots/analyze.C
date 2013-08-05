@@ -28,7 +28,6 @@
 #include <exception>
 
 #include "analyze.h"
-#include "rootRoutines.h"
 
 using namespace std;
 
