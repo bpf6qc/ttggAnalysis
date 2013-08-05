@@ -97,6 +97,8 @@ void mvaTreeMaker(TString input, int channelNumber) {
   floatNames.push_back("trailPhotonPhi");
   floatNames.push_back("photon_dR");
   floatNames.push_back("photon_dPhi");
+  floatNames.push_back("jet1_pt");
+  floatNames.push_back("jet2_pt");
 
   vector<TString> intNames;
   intNames.push_back("Nbtags");

@@ -939,6 +939,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TString yaxisTitle = "Number of Events / GeV";
 
   TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins, metCut);
+  gg = (TH1D*)DivideByBinWidth(gg);
   TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, customBins, metCut);
   TH1D * qcd_ff = HistoFromTree(isAFloat, variable, ffTree, variable+"_ff_"+req, variable, nBinsX, customBins, metCut);
   TH1D * qcd_gf = HistoFromTree(isAFloat, variable, gfTree, variable+"_gf_"+req, variable, nBinsX, customBins, metCut);
@@ -951,6 +952,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
     Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
     ewk->SetBinError(i+1, new_err);
   }
+  ewk = (TH1D*)DivideByBinWidth(ewk);
 
   TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone();
   qcd_ff->Scale(ffScale);
@@ -963,6 +965,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   
     qcd_ff->SetBinError(i+1, new_err);
   }
+  qcd_ff = (TH1D*)DivideByBinWidth(qcd_ff);
 
   TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone();
   qcd_gf->Scale(gfScale);
@@ -975,6 +978,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   
     qcd_gf->SetBinError(i+1, new_err);
   }
+  qcd_gf = (TH1D*)DivideByBinWidth(qcd_gf);
 
   out->cd();
   gg->Write();
