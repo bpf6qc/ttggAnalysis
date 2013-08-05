@@ -17,7 +17,7 @@ void makePlots() {
 
   for(int i = 0; i < 7; i++) {
     mvaTreeMaker(input, i);
-    analyze(addMC, i, intLumi, intLumi_int, useFF, useDifferenceSystematic, metCut);
+    analyze(input, addMC, i, intLumi, intLumi_int, useFF, useDifferenceSystematic, metCut);
   }  
 
   ts.Stop();

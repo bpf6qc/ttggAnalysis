@@ -343,8 +343,8 @@ bool calculateScaling(TTree * ggTree, TTree * egTree, TTree * qcdTree,
 		      Float_t& scale, Float_t& scaleErr) {
 
   TH1D * gg = (TH1D*)HistoFromTree(true, "pfMET", ggTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0., 20.);
-  TH1D * eg = (TH1D*)HistoFromTree(true, "pfMET", egTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0., 20.);
-  TH1D * qcd = (TH1D*)HistoFromTree(true, "pfMET", qcdTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0., 20.);
+  TH1D * eg = (TH1D*)HistoFromTree(true, "pfMET", egTree, "eg_pfMET_forScale", "eg_pfMET_forScale", 4, 0., 20.);
+  TH1D * qcd = (TH1D*)HistoFromTree(true, "pfMET", qcdTree, "qcd_pfMET_forScale", "qcd_pfMET_forScale", 4, 0., 20.);
 
   if(qcd->Integral() == 0.) {
     scale = 1.;

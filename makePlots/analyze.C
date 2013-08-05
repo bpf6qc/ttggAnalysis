@@ -212,7 +212,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   in->Close();
 }
 
-void analyze(bool addMC, int channel, TString intLumi, int intLumi_int, bool useFF, bool useDifferenceSystematic, double metCut) {
+void analyze(TString input, bool addMC, int channel, TString intLumi, int intLumi_int, bool useFF, bool useDifferenceSystematic, double metCut) {
 
   gROOT->Reset();
   gROOT->SetBatch(true);
@@ -238,7 +238,6 @@ void analyze(bool addMC, int channel, TString intLumi, int intLumi_int, bool use
   TTree * ggTree = (TTree*)in->Get("gg_"+channels[channel]+"_EvtTree");
   TTree * gfTree = (TTree*)in->Get("gf_"+channels[channel]+"_EvtTree");
   TTree * ffTree = (TTree*)in->Get("ff_"+channels[channel]+"_EvtTree");
-  TTree * eeTree = (TTree*)in->Get("ee_"+channels[channel]+"_EvtTree");
   TTree * egTree = (TTree*)in->Get("eg_"+channels[channel]+"_EvtTree");
 
   TFile * fSig460 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/acceptance/signal_contamination_mst_460_m1_175.root", "READ");
@@ -277,39 +276,46 @@ void analyze(bool addMC, int channel, TString intLumi, int intLumi_int, bool use
 	      channels[channel]);
   */
 
-  TCanvas * can = new TCanvas("canvas_a", "Plot", 10, 10, 2000, 2000);
-
-  // Make the correlation plot for MET filters
-  TH2D * metFilter = (TH2D*)in->Get("metFilter");
   if(channel == 0) {
-    metFilter->GetXaxis()->SetLabelSize(0.035);
-    metFilter->GetYaxis()->SetLabelSize(0.015);
-    metFilter->GetZaxis()->SetLabelSize(0.02);
 
-    metFilter->Draw("colz");
-    metFilter->SetMarkerColor(kWhite);
-    metFilter->Draw("text same");
-    can->SetLogz(true);
-    can->SaveAs("metFilter"+gifOrPdf);
+    TFile * biggerInput = new TFile(input, "READ");
 
-    can->SetLogz(false);
-  }
-
-  TH2D * DR_jet_gg = (TH2D*)in->Get("DR_jet_gg");
-  if(channel == 0) {
-    DR_jet_gg->Draw("colz");
-    TLine * vertline = new TLine(0.5, 0, 0.5, 5);
-    vertline->SetLineColor(kRed);
-    vertline->SetLineWidth(3);
-    vertline->Draw("same");
-    TLine * horiline = new TLine(0, 0.5, 5, 0.5);
-    horiline->SetLineColor(kRed);
-    horiline->SetLineWidth(3);
-    horiline->Draw("same");
-    can->SetLogz(true);
-    can->SaveAs("DR_jet_gg_"+channels[channel]+gifOrPdf);
-
-    can->SetLogz(false);
+    TCanvas * can = new TCanvas("canvas_a", "Plot", 10, 10, 2000, 2000);
+    
+    // Make the correlation plot for MET filters
+    TH2D * metFilter = (TH2D*)biggerInput->Get("metFilter");
+    if(channel == 0) {
+      metFilter->GetXaxis()->SetLabelSize(0.035);
+      metFilter->GetYaxis()->SetLabelSize(0.015);
+      metFilter->GetZaxis()->SetLabelSize(0.02);
+      
+      metFilter->Draw("colz");
+      metFilter->SetMarkerColor(kWhite);
+      metFilter->Draw("text same");
+      can->SetLogz(true);
+      can->SaveAs("metFilter"+gifOrPdf);
+      
+      can->SetLogz(false);
+    }
+    
+    TH2D * DR_jet_gg = (TH2D*)biggerInput->Get("DR_jet_gg");
+    if(channel == 0) {
+      DR_jet_gg->Draw("colz");
+      TLine * vertline = new TLine(0.5, 0, 0.5, 5);
+      vertline->SetLineColor(kRed);
+      vertline->SetLineWidth(3);
+      vertline->Draw("same");
+      TLine * horiline = new TLine(0, 0.5, 5, 0.5);
+      horiline->SetLineColor(kRed);
+      horiline->SetLineWidth(3);
+      horiline->Draw("same");
+      can->SetLogz(true);
+      can->SaveAs("DR_jet_gg_"+channels[channel]+gifOrPdf);
+      
+      can->SetLogz(false);
+    }
+    
+    biggerInput->Close();
   }
 
   PlotMaker * pMaker = new PlotMaker(intLumi_int, 
