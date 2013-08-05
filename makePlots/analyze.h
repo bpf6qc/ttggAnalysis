@@ -111,7 +111,7 @@ TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name
   return h;
 }
 
-TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t xlo, Double_t xhi) {
+TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t xlo, Double_t xhi, double metCut = -1.) {
 
   TH1D * h = new TH1D(name, title, nBins, xlo, xhi);
   h->Sumw2();
@@ -164,7 +164,7 @@ TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree
   return h;
 }
 
-TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t* customBins) {
+TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t* customBins, double metCut = -1.) {
 
   TH1D * h = new TH1D(name, title, nBins, customBins);
   h->Sumw2();
@@ -672,12 +672,12 @@ PlotMaker::PlotMaker(Int_t lumi,
 		     TString requirement) :
   intLumi_int(lumi),
   egScale(ewkScale),
-  egScaleErr(ewkScaleErrr),
+  egScaleErr(ewkScaleErr),
   ffScale(qcdScale_ff),
   ffScaleErr(qcdScaleErr_ff),
-  ffWorks(ff_works),
   gfScale(qcdScale_gf),
   gfScaleErr(qcdScaleErr_gf),
+  ffWorks(ff_works),
   gfWorks(gf_works),
   useQCDSystematic(use_qcd_syst),
   useFF(use_ff),

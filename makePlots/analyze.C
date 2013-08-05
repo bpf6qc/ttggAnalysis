@@ -161,9 +161,9 @@ void mvaTreeMaker(TString input, int channelNumber) {
   }
 
   Int_t njets_gf;
-  Float_t diempt_gf, diemptWeight_gf, diemptWeightErr_gf;
+  Float_t diempt_gf_value, diemptWeight_gf, diemptWeightErr_gf;
   gfTree->SetBranchAddress("Njets", &njets_gf);
-  gfTree->SetBranchAddress("diJetPt", &diempt_gf);
+  gfTree->SetBranchAddress("diJetPt", &diempt_gf_value);
 
   gfNewTree->Branch("Njets", &njets_gf);
   gfNewTree->Branch("weight", &diemptWeight_gf);
@@ -171,7 +171,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
   for(int j = 0; j < gfTree->GetEntries(); j++) {
     gfTree->GetEntry(j);
-    evaluateWeight(njets_gf, diempt_gf,
+    evaluateWeight(njets_gf, diempt_gf_value,
 		   ratio_gf_0, ratio_gf_1, ratio_gf_2,
 		   diemptWeight_gf, diemptWeightErr_gf);
     gfNewTree->Fill();
@@ -186,7 +186,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   egNewTree->Branch("weightError", &diemptWeightErr_eg);
 
   for(int j = 0; j < egTree->GetEntries(); j++) {
-    egTree->GetEntry(i);
+    egTree->GetEntry(j);
     diemptWeight_eg = 1.0;
     diemptWeightErr_eg = 0.0;
     egNewTree->Fill();
@@ -201,7 +201,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   ggNewTree->Branch("weightError", &diemptWeightErr_gg);
 
   for(int j = 0; j < ggTree->GetEntries(); j++) {
-    ggTree->GetEntry(i);
+    ggTree->GetEntry(j);
     diemptWeight_gg = 1.0;
     diemptWeightErr_gg = 0.0;
     ggNewTree->Fill();
