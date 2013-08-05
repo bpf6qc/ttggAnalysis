@@ -410,7 +410,7 @@ class PlotMaker : public TObject {
 
  public:
   PlotMaker(Int_t lumi,
-	    Float_t fakeRate, Float_t fakeRateErr,
+	    Float_t ewkScale, Float_t ewkScaleErr,
 	    TString requirement);
   virtual ~PlotMaker() { 
 
@@ -477,10 +477,10 @@ class PlotMaker : public TObject {
 
 };
 
-PlotMaker::PlotMaker(Int_t lumi, Float_t fakeRate, Float_t fakeRateErr, TString requirement) :
+PlotMaker::PlotMaker(Int_t lumi, Float_t ewkScale, Float_t ewkScaleErr, TString requirement) :
   intLumi_int(lumi),
-  egScale(fakeRate),
-  egScaleErr(fakeRateErr),
+  egScale(ewkScale),
+  egScaleErr(ewkScaleErr),
   req(requirement)
 {
   char buffer[50];

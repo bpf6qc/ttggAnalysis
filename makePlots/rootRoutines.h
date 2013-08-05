@@ -86,3 +86,4 @@ TH1D * DivideByBinWidth(TH1D * h) {
 
   return h;
 }
+

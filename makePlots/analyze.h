@@ -31,6 +31,192 @@ using namespace std;
 
 const TString gifOrPdf = ".pdf";
 
+TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t xlo, Double_t xhi, double metCut = -1.) {
+
+  TH1D * h = new TH1D(name, title, nBins, xlo, xhi);
+  h->Sumw2();
+
+  Float_t met, weight, weightError;
+  tree->SetBranchAddress("pfMET", &met);
+  tree->SetBranchAddress("weight", &weight);
+  tree->SetBranchAddress("weightError", &weightError);
+
+  Float_t var;
+  Int_t var_int;
+  if(variable != "pfMET") {
+    if(isAFloat) tree->SetBranchAddress(variable, &var);
+    else tree->SetBranchAddress(variable, &var_int);
+  }
+
+  for(int i = 0; i < tree->GetEntries(); i++) {
+    tree->GetEntry(i);
+
+    if(metCut > 0. && met >= metCut) continue;
+
+    Double_t oldError = (isAFloat) ? h->GetBinError(h->FindBin(var)) : h->GetBinError(h->FindBin(var_int));
+    
+    if(variable != "pfMET") {
+      if(isAFloat) h->Fill(var, weight);
+      else h->Fill(var_int, weight);
+    }
+    else h->Fill(met, weight);
+
+    if(isAFloat) h->SetBinError(h->FindBin(var), sqrt(oldError*oldError + weightError*weightError));
+    else h->SetBinError(h->FindBin(var_int), sqrt(oldError*oldError + weightError*weightError));
+
+  }
+
+  tree->ResetBranchAddresses();
+
+  return h;
+}
+
+TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins,  Double_t* customBins, double metCut = -1.) {
+
+  TH1D * h = new TH1D(name, title, nBins, customBins);
+  h->Sumw2();
+
+  Float_t met, weight, weightError;
+  tree->SetBranchAddress("pfMET", &met);
+  tree->SetBranchAddress("weight", &weight);
+  tree->SetBranchAddress("weightError", &weightError);
+
+  Float_t var;
+  Int_t var_int;
+  if(variable != "pfMET") {
+    if(isAFloat) tree->SetBranchAddress(variable, &var);
+    else tree->SetBranchAddress(variable, &var_int);
+  }
+
+  for(int i = 0; i < tree->GetEntries(); i++) {
+    tree->GetEntry(i);
+
+    if(metCut > 0. && met >= metCut) continue;
+
+    Double_t oldError = (isAFloat) ? h->GetBinError(h->FindBin(var)) : h->GetBinError(h->FindBin(var_int));
+    
+    if(variable != "pfMET") {
+      if(isAFloat) h->Fill(var, weight);
+      else h->Fill(var_int, weight);
+    }
+    else h->Fill(met, weight);
+
+    if(isAFloat) h->SetBinError(h->FindBin(var), sqrt(oldError*oldError + weightError*weightError));
+    else h->SetBinError(h->FindBin(var_int), sqrt(oldError*oldError + weightError*weightError));
+
+  }
+
+  tree->ResetBranchAddresses();
+
+  return h;
+}
+
+TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t xlo, Double_t xhi) {
+
+  TH1D * h = new TH1D(name, title, nBins, xlo, xhi);
+  h->Sumw2();
+
+  Float_t var;
+  Int_t var_int;
+  Float_t puWeight, btagWeight;
+  Float_t puWeightErr, btagWeightErr, btagWeightUp, btagWeightDown;
+  if(isAFloat) tree->SetBranchAddress(variable, &var);
+  else tree->SetBranchAddress(variable, &var_int);
+  tree->SetBranchAddress("pileupWeight", &puWeight);
+  tree->SetBranchAddress("pileupWeightErr", &puWeightErr);
+  tree->SetBranchAddress("btagWeight", &btagWeight);
+  tree->SetBranchAddress("btagWeightErr", &btagWeightErr);
+  tree->SetBranchAddress("btagWeightUp", &btagWeightUp);
+  tree->SetBranchAddress("btagWeightDown", &btagWeightDown);
+  for(int i = 0; i < tree->GetEntries(); i++) {
+    tree->GetEntry(i);
+
+    Float_t olderror = 0.;
+
+    if(isAFloat) {
+      olderror = h->GetBinError(h->FindBin(var));
+      h->Fill(var, puWeight * btagWeight);
+    }
+    else {
+      olderror = h->GetBinError(h->FindBin(var_int));
+      h->Fill(var_int, puWeight * btagWeight);
+    }
+    
+    // protection from weird 1200 weight errors...
+    if(btagWeightErr > 20.) btagWeightErr = btagWeight;
+
+    Float_t btagSFsys = (fabs(btagWeight - btagWeightUp) + fabs(btagWeight - btagWeightDown))/2.;
+    Float_t btag_toterr = sqrt(btagWeightErr*btagWeightErr + btagSFsys*btagSFsys);
+
+    Float_t addError2 = puWeight*puWeight*btag_toterr*btag_toterr + btagWeight*btagWeight*puWeightErr*puWeightErr;
+
+    Float_t newerror = sqrt(olderror*olderror + addError2);
+
+    if(isAFloat) h->SetBinError(h->FindBin(var), newerror);
+    else h->SetBinError(h->FindBin(var_int), newerror);
+      
+  }
+
+  h->Scale(scale);
+
+  tree->ResetBranchAddresses();
+
+  return h;
+}
+
+TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t* customBins) {
+
+  TH1D * h = new TH1D(name, title, nBins, customBins);
+  h->Sumw2();
+
+  Float_t var;
+  Int_t var_int;
+  Float_t puWeight, btagWeight;
+  Float_t puWeightErr, btagWeightErr, btagWeightUp, btagWeightDown;
+  if(isAFloat) tree->SetBranchAddress(variable, &var);
+  else tree->SetBranchAddress(variable, &var_int);
+  tree->SetBranchAddress("pileupWeight", &puWeight);
+  tree->SetBranchAddress("pileupWeightErr", &puWeightErr);
+  tree->SetBranchAddress("btagWeight", &btagWeight);
+  tree->SetBranchAddress("btagWeightErr", &btagWeightErr);
+  tree->SetBranchAddress("btagWeightUp", &btagWeightUp);
+  tree->SetBranchAddress("btagWeightDown", &btagWeightDown);
+  for(int i = 0; i < tree->GetEntries(); i++) {
+    tree->GetEntry(i);
+
+    Float_t olderror = 0.;
+
+    if(isAFloat) {
+      olderror = h->GetBinError(h->FindBin(var));
+      h->Fill(var, puWeight * btagWeight);
+    }
+    else {
+      olderror = h->GetBinError(h->FindBin(var_int));
+      h->Fill(var_int, puWeight * btagWeight);
+    }
+    
+    // protection from weird 1200 weight errors...
+    if(btagWeightErr > 20.) btagWeightErr = btagWeight;
+
+    Float_t btagSFsys = (fabs(btagWeight - btagWeightUp) + fabs(btagWeight - btagWeightDown))/2.;
+    Float_t btag_toterr = sqrt(btagWeightErr*btagWeightErr + btagSFsys*btagSFsys);
+
+    Float_t addError2 = puWeight*puWeight*btag_toterr*btag_toterr + btagWeight*btagWeight*puWeightErr*puWeightErr;
+
+    Float_t newerror = sqrt(olderror*olderror + addError2);
+
+    if(isAFloat) h->SetBinError(h->FindBin(var), newerror);
+    else h->SetBinError(h->FindBin(var_int), newerror);
+      
+  }
+
+  h->Scale(scale);
+
+  tree->ResetBranchAddresses();
+
+  return h;
+}
+
 void formatTable(TH1D * h_gg,
 		 TH1D * h_ewk, TH1D * ewk_norm2, Float_t fakeRate, Float_t fakeRate_sys, Float_t egScale,
 		 TH1D * qcd_ff, TH1D * ff_norm2, Float_t ffScale,
@@ -121,38 +307,7 @@ TH1D * GetWeights(TH1D* ggDiEMpT, TH1D* h_diempt, Float_t gg_test, Float_t other
   TH1D * diempt = (TH1D*)h_diempt->Clone();
 
   const int ndiemptbins = 30;
-  Double_t diemptbins[ndiemptbins+1] = {
-    0,
-    5,
-    10,
-    15,
-    20,
-    25,
-    30,
-    35,
-    40,
-    45,
-    50,
-    55,
-    60,
-    65,
-    70,
-    75,
-    80,
-    85,
-    90,
-    95,
-    100,
-    110,
-    120,
-    130,
-    140,
-    150,
-    200,
-    300,
-    400,
-    600,
-    1000};
+  Double_t diemptbins[ndiemptbins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 200, 300, 400, 600, 1000};
 
   TH1D * ratio2 = (TH1D*)ratio->Rebin(ndiemptbins, "ratio2", diemptbins);
   TH1D * diempt2 = (TH1D*)diempt->Rebin(ndiemptbins, "diempt2", diemptbins);
@@ -163,6 +318,68 @@ TH1D * GetWeights(TH1D* ggDiEMpT, TH1D* h_diempt, Float_t gg_test, Float_t other
   ratio2->Divide(diempt2);
 
   return ratio2;
+}
+
+void evaluateWeight(Int_t njets, Float_t diempt,
+		    TH1D * ratio_0, TH1D * ratio_1, TH1D * ratio_2,
+		    Float_t& w, Float_t& err) {
+
+  if(njets == 0) {
+    w = ratio_0->GetBinContent(ratio_0->FindBin(diempt));
+    err = ratio_0->GetBinError(ratio_0->FindBin(diempt));
+  }
+  else if(njets == 1) {
+    w = ratio_1->GetBinContent(ratio_1->FindBin(diempt));
+    err = ratio_1->GetBinError(ratio_1->FindBin(diempt));
+  }
+  else {
+    w = ratio_2->GetBinContent(ratio_2->FindBin(diempt));
+    err = ratio_2->GetBinError(ratio_2->FindBin(diempt));
+  }
+
+}
+
+bool calculateScaling(TTree * ggTree, TTree * egTree, TTree * qcdTree,
+		      Float_t& scale, Float_t& scaleErr) {
+
+  TH1D * gg = (TH1D*)HistoFromTree(true, "pfMET", ggTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0, 20);
+  TH1D * eg = (TH1D*)HistoFromTree(true, "pfMET", egTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0, 20);
+  TH1D * qcd = (TH1D*)HistoFromTree(true, "pfMET", qcdTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0, 20);
+
+  if(qcd->Integral() == 0.) {
+    scale = 1.;
+    scaleErr = 0.;
+
+    delete gg;
+    delete eg;
+    delete qcd;
+
+    return false;
+  }
+
+  scale = (gg->Integral() - eg->Integral()) / qcd->Integral();
+
+  Float_t qcdScaleErr_num = 0.;
+  for(int i = 0; i < 4; i++)	{
+    qcdScaleErr_num += eg->GetBinError(i+1) * eg->GetBinError(i+1);
+  }
+
+  qcdScaleErr_num = (sqrt(gg->Integral()) - sqrt(qcdScaleErr_num)) / (gg->Integral() - eg->Integral());
+
+  Float_t qcdScaleErr_den = 0.;
+  for(int i = 0; i < 4; i++) {
+    qcdScaleErr_den += qcd->GetBinError(i+1) * qcd->GetBinError(i+1);
+  }
+  qcdScaleErr_den = sqrt(qcdScaleErr_den) / qcd->Integral();
+  
+  scaleErr = sqrt(qcdScaleErr_num*qcdScaleErr_num + qcdScaleErr_den*qcdScaleErr_den) * qcdScale;
+
+  delete gg;
+  delete eg;
+  delete qcd;
+
+  return true;
+
 }
 
 TH1D * GetAlternativeWeights(TTree * ggtree, TTree * bkgtree, TString variable, bool isAFloat, Int_t nbins, Double_t* xbins, TString name) {
@@ -406,91 +623,6 @@ TH1D * AlternativeReweight(TString outVariable, bool outIsAFloat,
   return rew;
 }
 
-TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t xlo, Double_t xhi, double restrictMet = false) {
-
-  TH1D * h = new TH1D(name, title, nBins, xlo, xhi);
-  h->Sumw2();
-
-  Float_t met;
-  tree->SetBranchAddress("pfMET", &met);
-
-  Float_t var;
-  Int_t var_int;
-  if(variable != "pfMET") {
-    if(isAFloat) tree->SetBranchAddress(variable, &var);
-    else tree->SetBranchAddress(variable, &var_int);
-  }
-  for(int i = 0; i < tree->GetEntries(); i++) {
-    tree->GetEntry(i);
-
-    if(restrictMet && met >= 50.) continue;
-
-    if(variable != "pfMET") {
-      if(isAFloat) h->Fill(var);
-      else h->Fill(var_int);
-    }
-    else h->Fill(met);
-
-  }
-
-  tree->ResetBranchAddresses();
-
-  return h;
-}
-
-TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t xlo, Double_t xhi) {
-
-  TH1D * h = new TH1D(name, title, nBins, xlo, xhi);
-  h->Sumw2();
-
-  Float_t var;
-  Int_t var_int;
-  Float_t puWeight, btagWeight;
-  Float_t puWeightErr, btagWeightErr, btagWeightUp, btagWeightDown;
-  if(isAFloat) tree->SetBranchAddress(variable, &var);
-  else tree->SetBranchAddress(variable, &var_int);
-  tree->SetBranchAddress("pileupWeight", &puWeight);
-  tree->SetBranchAddress("pileupWeightErr", &puWeightErr);
-  tree->SetBranchAddress("btagWeight", &btagWeight);
-  tree->SetBranchAddress("btagWeightErr", &btagWeightErr);
-  tree->SetBranchAddress("btagWeightUp", &btagWeightUp);
-  tree->SetBranchAddress("btagWeightDown", &btagWeightDown);
-  for(int i = 0; i < tree->GetEntries(); i++) {
-    tree->GetEntry(i);
-
-    Float_t olderror = 0.;
-
-    if(isAFloat) {
-      olderror = h->GetBinError(h->FindBin(var));
-      h->Fill(var, puWeight * btagWeight);
-    }
-    else {
-      olderror = h->GetBinError(h->FindBin(var_int));
-      h->Fill(var_int, puWeight * btagWeight);
-    }
-    
-    // protection from weird 1200 weight errors...
-    if(btagWeightErr > 20.) btagWeightErr = btagWeight;
-
-    Float_t btagSFsys = (fabs(btagWeight - btagWeightUp) + fabs(btagWeight - btagWeightDown))/2.;
-    Float_t btag_toterr = sqrt(btagWeightErr*btagWeightErr + btagSFsys*btagSFsys);
-
-    Float_t addError2 = puWeight*puWeight*btag_toterr*btag_toterr + btagWeight*btagWeight*puWeightErr*puWeightErr;
-
-    Float_t newerror = sqrt(olderror*olderror + addError2);
-
-    if(isAFloat) h->SetBinError(h->FindBin(var), newerror);
-    else h->SetBinError(h->FindBin(var_int), newerror);
-      
-  }
-
-  h->Scale(scale);
-
-  tree->ResetBranchAddresses();
-
-  return h;
-}
-
 void calculateROC(TH1D * sig_a, TH1D * sig_b, TH1D * bkg, TString req, TString title) {
 
   TH1D * srootb_a = (TH1D*)sig_a->Clone("roc_a"); srootb_a->Reset();
@@ -589,24 +721,123 @@ void calculateROC(TH1D * sig_a, TH1D * sig_b, TH1D * bkg, TString req, TString t
 
 }
 
-vector<TH1D*> preparePlots(TTree * ggTree, TTree * egTree, TTree * ffTree, TTree * gfTree, TTree * ttgjetsTree,
-			   TH1D * ratio_ff_0, TH1D * ratio_ff_1, TH1D * ratio_ff_2,
-			   TH1D * ratio_gf_0, TH1D * ratio_gf_1, TH1D * ratio_gf_2,
-			   Float_t egScale, Float_t egScaleErr,
-			   Float_t ffScale, Float_t ffScaleErr,
-			   Float_t gfScale, Float_t gfScaleErr, Float_t ttgjetsScale,
-			   TString variable, bool isAFloat,
-			   Int_t nBinsX, Float_t bin_lo, Float_t bin_hi,
-			   TString req,
-			   Int_t rebin,
-			   bool compareReweighting) {
+class PlotMaker : public TObject {
+  
+  ClassDef(PlotMaker, 1);
 
-  TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, bin_lo, bin_hi);
-  TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, bin_lo, bin_hi);
-  TH1D * ttg = SignalHistoFromTree(ttgjetsScale, isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, bin_lo, bin_hi);
-  TH1D * qcd = Reweight(isAFloat, gg, variable, ratio_ff_0, ratio_ff_1, ratio_ff_2, ffTree, 0, false, "ff_"+req, false);
-  TH1D * qcd_gf = Reweight(isAFloat, gg, variable, ratio_gf_0, ratio_gf_1, ratio_gf_2, gfTree, 0, false, "gf_"+req, false);
- 
+ public:
+  PlotMaker(Int_t lumi,
+	    Float_t ewkScale, Float_t ewkScaleErr,
+	    Float_t qcdScale_ff, Float_t qcdScaleErr_ff, bool ff_works,
+	    Float_t qcdScale_gf, Float_t qcdScaleErr_gf, bool gf_works,
+	    bool use_qcd_syst, bool use_ff,
+	    TString requirement);
+  virtual ~PlotMaker() { 
+
+    delete ggTree;
+    delete egTree;
+    delete ffTree;
+    delete gfTree;
+        
+  }
+
+  void SetTrees(TTree * gg, TTree * eg,
+		TTree * ff, TTree * gf,
+		TTree * sig_a, TTree * sig_b);
+
+  void CreatePlot(TString variable, bool isAFloat,
+		  Int_t nBinsX, Float_t bin_lo, Float_t bin_hi,
+		  TString xaxisTitle, TString yaxisTitle,
+		  Float_t xmin, Float_t xmax,
+		  Float_t ymin, Float_t ymax,
+		  Float_t ratiomin, Float_t ratiomax,
+		  bool drawSignal, bool drawLegend, bool drawPrelim,
+		  TFile*& out, double metCut);
+
+  void CreatePlot(TString variable, bool isAFloat,
+		  Int_t nBinsX, Double_t* customBins,
+		  TString xaxisTitle,
+		  Float_t xmin, Float_t xmax,
+		  Float_t ymin, Float_t ymax,
+		  Float_t ratiomin, Float_t ratiomax,
+		  bool drawSignal, bool drawLegend, bool drawPrelim,
+		  TFile*& out, double metCut);
+
+ private:
+  TTree * ggTree;
+  TTree * egTree;
+  TTree * ffTree;
+  TTree * gfTree;
+  
+  TTree * sigaTree;
+  TTree * sigbTree;
+
+  Int_t intLumi_int;
+  TString intLumi;
+
+  Float_t egScale, egScaleErr;
+  Float_t ffScale, ffScaleErr;
+  Float_t gfScale, gfScaleErr;
+
+  bool ffWorks, gfWorks;
+  bool useQCDSystematic, useFF;
+
+  TString req;
+
+};
+PlotMaker::PlotMaker(Int_t lumi,
+		     Float_t ewkScale, Float_t ewkScaleErr,
+		     Float_t qcdScale_ff, Float_t qcdScaleErr_ff, bool ff_works,
+		     Float_t qcdScale_gf, Float_t qcdScaleErr_gf, bool gf_works,
+		     bool use_qcd_syst, bool use_ff,
+		     TString requirement) :
+  intLumi_int(lumi),
+  egScale(fakeRate),
+  egScaleErr(fakeRateErr),
+  ffScale(qcdScale_ff),
+  ffScaleErr(qcdScaleErr_ff),
+  ffWorks(ff_works),
+  gfScale(qcdScale_gf),
+  gfScaleErr(qcdScaleErr_gf),
+  gfWorks(gf_works),
+  useQCDSystematic(use_qcd_syst),
+  useFF(use_ff),
+  req(requirement)
+{
+  char buffer[50];
+  sprintf(buffer, "%.3f", (float)intLumi_int / 1000.);
+  intLumi = buffer;
+}
+
+void PlotMaker::SetTrees(TTree * gg, TTree * eg,
+			 TTree * ff, TTree * gf,
+			 TTree * sig_a, TTree * sig_b) {
+
+  ggTree = gg;
+  egTree = eg;
+  ffTree = ff;
+  gfTree = gf;
+  
+  sigaTree = sig_a;
+  sigbTree = sig_b;
+
+}
+
+void PlotMaker::CreatePlot(TString variable, bool isAFloat,
+			   bool useQCDSystematic, bool useFF,
+			   Int_t nBinsX, Float_t bin_lo, Float_t bin_hi,
+			   TString xaxisTitle, TString yaxisTitle,
+			   Float_t xmin, Float_t xmax,
+			   Float_t ymin, Float_t ymax,
+			   Float_t ratiomin, Float_t ratiomax,
+			   bool drawSignal, bool drawLegend, bool drawPrelim,
+			   TFile*& out, double metCut) {
+
+  TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+  TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+  TH1D * qcd_ff = HistoFromTree(isAFloat, variable, ffTree, variable+"_ff_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+  TH1D * qcd_gf = HistoFromTree(isAFloat, variable, gfTree, variable+"_gf_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+
   TH1D * ewk_noNorm = (TH1D*)ewk->Clone();
   ewk->Scale(egScale);
   for(int i = 0; i < ewk->GetNbinsX(); i++) {
@@ -616,144 +847,76 @@ vector<TH1D*> preparePlots(TTree * ggTree, TTree * egTree, TTree * ffTree, TTree
     ewk->SetBinError(i+1, new_err);
   }
 
-  TH1D * qcd_noNorm = (TH1D*)qcd->Clone();
-  qcd->Scale(ffScale);
-  for(int i = 0; i < qcd->GetNbinsX(); i++) {
-    Float_t normerr = ffScaleErr*(qcd_noNorm->GetBinContent(i+1));
-    Float_t staterr = qcd->GetBinError(i+1);
+  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone();
+  qcd_ff->Scale(ffScale);
+
+  for(int i = 0; i < qcd_ff->GetNbinsX(); i++) {
+    Float_t normerr = ffScaleErr*(ff_noNorm->GetBinContent(i+1));
+    Float_t staterr = qcd_ff->GetBinError(i+1);
+                                                
     Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
-    qcd->SetBinError(i+1, new_err);
+  
+    qcd_ff->SetBinError(i+1, new_err);
   }
 
-  TH1D * qcd_gf_noNorm = (TH1D*)qcd_gf->Clone();
+  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone();
   qcd_gf->Scale(gfScale);
+
   for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
-    Float_t normerr = gfScaleErr*(qcd_gf_noNorm->GetBinContent(i+1));
+    Float_t normerr = gfScaleErr*(gf_noNorm->GetBinContent(i+1));
     Float_t staterr = qcd_gf->GetBinError(i+1);
+                                                
     Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+  
     qcd_gf->SetBinError(i+1, new_err);
   }
 
-  if(rebin >= 2) {
-    gg->Rebin(rebin);
-    ewk->Rebin(rebin);
-    ttg->Rebin(rebin);
-    qcd->Rebin(rebin);
-    qcd_gf->Rebin(rebin);
-  }
+  out->cd();
+  gg->Write();
+  ewk->Write();
+  qcd_ff->Write();
+  qcd_gf->Write();
 
-  if(compareReweighting) {
-    TH1D * qcd_unrew = HistoFromTree(isAFloat, variable, ffTree, variable+"_ff_unrew_"+req, variable, nBinsX, bin_lo, bin_hi);
-    if(rebin >= 2) qcd_unrew->Rebin(rebin);
-    qcd_unrew->Scale(1./qcd_unrew->Integral());
-
-    TH1D * ratio_compare = (TH1D*)qcd->Clone("ratio_compare_"+variable+"_ff_"+req);
-    ratio_compare->Scale(1./ratio_compare->Integral());
-    ratio_compare->Divide(qcd_unrew);
-
-    float var;
-    int var_int;
-    if(isAFloat) ffTree->SetBranchAddress(variable, &var);
-    else ffTree->SetBranchAddress(variable, &var_int);
-
-    float varmax = -999.;
-    for(int i = 0; i < ffTree->GetEntries(); i++) {
-      ffTree->GetEntry(i);
-      if(isAFloat) {
-	if(var > varmax) varmax = var;
-      }
-      else {
-	if(var_int > varmax) varmax = var_int;
-      }
-    }
-
-    ffTree->ResetBranchAddresses();
-
-    TCanvas * canv = new TCanvas("canv", "Plot", 10, 10, 2000, 2000);
-    ratio_compare->GetXaxis()->SetRangeUser(0, varmax * 1.1);
-    ratio_compare->Draw();
-    canv->SaveAs("avg_weight_ff_"+variable+"_"+req+gifOrPdf);
-    delete canv;
-  }
-
-  vector<TH1D*> vec;
-  vec.push_back(gg);
-  vec.push_back(ewk);
-  vec.push_back(qcd);
-  vec.push_back(qcd_gf);
-  vec.push_back(ttg);
-
-  return vec;
-
-}
-
-void prettyPlot(TH1D* gg_, TH1D* eg_, TH1D* ff_, TH1D* gf_, TH1D* ttgjets,
-		bool useQCDSystematic, bool useTTGJets, bool useFF, bool useMCforQCD,
-                TH1D* sig_a_, TH1D* sig_b_,
-		TH1D * mc_qcd30to40, TH1D * mc_qcd40,
-                TString intLumi, bool ff_failure,
-                TString req, TString title, TString xaxisTitle, TString yaxisTitle,
-                Float_t xmin, Float_t xmax, Float_t ymin, Float_t ymax,
-                Float_t ratiomin, Float_t ratiomax,
-                bool drawMC, bool drawLegend, bool drawPrelim) {
-
-  TH1D * gg = (TH1D*)gg_->Clone("gg");
-  TH1D * ewk = (TH1D*)eg_->Clone("ewk");
-  TH1D * ttg = (TH1D*)ttgjets->Clone("ttg");
-
-  TH1D * qcd;
-  if(!useMCforQCD) {
-    // use FF as data-driven QCD
-    if(useFF) {
-      qcd = (TH1D*)ff_->Clone("qcd");
-      if(useQCDSystematic) {
-	for(int i = 0; i < qcd->GetNbinsX(); i++) {
-	  Double_t syserror = qcd->GetBinContent(i+1) - gf_->GetBinContent(i+1);
-	  Double_t totalerr = qcd->GetBinError(i+1);
-	  qcd->SetBinError(i+1, sqrt(totalerr*totalerr + syserror*syserror));
-	}
-      }
-    }
-    // use GF as data-driven QCD
-    else {
-      qcd = (TH1D*)gf_->Clone("qcd");
-      if(useQCDSystematic) {
-	for(int i = 0; i < qcd->GetNbinsX(); i++) {
-	  Double_t syserror = qcd->GetBinContent(i+1) - ff_->GetBinContent(i+1);
-	  Double_t totalerr = qcd->GetBinError(i+1);
-	  qcd->SetBinError(i+1, sqrt(totalerr*totalerr + syserror*syserror));
-	}
+  TH1D * bkg;
+  if(useFF) {
+    bkg = (TH1D*)qcd_ff->Clone("bkg");
+    if(useQCDSystematic) {
+      for(int i = 0; i < bkg->GetNbinsX(); i++) {
+	Double_t syserror = bkg->GetBinContent(i+1) - qcd_gf->GetBinContent(i+1);
+	Double_t totalerr = bkg->GetBinError(i+1);
+	bkg->SetBinError(i+1, sqrt(totalerr*totalerr + syserror*syserror));
       }
     }
   }
-  // use monte-carlo QCD
   else {
-    qcd = (TH1D*)mc_qcd30to40->Clone("qcd");
-    qcd->Add(mc_qcd40);
-  } 
+    bkg = (TH1D*)qcd_gf->Clone("bkg");
+    if(useQCDSystematic) {
+      for(int i = 0; i < bkg->GetNbinsX(); i++) {
+	Double_t syserror = bkg->GetBinContent(i+1) - qcd_ff->GetBinContent(i+1);
+	Double_t totalerr = bkg->GetBinError(i+1);
+	bkg->SetBinError(i+1, sqrt(totalerr*totalerr + syserror*syserror));
+      }
+    }
+  }
 
-  TH1D * bkg = (TH1D*)ewk->Clone("bkg");
-  if(useTTGJets) bkg->Add(ttg);
-  bkg->Add(qcd);  
+  bkg->Add(ewk);
+
   TH1D * errors = (TH1D*)bkg->Clone("errors");
-
-  ttg->Add(ewk);
 
   TH1D * sig_a;
   TH1D * sig_b;
-  if(drawMC) {
-    sig_a = (TH1D*)sig_a_->Clone("sig_a");
-    sig_b= (TH1D*)sig_b_->Clone("sig_b");
-  }
+  if(drawSignal) {
+    sig_a = SignalHistoFromTree(0.147492 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigaTree, variable+"_a_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+    sig_b = SignalHistoFromTree(0.0399591 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigbTree, variable+"_b_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
 
-  if(drawMC) calculateROC(sig_a, sig_b, bkg, req, title);
+    calculateROC(sig_a, sig_b, bkg, req, variable);
+  }
 
   TLegend * leg = new TLegend(0.50, 0.65, 0.85, 0.85, NULL, "brNDC");
   leg->AddEntry(gg, "#gamma#gamma Candidate Sample", "LP");
   leg->AddEntry(errors, "Total Background Uncertainty", "F");
-  if(!ff_failure) leg->AddEntry(bkg, "QCD", "F");
+  if((useFF && ffWorks) || (!useFF && gfWorks)) leg->AddEntry(bkg, "QCD", "F");
   else leg->AddEntry(bkg, "QCD (UN-NORMALIZED)", "F");
-  if(useTTGJets) leg->AddEntry(ttg, "t#bar{t}#gamma+jets MC", "F");
   leg->AddEntry(ewk, "Electroweak", "F");
   leg->SetFillColor(0);
   leg->SetTextSize(0.028);
@@ -774,17 +937,14 @@ void prettyPlot(TH1D* gg_, TH1D* eg_, TH1D* ff_, TH1D* gf_, TH1D* ttgjets,
   errors->SetFillStyle(3154);
   errors->SetMarkerSize(0);
 
-  ewk->SetFillColor(8);
-  ewk->SetMarkerSize(0);
-  ewk->SetLineColor(1);
-  
-  ttg->SetFillColor(kOrange-3);
-  ttg->SetMarkerSize(0);
-  ttg->SetLineColor(1);
-
+  // new stack: qcd, gjet, diphotonjets, ewk, ttg, ttbar
   bkg->SetFillColor(kGray);
   bkg->SetMarkerSize(0);
   bkg->SetLineColor(1);
+
+  ewk->SetFillColor(8);
+  ewk->SetMarkerSize(0);
+  ewk->SetLineColor(1);
 
   TCanvas * can = new TCanvas("can", "Plot", 10, 10, 2000, 2000);
 
@@ -802,21 +962,21 @@ void prettyPlot(TH1D* gg_, TH1D* eg_, TH1D* ff_, TH1D* gf_, TH1D* ttgjets,
   //padhi->SetGridy(true);
   padhi->SetBottomMargin(0);
 
-  bkg->SetTitle(title);
+  bkg->SetTitle(variable);
   bkg->GetXaxis()->SetTitle(xaxisTitle);
   bkg->GetYaxis()->SetTitle(yaxisTitle);
 
   if(xmax > xmin) bkg->GetXaxis()->SetRangeUser(xmin, xmax);
   bkg->GetYaxis()->SetRangeUser(ymin, ymax);
 
+  // new stack: qcd, gjet, diphotonjets, ewk, ttg, ttbar
   bkg->Draw("hist");
-  if(useTTGJets) ttg->Draw("same hist");
   ewk->Draw("same hist");
   errors->Draw("same e2");
   gg->Draw("same e1");
-  ewk->Draw("same axis");
+  bkg->Draw("same axis");
 
-  if(drawMC) {
+  if(drawSignal) {
     sig_a->SetLineColor(kMagenta);
     sig_a->SetLineWidth(3);
     leg->AddEntry(sig_a, "GGM #gamma#gamma (460_175)", "L");
@@ -883,11 +1043,239 @@ void prettyPlot(TH1D* gg_, TH1D* eg_, TH1D* ff_, TH1D* gf_, TH1D* ttgjets,
 
   padhi->cd();
   padhi->SetLogy(true);
-  can->SaveAs(title+"_"+req+".pdf");
+  can->SaveAs(variable+"_"+req+".pdf");
 
   delete can;
 
 }
+
+void PlotMaker::CreatePlot(TString variable, bool isAFloat,
+			   bool useQCDSystematic, bool useFF,
+			   Int_t nBinsX, Double_t* customBins,
+			   TString xaxisTitle,
+			   Float_t xmin, Float_t xmax,
+			   Float_t ymin, Float_t ymax,
+			   Float_t ratiomin, Float_t ratiomax,
+			   bool drawSignal, bool drawLegend, bool drawPrelim,
+			   TFile*& out, double metCut) {
+
+  TString yaxisTitle = "Number of Events / GeV";
+
+  TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins, metCut);
+  TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, customBins, metCut);
+  TH1D * qcd_ff = HistoFromTree(isAFloat, variable, ffTree, variable+"_ff_"+req, variable, nBinsX, customBins, metCut);
+  TH1D * qcd_gf = HistoFromTree(isAFloat, variable, gfTree, variable+"_gf_"+req, variable, nBinsX, customBins, metCut);
+
+  TH1D * ewk_noNorm = (TH1D*)ewk->Clone();
+  ewk->Scale(egScale);
+  for(int i = 0; i < ewk->GetNbinsX(); i++) {
+    Float_t normerr = egScaleErr*(ewk_noNorm->GetBinContent(i+1));
+    Float_t staterr = ewk->GetBinError(i+1);
+    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+    ewk->SetBinError(i+1, new_err);
+  }
+
+  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone();
+  qcd_ff->Scale(ffScale);
+
+  for(int i = 0; i < qcd_ff->GetNbinsX(); i++) {
+    Float_t normerr = ffScaleErr*(ff_noNorm->GetBinContent(i+1));
+    Float_t staterr = qcd_ff->GetBinError(i+1);
+                                                
+    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+  
+    qcd_ff->SetBinError(i+1, new_err);
+  }
+
+  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone();
+  qcd_gf->Scale(gfScale);
+
+  for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
+    Float_t normerr = gfScaleErr*(gf_noNorm->GetBinContent(i+1));
+    Float_t staterr = qcd_gf->GetBinError(i+1);
+                                                
+    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+  
+    qcd_gf->SetBinError(i+1, new_err);
+  }
+
+  out->cd();
+  gg->Write();
+  ewk->Write();
+  qcd_ff->Write();
+  qcd_gf->Write();
+
+  TH1D * bkg;
+  if(useFF) {
+    bkg = (TH1D*)qcd_ff->Clone("bkg");
+    if(useQCDSystematic) {
+      for(int i = 0; i < bkg->GetNbinsX(); i++) {
+	Double_t syserror = bkg->GetBinContent(i+1) - qcd_gf->GetBinContent(i+1);
+	Double_t totalerr = bkg->GetBinError(i+1);
+	bkg->SetBinError(i+1, sqrt(totalerr*totalerr + syserror*syserror));
+      }
+    }
+  }
+  else {
+    bkg = (TH1D*)qcd_gf->Clone("bkg");
+    if(useQCDSystematic) {
+      for(int i = 0; i < bkg->GetNbinsX(); i++) {
+	Double_t syserror = bkg->GetBinContent(i+1) - qcd_ff->GetBinContent(i+1);
+	Double_t totalerr = bkg->GetBinError(i+1);
+	bkg->SetBinError(i+1, sqrt(totalerr*totalerr + syserror*syserror));
+      }
+    }
+  }
+
+  bkg->Add(ewk);
+
+  TH1D * errors = (TH1D*)bkg->Clone("errors");
+
+  TH1D * sig_a;
+  TH1D * sig_b;
+  if(drawSignal) {
+    sig_a = SignalHistoFromTree(0.147492 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigaTree, variable+"_a_"+req, variable, nBinsX, customBins, metCut);
+    sig_b = SignalHistoFromTree(0.0399591 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigbTree, variable+"_b_"+req, variable, nBinsX, customBins, metCut);
+
+    calculateROC(sig_a, sig_b, bkg, req, variable);
+  }
+
+  TLegend * leg = new TLegend(0.50, 0.65, 0.85, 0.85, NULL, "brNDC");
+  leg->AddEntry(gg, "#gamma#gamma Candidate Sample", "LP");
+  leg->AddEntry(errors, "Total Background Uncertainty", "F");
+  leg->AddEntry(bkg, "QCD", "F");
+  leg->AddEntry(ewk, "Electroweak", "F");
+  leg->SetFillColor(0);
+  leg->SetTextSize(0.028);
+
+  TPaveText * prelim = new TPaveText(0.50, 0.42, 0.85, 0.62, "NDC");
+  prelim->SetFillColor(0);
+  prelim->SetFillStyle(0);
+  prelim->SetLineColor(0);
+  prelim->AddText("CMS Preliminary 2013");
+  prelim->AddText(" ");
+  prelim->AddText("#sqrt{s} = 8 TeV, #intL = "+intLumi+" fb^{-1}");
+  prelim->AddText(req+" Requirement");
+
+  gg->SetMarkerStyle(20); 
+  gg->SetMarkerSize(1.5);
+
+  errors->SetFillColor(kOrange+10);
+  errors->SetFillStyle(3154);
+  errors->SetMarkerSize(0);
+
+  // new stack: qcd, gjet, diphotonjets, ewk, ttg, ttbar
+  bkg->SetFillColor(kGray);
+  bkg->SetMarkerSize(0);
+  bkg->SetLineColor(1);
+
+  ewk->SetFillColor(8);
+  ewk->SetMarkerSize(0);
+  ewk->SetLineColor(1);
+
+  TCanvas * can = new TCanvas("can", "Plot", 10, 10, 2000, 2000);
+
+  TPad * padhi = new TPad("padhi", "padhi", 0, 0.3, 1, 1);
+  TPad * padlo = new TPad("padlo", "padlo", 0, 0, 1, 0.3);
+
+  padhi->Draw();
+  padlo->Draw();
+  padhi->cd();
+
+  padhi->SetLogy(false);
+  padhi->SetTickx(true);
+  padhi->SetTicky(true);
+  //padhi->SetGridx(true);
+  //padhi->SetGridy(true);
+  padhi->SetBottomMargin(0);
+
+  bkg->SetTitle(variable);
+  bkg->GetXaxis()->SetTitle(xaxisTitle);
+  bkg->GetYaxis()->SetTitle(yaxisTitle);
+
+  if(xmax > xmin) bkg->GetXaxis()->SetRangeUser(xmin, xmax);
+  bkg->GetYaxis()->SetRangeUser(ymin, ymax);
+
+  // new stack: qcd, gjet, diphotonjets, ewk, ttg, ttbar
+  bkg->Draw("hist");
+  ewk->Draw("same hist");
+  errors->Draw("same e2");
+  gg->Draw("same e1");
+  bkg->Draw("same axis");
+
+  if(drawSignal) {
+    sig_a->SetLineColor(kMagenta);
+    sig_a->SetLineWidth(3);
+    leg->AddEntry(sig_a, "GGM #gamma#gamma (460_175)", "L");
+    sig_a->Draw("same hist");
+    
+    sig_b->SetLineColor(kBlue);
+    sig_b->SetLineWidth(3);
+    leg->AddEntry(sig_b, "GGM #gamma#gamma (560_325)", "L");
+    sig_b->Draw("same hist");
+  }
+
+  if(drawLegend) leg->Draw("same");
+  if(drawPrelim && drawLegend) prelim->Draw("same");
+
+  padlo->cd();
+  padlo->SetTopMargin(0);
+  padlo->SetBottomMargin(0.2);
+
+  TH1D * ratio = (TH1D*)gg->Clone("ratio");
+  ratio->Reset();
+  ratio->SetTitle("Data / Background");
+  for(int i = 0; i < ratio->GetNbinsX(); i++) {
+    if(bkg->GetBinContent(i+1) == 0.) continue;
+    ratio->SetBinContent(i+1, gg->GetBinContent(i+1) / bkg->GetBinContent(i+1));
+    ratio->SetBinError(i+1, gg->GetBinError(i+1) / bkg->GetBinContent(i+1));
+  }
+
+  TH1D * ratio_sys;
+  ratio_sys = (TH1D*)bkg->Clone("ratio_sys");
+  for(int i = 0; i < ratio_sys->GetNbinsX(); i++) {
+    ratio_sys->SetBinContent(i+1, 1.);
+    if(bkg->GetBinContent(i+1) == 0.) ratio_sys->SetBinError(i+1, 0.);
+    else ratio_sys->SetBinError(i+1, ratio_sys->GetBinError(i+1) / bkg->GetBinContent(i+1));
+  }
+
+  if(xmax > xmin) ratio->GetXaxis()->SetRangeUser(xmin, xmax);
+
+  ratio_sys->SetFillStyle(1001);
+  ratio_sys->SetFillColor(kGray);
+  ratio_sys->SetLineColor(kGray);
+  ratio_sys->SetMarkerColor(kGray);
+
+  ratio->GetXaxis()->SetTitle(xaxisTitle);
+  ratio->GetXaxis()->SetLabelFont(63);
+  ratio->GetXaxis()->SetLabelSize(48);
+  ratio->GetXaxis()->SetTitleSize(0.12);
+  ratio->GetXaxis()->SetTitleOffset(0.6);
+  ratio->GetYaxis()->SetTitle("Data / Background");
+  ratio->GetYaxis()->SetLabelFont(63);
+  ratio->GetYaxis()->SetLabelSize(48);
+  ratio->GetYaxis()->SetTitleSize(0.08);
+  ratio->GetYaxis()->SetTitleOffset(0.5);
+  ratio->GetYaxis()->SetRangeUser(ratiomin, ratiomax);
+  ratio->GetYaxis()->SetNdivisions(508);
+
+  ratio->Draw("e1");
+  ratio_sys->Draw("e2 same");
+  ratio->Draw("e1 same");
+  ratio->Draw("axis same");
+
+  TLine * oneLine = new TLine(xmin, 1, xmax, 1);
+  oneLine->SetLineStyle(2);
+  oneLine->Draw();  
+
+  padhi->cd();
+  padhi->SetLogy(true);
+  can->SaveAs(variable+"_"+req+".pdf");
+
+  delete can;
+
+}
+
 
 void prep_signal(TString req) {
 
