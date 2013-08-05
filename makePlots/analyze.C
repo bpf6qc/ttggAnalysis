@@ -112,7 +112,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   vector<Int_t> intVariablesFF, intVariablesGF, intVariablesEG, intVariablesGG;
   intVariablesFF.resize(intNames.size());
   intVariablesGF.resize(intNames.size());
-  intVariabelsEG.resize(intNames.size());
+  intVariablesEG.resize(intNames.size());
   intVariablesGG.resize(intNames.size());
 
   for(unsigned int i = 0; i < floatNames.size(); i++) {

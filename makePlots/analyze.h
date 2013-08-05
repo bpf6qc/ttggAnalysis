@@ -342,9 +342,9 @@ void evaluateWeight(Int_t njets, Float_t diempt,
 bool calculateScaling(TTree * ggTree, TTree * egTree, TTree * qcdTree,
 		      Float_t& scale, Float_t& scaleErr) {
 
-  TH1D * gg = (TH1D*)HistoFromTree(true, "pfMET", ggTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0, 20);
-  TH1D * eg = (TH1D*)HistoFromTree(true, "pfMET", egTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0, 20);
-  TH1D * qcd = (TH1D*)HistoFromTree(true, "pfMET", qcdTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0, 20);
+  TH1D * gg = (TH1D*)HistoFromTree(true, "pfMET", ggTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0., 20.);
+  TH1D * eg = (TH1D*)HistoFromTree(true, "pfMET", egTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0., 20.);
+  TH1D * qcd = (TH1D*)HistoFromTree(true, "pfMET", qcdTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0., 20.);
 
   if(qcd->Integral() == 0.) {
     scale = 1.;
@@ -372,7 +372,7 @@ bool calculateScaling(TTree * ggTree, TTree * egTree, TTree * qcdTree,
   }
   qcdScaleErr_den = sqrt(qcdScaleErr_den) / qcd->Integral();
   
-  scaleErr = sqrt(qcdScaleErr_num*qcdScaleErr_num + qcdScaleErr_den*qcdScaleErr_den) * qcdScale;
+  scaleErr = sqrt(qcdScaleErr_num*qcdScaleErr_num + qcdScaleErr_den*qcdScaleErr_den) * scale;
 
   delete gg;
   delete eg;
@@ -430,127 +430,6 @@ TH1D * GetAlternativeWeights(TTree * ggtree, TTree * bkgtree, TString variable, 
   bkgtree->ResetBranchAddresses();
 
   return weight;
-}
-
-// Return a di-em pt reweighted met histogram
-TH1D * Reweight(bool isAFloat, TH1D * h, TString variable, TH1D* ratio_0, TH1D* ratio_1, TH1D* ratio_2, TTree* tree, int type, bool save, TString name, bool isMC) {
-  
-  // type 0 = ff or ee full spectrum
-  //      1 = ee signal (81-101)
-  //      2 = ee low    (71-81)
-  //      3 = ee high   (101-111)
-
-  TH1D * rew = (TH1D*)h->Clone(variable+"_"+name);
-  rew->Reset();
-
-  TH1D * unrew = (TH1D*)rew->Clone(variable+"_"+name+"_unrew");
-
-  float var_, diempt_, invmass_, puWeight_, puWeightErr_;
-  int nJets_, var_int;
-  if(variable != "invmass" && 
-     variable != "Njets" && 
-     variable != "diJetPt") {
-    if(isAFloat) tree->SetBranchAddress(variable, &var_);
-    else tree->SetBranchAddress(variable, &var_int);
-  }
-  //tree->SetBranchAddress("diEMpT", &diempt_);
-  tree->SetBranchAddress("diJetPt", &diempt_);
-  tree->SetBranchAddress("invmass", &invmass_);
-  tree->SetBranchAddress("Njets", &nJets_);
-  if(isMC) {
-    tree->SetBranchAddress("puWeight", &puWeight_);
-    tree->SetBranchAddress("puWeightError", &puWeightErr_);
-  }
-
-  Double_t ratioWeight, ratioWeightErr;
-  Double_t puWeight, puWeightErr;
-
-  for(int i = 0; i < tree->GetEntries(); i++) {
-    tree->GetEntry(i);
-    if(variable == "invmass") var_ = invmass_;
-    if(variable == "diJetPt") var_ = diempt_;
-    if(variable == "Njets") var_int = nJets_;
-
-    Double_t eventWeight = 1.;
-    Double_t eventWeightErr = 0.;
-    if(isMC) {
-      eventWeight = puWeight_;
-      eventWeightErr = puWeightErr_;
-    }
-
-    if(eventWeight == 0.) continue;
-
-    Double_t ratioWeight, ratioWeightErr;
-    if(nJets_ == 0) {
-      ratioWeight = ratio_0->GetBinContent(ratio_0->FindBin(diempt_));
-      ratioWeightErr = ratio_0->GetBinError(ratio_0->FindBin(diempt_));
-    }
-    else if(nJets_ == 1) {
-      ratioWeight = ratio_1->GetBinContent(ratio_1->FindBin(diempt_));
-      ratioWeightErr = ratio_1->GetBinError(ratio_1->FindBin(diempt_));
-    }
-    else {
-      ratioWeight = ratio_2->GetBinContent(ratio_2->FindBin(diempt_));
-      ratioWeightErr = ratio_2->GetBinError(ratio_2->FindBin(diempt_));
-    }
-
-    if(ratioWeight == 0.) continue;
-
-    Double_t oldError = (isAFloat) ? rew->GetBinError(rew->FindBin(var_)) : rew->GetBinError(rew->FindBin(var_int));
-
-    if(
-       (type == 1 && invmass_ > 81.0 && invmass_ < 101.0) ||
-       (type == 2 && invmass_ > 71.0 && invmass_ < 81.0) ||
-       (type == 3 && invmass_ > 101.0 && invmass_ < 111.0) ||
-       (type == 0)
-       ) {
-      
-      if(isAFloat) {
-	rew->Fill(var_, 1.0*ratioWeight*eventWeight);
-	unrew->Fill(var_);
-      }
-      else {
-	rew->Fill(var_int, 1.0*ratioWeight*eventWeight);
-	unrew->Fill(var_int);
-      }
-
-      Double_t newError = ratioWeightErr*ratioWeightErr / (ratioWeight*ratioWeight);
-      newError += eventWeightErr*eventWeightErr / (eventWeight*eventWeight);
-      newError = ratioWeight*eventWeight*sqrt(newError);
-
-      if(isAFloat) rew->SetBinError(rew->FindBin(var_), sqrt(oldError*oldError + newError*newError));
-      else rew->SetBinError(rew->FindBin(var_int), sqrt(oldError*oldError + newError*newError));
-    }
-
-  }  // loop over entries
-
-  if(save) {
-    TCanvas * canv = new TCanvas("canv", "Plot", 10, 10, 2000, 2000);
-
-    if(ratio_0->Integral() > 0.) {
-      ratio_0->Draw();
-      canv->SaveAs("ratio_0_"+name+gifOrPdf);
-    }
-
-    if(ratio_1->Integral() > 0.) {
-      ratio_1->Draw();
-      canv->SaveAs("ratio_1_"+name+gifOrPdf);
-    }
-
-    if(ratio_2->Integral() > 0.) {
-      ratio_2->Draw();
-      canv->SaveAs("ratio_2_"+name+gifOrPdf);
-    }
-
-    //rew->Draw();
-    //canv->SaveAs(name+"CenMETValRew"+gifOrPdf);
-
-    delete canv;
-  }
-
-  tree->ResetBranchAddresses();
-
-  return rew;
 }
 
 TH1D * AlternativeReweight(TString outVariable, bool outIsAFloat,
@@ -792,8 +671,8 @@ PlotMaker::PlotMaker(Int_t lumi,
 		     bool use_qcd_syst, bool use_ff,
 		     TString requirement) :
   intLumi_int(lumi),
-  egScale(fakeRate),
-  egScaleErr(fakeRateErr),
+  egScale(ewkScale),
+  egScaleErr(ewkScaleErrr),
   ffScale(qcdScale_ff),
   ffScaleErr(qcdScaleErr_ff),
   ffWorks(ff_works),
@@ -824,7 +703,6 @@ void PlotMaker::SetTrees(TTree * gg, TTree * eg,
 }
 
 void PlotMaker::CreatePlot(TString variable, bool isAFloat,
-			   bool useQCDSystematic, bool useFF,
 			   Int_t nBinsX, Float_t bin_lo, Float_t bin_hi,
 			   TString xaxisTitle, TString yaxisTitle,
 			   Float_t xmin, Float_t xmax,
@@ -1050,7 +928,6 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 }
 
 void PlotMaker::CreatePlot(TString variable, bool isAFloat,
-			   bool useQCDSystematic, bool useFF,
 			   Int_t nBinsX, Double_t* customBins,
 			   TString xaxisTitle,
 			   Float_t xmin, Float_t xmax,
