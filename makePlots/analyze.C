@@ -212,7 +212,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   in->Close();
 }
 
-void analyze(bool addMC, int channel, TString intLumi, int intLumi_int, bool useFF, bool useDifferenceSystematic, bool useTTGJets, bool useMCforQCD) {
+void analyze(bool addMC, int channel, TString intLumi, int intLumi_int, bool useFF, bool useDifferenceSystematic, double metCut) {
 
   gROOT->Reset();
   gROOT->SetBatch(true);
@@ -232,7 +232,7 @@ void analyze(bool addMC, int channel, TString intLumi, int intLumi_int, bool use
 
   prep_signal(channels[channel]);
 
-  TFile * in = new TFile("mvaTree_"+channel+".root", "READ");
+  TFile * in = new TFile("mvaTree_"+channels[channel]+".root", "READ");
 
   // Start grabbing objects from input file
   TTree * ggTree = (TTree*)in->Get("gg_"+channels[channel]+"_EvtTree");
@@ -242,11 +242,11 @@ void analyze(bool addMC, int channel, TString intLumi, int intLumi_int, bool use
   TTree * egTree = (TTree*)in->Get("eg_"+channels[channel]+"_EvtTree");
 
   TFile * fSig460 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/acceptance/signal_contamination_mst_460_m1_175.root", "READ");
-  TTree * ggTree_460 = (TTree*)fSig460->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175");
+  TTree * sigaTree = (TTree*)fSig460->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175");
 
   TFile * fSig800 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/acceptance/signal_contamination_mst_560_m1_325.root", "READ");
   //TTree * ggTree_800 = (TTree*)fSig800->Get("gg_"+channels[channel]+"_EvtTree_mst_560_m1_325");
-  TTree * ggTree_800 = (TTree*)fSig800->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175"); // DURP
+  TTree * sigbTree = (TTree*)fSig800->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175"); // DURP
   
   // pixel veto
   Float_t fakeRate = 0.0199;
@@ -316,7 +316,7 @@ void analyze(bool addMC, int channel, TString intLumi, int intLumi_int, bool use
 				     egScale, egScaleErr, 
 				     ffScale, ffScaleErr, ffWorks,
 				     gfScale, gfScaleErr, gfWorks,
-				     useQCDSystematic, useFF,
+				     useDifferenceSystematic, useFF,
 				     channels[channel]);
 
   pMaker->SetTrees(ggTree, egTree,
@@ -474,7 +474,5 @@ void analyze(bool addMC, int channel, TString intLumi, int intLumi_int, bool use
   in->Close();
   fSig460->Close();
   fSig800->Close();
-  fQCD30to40->Close();
-  fQCD40->Close();
 
 }

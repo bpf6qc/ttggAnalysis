@@ -12,11 +12,12 @@ void makePlots() {
   
   bool useFF = true;
   bool useDifferenceSystematic = false;
-  bool useTTGJets = false;
-  bool useMCforQCD = false;
+
+  double metCut = -1.;
 
   for(int i = 0; i < 7; i++) {
-    analyze(input, addMC, i, intLumi, intLumi_int, useFF, useDifferenceSystematic, useTTGJets, useMCforQCD);
+    mvaTreeMaker(input, i);
+    analyze(addMC, i, intLumi, intLumi_int, useFF, useDifferenceSystematic, metCut);
   }  
 
   ts.Stop();
