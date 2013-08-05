@@ -262,10 +262,10 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
   Float_t egScaleErr = fakeRate_err/(1. - fakeRate)/(1. - fakeRate);
 
   Float_t gfScale, gfScaleErr;
-  bool gfWorks = calculateScaling(ggTree, egTree, gfTree, gfScale, gfScaleErr);
+  bool gfWorks = calculateScaling(ggTree, egTree, gfTree, egScale, egScaleErr, gfScale, gfScaleErr);
 
   Float_t ffScale, ffScaleErr;
-  bool ffWorks = calculateScaling(ggTree, egTree, ffTree, ffScale, ffScaleErr);
+  bool ffWorks = calculateScaling(ggTree, egTree, ffTree, egScale, egScaleErr, ffScale, ffScaleErr);
 
   /*
   formatTable(met_gg,

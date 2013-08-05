@@ -342,6 +342,7 @@ void evaluateWeight(Int_t njets, Float_t diempt,
 }
 
 bool calculateScaling(TTree * ggTree, TTree * egTree, TTree * qcdTree,
+		      Float_t egScale, Float_t egScaleErr,
 		      Float_t& scale, Float_t& scaleErr) {
 
   TH1D * gg = (TH1D*)HistoFromTree(true, "pfMET", ggTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0., 20.);
@@ -357,6 +358,15 @@ bool calculateScaling(TTree * ggTree, TTree * egTree, TTree * qcdTree,
     delete qcd;
 
     return false;
+  }
+
+  TH1D * eg_noNorm = (TH1D*)eg->Clone();
+  eg->Scale(egScale);
+  for(int i = 0; i < eg->GetNbinsX(); i++) {
+    Float_t normerr = egScaleErr*(eg_noNorm->GetBinContent(i+1));
+    Float_t staterr = eg->GetBinError(i+1);
+    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+    eg->SetBinError(i+1, new_err);
   }
 
   scale = (gg->Integral() - eg->Integral()) / qcd->Integral();
