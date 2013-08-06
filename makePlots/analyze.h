@@ -63,8 +63,10 @@ TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name
     }
     else h->Fill(met, weight);
 
-    if(isAFloat) h->SetBinError(h->FindBin(var), sqrt(oldError*oldError + weightError*weightError));
-    else h->SetBinError(h->FindBin(var_int), sqrt(oldError*oldError + weightError*weightError));
+    if(weightError != 0.0) {
+      if(isAFloat) h->SetBinError(h->FindBin(var), sqrt(oldError*oldError + weightError*weightError));
+      else h->SetBinError(h->FindBin(var_int), sqrt(oldError*oldError + weightError*weightError));
+    }
 
   }
 
@@ -103,8 +105,10 @@ TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name
     }
     else h->Fill(met, weight);
 
-    if(isAFloat) h->SetBinError(h->FindBin(var), sqrt(oldError*oldError + weightError*weightError));
-    else h->SetBinError(h->FindBin(var_int), sqrt(oldError*oldError + weightError*weightError));
+    if(weightError != 0.0) {
+      if(isAFloat) h->SetBinError(h->FindBin(var), sqrt(oldError*oldError + weightError*weightError));
+      else h->SetBinError(h->FindBin(var_int), sqrt(oldError*oldError + weightError*weightError));
+    }
 
   }
 
@@ -360,7 +364,7 @@ bool calculateScaling(TTree * ggTree, TTree * egTree, TTree * qcdTree,
     return false;
   }
 
-  TH1D * eg_noNorm = (TH1D*)eg->Clone();
+  TH1D * eg_noNorm = (TH1D*)eg->Clone("eg_noNorm_forScale");
   eg->Scale(egScale);
   for(int i = 0; i < eg->GetNbinsX(); i++) {
     Float_t normerr = egScaleErr*(eg_noNorm->GetBinContent(i+1));
@@ -654,6 +658,8 @@ class PlotMaker : public TObject {
 		  bool drawSignal, bool drawLegend, bool drawPrelim,
 		  TFile*& out, double metCut);
 
+  void SaveLimitOutput(TFile*& out);
+
  private:
   TTree * ggTree;
   TTree * egTree;
@@ -728,7 +734,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TH1D * qcd_ff = HistoFromTree(isAFloat, variable, ffTree, variable+"_ff_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
   TH1D * qcd_gf = HistoFromTree(isAFloat, variable, gfTree, variable+"_gf_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
 
-  TH1D * ewk_noNorm = (TH1D*)ewk->Clone();
+  TH1D * ewk_noNorm = (TH1D*)ewk->Clone("ewk_noNorm_"+variable+"_"+req);
   ewk->Scale(egScale);
   for(int i = 0; i < ewk->GetNbinsX(); i++) {
     Float_t normerr = egScaleErr*(ewk_noNorm->GetBinContent(i+1));
@@ -737,7 +743,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
     ewk->SetBinError(i+1, new_err);
   }
 
-  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone();
+  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone("ff_noNorm_"+variable+"_"+req);
   qcd_ff->Scale(ffScale);
 
   for(int i = 0; i < qcd_ff->GetNbinsX(); i++) {
@@ -749,7 +755,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
     qcd_ff->SetBinError(i+1, new_err);
   }
 
-  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone();
+  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone("gf_noNorm_"+variable+"_"+req);
   qcd_gf->Scale(gfScale);
 
   for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
@@ -956,7 +962,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TH1D * qcd_ff = HistoFromTree(isAFloat, variable, ffTree, variable+"_ff_"+req, variable, nBinsX, customBins, metCut);
   TH1D * qcd_gf = HistoFromTree(isAFloat, variable, gfTree, variable+"_gf_"+req, variable, nBinsX, customBins, metCut);
 
-  TH1D * ewk_noNorm = (TH1D*)ewk->Clone();
+  TH1D * ewk_noNorm = (TH1D*)ewk->Clone("ewk_noNorm_"+variable+"_"+req);
   ewk->Scale(egScale);
   for(int i = 0; i < ewk->GetNbinsX(); i++) {
     Float_t normerr = egScaleErr*(ewk_noNorm->GetBinContent(i+1));
@@ -966,7 +972,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   }
   ewk = (TH1D*)DivideByBinWidth(ewk);
 
-  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone();
+  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone("ff_noNorm_"+variable+"_"+req);
   qcd_ff->Scale(ffScale);
 
   for(int i = 0; i < qcd_ff->GetNbinsX(); i++) {
@@ -979,7 +985,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   }
   qcd_ff = (TH1D*)DivideByBinWidth(qcd_ff);
 
-  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone();
+  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone("gf_noNorm_"+variable+"_"+req);
   qcd_gf->Scale(gfScale);
 
   for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
@@ -1031,6 +1037,9 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
     sig_b = SignalHistoFromTree(0.0399591 * intLumi_int * 1.019 * 1.019 / 15000., isAFloat, variable, sigbTree, variable+"_b_"+req, variable, nBinsX, customBins, metCut);
 
     calculateROC(sig_a, sig_b, bkg, req, variable);
+
+    sig_a = (TH1D*)DivideByBinWidth(sig_a);
+    sig_b = (TH1D*)DivideByBinWidth(sig_b);
   }
 
   TLegend * leg = new TLegend(0.50, 0.65, 0.85, 0.85, NULL, "brNDC");
@@ -1169,6 +1178,53 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
 }
 
+void PlotMaker::SaveLimitOutput(TFile*& out) {
+
+  TH1D * gg = HistoFromTree(true, "pfMET", ggTree, variable+"_gg_"+req, "pfMET", 400, 0., 2000., -1.);
+  TH1D * ewk = HistoFromTree(true, "pfMET", egTree, variable+"_eg_"+req, "pfMET", 400, 0., 2000., -1.);
+  TH1D * qcd_ff = HistoFromTree(true, "pfMET", ffTree, variable+"_ff_"+req, "pfMET", 400, 0., 2000., -1.);
+  TH1D * qcd_gf = HistoFromTree(true, "pfMET", gfTree, variable+"_gf_"+req, "pfMET", 400, 0., 2000., -1.);
+
+  TH1D * ewk_noNorm = (TH1D*)ewk->Clone("ewk_noNorm_"+variable+"_"+req);
+  ewk->Scale(egScale);
+  for(int i = 0; i < ewk->GetNbinsX(); i++) {
+    Float_t normerr = egScaleErr*(ewk_noNorm->GetBinContent(i+1));
+    Float_t staterr = ewk->GetBinError(i+1);
+    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+    ewk->SetBinError(i+1, new_err);
+  }
+
+  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone("ff_noNorm_"+variable+"_"+req);
+  qcd_ff->Scale(ffScale);
+
+  for(int i = 0; i < qcd_ff->GetNbinsX(); i++) {
+    Float_t normerr = ffScaleErr*(ff_noNorm->GetBinContent(i+1));
+    Float_t staterr = qcd_ff->GetBinError(i+1);
+                                                
+    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+  
+    qcd_ff->SetBinError(i+1, new_err);
+  }
+
+  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone("gf_noNorm_"+variable+"_"+req);
+  qcd_gf->Scale(gfScale);
+
+  for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
+    Float_t normerr = gfScaleErr*(gf_noNorm->GetBinContent(i+1));
+    Float_t staterr = qcd_gf->GetBinError(i+1);
+                                                
+    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+  
+    qcd_gf->SetBinError(i+1, new_err);
+  }
+
+  out->cd();
+  gg->Write();
+  ewk->Write();
+  qcd_ff->Write();
+  qcd_gf->Write();
+
+}
 
 void prep_signal(TString req) {
 

@@ -330,6 +330,10 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		   ffTree, gfTree,
 		   sigaTree, sigbTree);
 
+  TFile * limitOutput = new TFile("met_reweighted_"+channels[channel]+".root", "RECREATE");
+  pMaker->SaveLimitOutput(limitOutpu);
+  limitOutput->Close();
+
   TFile * out = new TFile("plots_"+channels[channel]+".root", "RECREATE");
 
   pMaker->CreatePlot("leadPhotonEta", true,
