@@ -331,7 +331,7 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		   sigaTree, sigbTree);
 
   TFile * limitOutput = new TFile("met_reweighted_"+channels[channel]+".root", "RECREATE");
-  pMaker->SaveLimitOutput(limitOutpu);
+  pMaker->SaveLimitOutput(limitOutput);
   limitOutput->Close();
 
   TFile * out = new TFile("plots_"+channels[channel]+".root", "RECREATE");
