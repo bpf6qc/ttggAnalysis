@@ -55,10 +55,10 @@ TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name
 
     if(metCut > 0. && met >= metCut) continue;
 
-    Double_t oldError = (isAFloat) ? h->GetBinError(h->FindBin(var)) : h->GetBinError(h->FindBin(var_int));
-    
     if(variable == "pfMET") var = met;
 
+    Double_t oldError = (isAFloat) ? h->GetBinError(h->FindBin(var)) : h->GetBinError(h->FindBin(var_int));
+    
     if(isAFloat) h->Fill(var, weight);
     else h->Fill(var_int, weight);
     
@@ -96,10 +96,10 @@ TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name
 
     if(metCut > 0. && met >= metCut) continue;
 
-    Double_t oldError = (isAFloat) ? h->GetBinError(h->FindBin(var)) : h->GetBinError(h->FindBin(var_int));
-    
     if(variable == "pfMET") var = met;
 
+    Double_t oldError = (isAFloat) ? h->GetBinError(h->FindBin(var)) : h->GetBinError(h->FindBin(var_int));
+    
     if(isAFloat) h->Fill(var, weight);
     else h->Fill(var_int, weight);
 
