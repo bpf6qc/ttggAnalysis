@@ -1180,12 +1180,12 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
 void PlotMaker::SaveLimitOutput(TFile*& out) {
 
-  TH1D * gg = HistoFromTree(true, "pfMET", ggTree, variable+"_gg_"+req, "pfMET", 400, 0., 2000., -1.);
-  TH1D * ewk = HistoFromTree(true, "pfMET", egTree, variable+"_eg_"+req, "pfMET", 400, 0., 2000., -1.);
-  TH1D * qcd_ff = HistoFromTree(true, "pfMET", ffTree, variable+"_ff_"+req, "pfMET", 400, 0., 2000., -1.);
-  TH1D * qcd_gf = HistoFromTree(true, "pfMET", gfTree, variable+"_gf_"+req, "pfMET", 400, 0., 2000., -1.);
+  TH1D * gg = HistoFromTree(true, "pfMET", ggTree, "pfMET_gg_"+req, "pfMET", 400, 0., 2000., -1.);
+  TH1D * ewk = HistoFromTree(true, "pfMET", egTree, "pfMET_eg_"+req, "pfMET", 400, 0., 2000., -1.);
+  TH1D * qcd_ff = HistoFromTree(true, "pfMET", ffTree, "pfMET_ff_"+req, "pfMET", 400, 0., 2000., -1.);
+  TH1D * qcd_gf = HistoFromTree(true, "pfMET", gfTree, "pfMET_gf_"+req, "pfMET", 400, 0., 2000., -1.);
 
-  TH1D * ewk_noNorm = (TH1D*)ewk->Clone("ewk_noNorm_"+variable+"_"+req);
+  TH1D * ewk_noNorm = (TH1D*)ewk->Clone("ewk_noNorm_pfMET_"+req);
   ewk->Scale(egScale);
   for(int i = 0; i < ewk->GetNbinsX(); i++) {
     Float_t normerr = egScaleErr*(ewk_noNorm->GetBinContent(i+1));
@@ -1194,7 +1194,7 @@ void PlotMaker::SaveLimitOutput(TFile*& out) {
     ewk->SetBinError(i+1, new_err);
   }
 
-  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone("ff_noNorm_"+variable+"_"+req);
+  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone("ff_noNorm_pfMET_"+req);
   qcd_ff->Scale(ffScale);
 
   for(int i = 0; i < qcd_ff->GetNbinsX(); i++) {
@@ -1206,7 +1206,7 @@ void PlotMaker::SaveLimitOutput(TFile*& out) {
     qcd_ff->SetBinError(i+1, new_err);
   }
 
-  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone("gf_noNorm_"+variable+"_"+req);
+  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone("gf_noNorm_pfMET_"+req);
   qcd_gf->Scale(gfScale);
 
   for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
