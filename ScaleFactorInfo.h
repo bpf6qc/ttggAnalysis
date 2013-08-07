@@ -90,6 +90,8 @@ ScaleFactorInfo::ScaleFactorInfo(TString tag) {
   tagger = tag;
   hasEfficiencies = false;
 
+  // DURP: FAST SIM CF COMING SOON FOR EPS13, STILL MORIOND13
+
   if(tagger == "CSVM") {
     CFb.push_back(0.982194); 
     CFb.push_back(0.980998); 
@@ -361,72 +363,29 @@ ScaleFactorInfo::ScaleFactorInfo(TString tag) {
   }
 
   if(tagger == "CSVL") {
-    SFb_error.push_back(0.0484285);
-    SFb_error.push_back(0.0126178);
-    SFb_error.push_back(0.0120027);
-    SFb_error.push_back(0.0141137);
-    SFb_error.push_back(0.0145441);
-    SFb_error.push_back(0.0131145);
-    SFb_error.push_back(0.0168479);
-    SFb_error.push_back(0.0160836);
-    SFb_error.push_back(0.0126209);
-    SFb_error.push_back(0.0136017);
-    SFb_error.push_back(0.019182);
-    SFb_error.push_back(0.0198805);
-    SFb_error.push_back(0.0386531);
-    SFb_error.push_back(0.0392831);
-    SFb_error.push_back(0.0481008);
-    SFb_error.push_back(0.0474291);
+    Float_t SFb_error_EPS13[16] = {0.033299, 0.0146768, 0.013803, 0.0170145, 0.0166976, 0.0137879, 0.0149072, 0.0153068, 0.0133077, 0.0123737, 0.0157152, 0.0175161, 0.0209241, 0.0278605, 0.0346928, 0.0350099};
+    for(int i = 0; i < 16; i++) SFb_error.push_back(SFb_error_EPS13[i]);
   }
   else if(tagger == "CSVM") {
-    SFb_error.push_back(0.0554504);
-    SFb_error.push_back(0.0209663);
-    SFb_error.push_back(0.0207019);
-    SFb_error.push_back(0.0230073);
-    SFb_error.push_back(0.0208719);
-    SFb_error.push_back(0.0200453);
-    SFb_error.push_back(0.0264232);
-    SFb_error.push_back(0.0240102);
-    SFb_error.push_back(0.0229375);
-    SFb_error.push_back(0.0184615);
-    SFb_error.push_back(0.0216242);
-    SFb_error.push_back(0.0248119);
-    SFb_error.push_back(0.0465748);
-    SFb_error.push_back(0.0474666);
-    SFb_error.push_back(0.0718173);
-    SFb_error.push_back(0.0717567);
+    Float_t SFb_error_EPS13[16] = {0.0415707, 0.0204209, 0.0223227, 0.0206655, 0.0199325, 0.0174121, 0.0202332, 0.0182446, 0.0159777, 0.0218531, 0.0204688, 0.0265191, 0.0313175, 0.0415417, 0.0740446, 0.0596716};
+    for(int i = 0; i < 16; i++) SFb_error.push_back(SFb_error_EPS13[i]);
   }
   else if(tagger == "CSVT") {
-    SFb_error.push_back(0.0567059);
-    SFb_error.push_back(0.0266907);
-    SFb_error.push_back(0.0263491);
-    SFb_error.push_back(0.0342831);
-    SFb_error.push_back(0.0303327);
-    SFb_error.push_back(0.024608);
-    SFb_error.push_back(0.0333786);
-    SFb_error.push_back(0.0317642);
-    SFb_error.push_back(0.031102);
-    SFb_error.push_back(0.0295603);
-    SFb_error.push_back(0.0474663);
-    SFb_error.push_back(0.0503182);
-    SFb_error.push_back(0.0580424);
-    SFb_error.push_back(0.0575776);
-    SFb_error.push_back(0.0769779);
-    SFb_error.push_back(0.0898199);
+    Float_t SFb_error_EPS13[16] = {0.0515703, 0.0264008, 0.0272757, 0.0275565, 0.0248745, 0.0218456, 0.0253845, 0.0239588, 0.0271791, 0.0273912, 0.0379822, 0.0411624, 0.0786307, 0.0866832, 0.0942053, 0.102403};
+    for(int i = 0; i < 16; i++) SFb_error.push_back(SFb_error_EPS13[i]);
   }
   else SFb_error.clear();
 
 }
 
-
-
 Float_t ScaleFactorInfo::GetSFbottom(Float_t pt) {
 
   Float_t x = pt;
 
-  if(tagger == "CSVL") return 0.981149*((1.+(-0.000713295*x))/(1.+(-0.000703264*x)));
-  else if(tagger == "CSVM") return 0.726981*((1.+(0.253238*x))/(1.+(0.188389*x)));
-  else if(tagger == "CSVT") return 0.869965*((1.+(0.0335062*x))/(1.+(0.0304598*x)));
+  // EPS13 prescription with ttbar measurements
+  if(tagger == "CSVL") return 0.997942*((1.+(0.00923753*x))/(1.+(0.0096119*x)));
+  else if(tagger == "CSVM") return (0.938887+(0.00017124*x))+(-2.76366e-07*(x*x));
+  else if(tagger == "CSVT") return (0.927563+(1.55479e-05*x))+(-1.90666e-07*(x*x));
 
   return 0.;
 }
@@ -444,217 +403,54 @@ Float_t ScaleFactorInfo::GetSFlight(TString meanminmax, Float_t eta, TString Dat
   else ptmax = 700.;
   */
 
-  if(DataPeriod == "ABCD") {
-
-    if(tagger == "CSVL") {
-      if(eta_ < 0.5) {
-	if( meanminmax == "mean" ) return ((1.04901+(0.00152181*x))+(-3.43568e-06*(x*x)))+(2.17219e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.973773+(0.00103049*x))+(-2.2277e-06*(x*x)))+(1.37208e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.12424+(0.00201136*x))+(-4.64021e-06*(x*x)))+(2.97219e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 0.5 && eta_ < 1.0) {
-	if( meanminmax == "mean" ) return ((0.991915+(0.00172552*x))+(-3.92652e-06*(x*x)))+(2.56816e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.921518+(0.00129098*x))+(-2.86488e-06*(x*x)))+(1.86022e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.06231+(0.00215815*x))+(-4.9844e-06*(x*x)))+(3.27623e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.0 && eta_ < 1.5) {
-	if( meanminmax == "mean" ) return ((0.962127+(0.00192796*x))+(-4.53385e-06*(x*x)))+(3.0605e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.895419+(0.00153387*x))+(-3.48409e-06*(x*x)))+(2.30899e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.02883+(0.00231985*x))+(-5.57924e-06*(x*x)))+(3.81235e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.5 && eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.06121+(0.000332747*x))+(-8.81201e-07*(x*x)))+(7.43896e-10*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.983607+(0.000196747*x))+(-3.98327e-07*(x*x)))+(2.95764e-10*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.1388+(0.000468418*x))+(-1.36341e-06*(x*x)))+(1.19256e-09*(x*(x*x)));
-      }
-    } // if CSVL
+  if(tagger == "CSVL") {
+    if(eta_ < 0.5) {
+      if( meanminmax == "mean" ) return ((1.01177+(0.0023066*x))+(-4.56052e-06*(x*x)))+(2.57917e-09*(x*(x*x)));
+      if( meanminmax == "min" ) return ((0.977761+(0.00170704*x))+(-3.2197e-06*(x*x)))+(1.78139e-09*(x*(x*x)));
+      if( meanminmax == "max" ) return ((1.04582+(0.00290226*x))+(-5.89124e-06*(x*x)))+(3.37128e-09*(x*(x*x)));
+    }
+    else if(eta_ >= 0.5 && eta_ < 1.0) {
+      if( meanminmax == "mean" ) return ((0.975966+(0.00196354*x))+(-3.83768e-06*(x*x)))+(2.17466e-09*(x*(x*x)));
+      if( meanminmax == "min" ) return ((0.945135+(0.00146006*x))+(-2.70048e-06*(x*x)))+(1.4883e-09*(x*(x*x)));
+      if( meanminmax == "max" ) return ((1.00683+(0.00246404*x))+(-4.96729e-06*(x*x)))+(2.85697e-09*(x*(x*x)));
+    }
+    else if(eta_ >= 1.0 && eta_ < 1.5) {
+      if( meanminmax == "mean" ) return ((0.93821+(0.00180935*x))+(-3.86937e-06*(x*x)))+(2.43222e-09*(x*(x*x)));
+      if( meanminmax == "min" ) return ((0.911657+(0.00142008*x))+(-2.87569e-06*(x*x)))+(1.76619e-09*(x*(x*x)));
+      if( meanminmax == "max" ) return ((0.964787+(0.00219574*x))+(-4.85552e-06*(x*x)))+(3.09457e-09*(x*(x*x)));
+    }
+    else if(eta_ >= 1.5 && eta_ < 2.4) {
+      if( meanminmax == "mean" ) return ((1.00022+(0.0010998*x))+(-3.10672e-06*(x*x)))+(2.35006e-09*(x*(x*x)));
+      if( meanminmax == "min" ) return ((0.970045+(0.000862284*x))+(-2.31714e-06*(x*x)))+(1.68866e-09*(x*(x*x)));
+      if( meanminmax == "max" ) return ((1.03039+(0.0013358*x))+(-3.89284e-06*(x*x)))+(3.01155e-09*(x*(x*x)));
+    }
+  } // if CSVL
     
-    else if(tagger == "CSVM") {
-      if(eta_ < 0.8) {
-	if( meanminmax == "mean" ) return ((1.06238+(0.00198635*x))+(-4.89082e-06*(x*x)))+(3.29312e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.972746+(0.00104424*x))+(-2.36081e-06*(x*x)))+(1.53438e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.15201+(0.00292575*x))+(-7.41497e-06*(x*x)))+(5.0512e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 0.8 && eta_ < 1.6) {
-	if( meanminmax == "mean" ) return ((1.08048+(0.00110831*x))+(-2.96189e-06*(x*x)))+(2.16266e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.9836+(0.000649761*x))+(-1.59773e-06*(x*x)))+(1.14324e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.17735+(0.00156533*x))+(-4.32257e-06*(x*x)))+(3.18197e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.6 && eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.09145+(0.000687171*x))+(-2.45054e-06*(x*x)))+(1.7844e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((1.00616+(0.000358884*x))+(-1.23768e-06*(x*x)))+(6.86678e-10*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.17671+(0.0010147*x))+(-3.66269e-06*(x*x)))+(2.88425e-09*(x*(x*x)));
-      }
-    } // if CSVM
+  else if(tagger == "CSVM") {
+    if(eta_ < 0.8) {
+      if( meanminmax == "mean" ) return ((1.07541+(0.00231827*x))+(-4.74249e-06*(x*x)))+(2.70862e-09*(x*(x*x)));
+      if( meanminmax == "min" ) return ((0.964527+(0.00149055*x))+(-2.78338e-06*(x*x)))+(1.51771e-09*(x*(x*x)));
+      if( meanminmax == "max" ) return ((1.18638+(0.00314148*x))+(-6.68993e-06*(x*x)))+(3.89288e-09*(x*(x*x)));
+    }
+    else if(eta_ >= 0.8 && eta_ < 1.6) {
+      if( meanminmax == "mean" ) return ((1.05613+(0.00114031*x))+(-2.56066e-06*(x*x)))+(1.67792e-09*(x*(x*x)));
+      if( meanminmax == "min" ) return ((0.946051+(0.000759584*x))+(-1.52491e-06*(x*x)))+(9.65822e-10*(x*(x*x)));
+      if( meanminmax == "max" ) return ((1.16624+(0.00151884*x))+(-3.59041e-06*(x*x)))+(2.38681e-09*(x*(x*x)));
+    }
+    else if(eta_ >= 1.6 && eta_ < 2.4) {
+      if( meanminmax == "mean" ) return ((1.05625+(0.000487231*x))+(-2.22792e-06*(x*x)))+(1.70262e-09*(x*(x*x)));
+      if( meanminmax == "min" ) return ((0.956736+(0.000280197*x))+(-1.42739e-06*(x*x)))+(1.0085e-09*(x*(x*x)));
+      if( meanminmax == "max" ) return ((1.15575+(0.000693344*x))+(-3.02661e-06*(x*x)))+(2.39752e-09*(x*(x*x)));
+    }
+  } // if CSVM
 
-    else if(tagger == "CSVT") {
-      if(eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.01739+(0.00283619*x))+(-7.93013e-06*(x*x)))+(5.97491e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.953587+(0.00124872*x))+(-3.97277e-06*(x*x)))+(3.23466e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.08119+(0.00441909*x))+(-1.18764e-05*(x*x)))+(8.71372e-09*(x*(x*x)));
-      }
-    } // if CSVT
-
-  } // if SF_12 ABCD
-
-  else if(DataPeriod == "AB") {
-
-    if(tagger == "CSVL") {
-      if(eta_ < 0.5) {
-	if( meanminmax == "mean" ) return ((1.00989+(0.00155686*x))+(-3.72647e-06*(x*x)))+(2.47025e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.947488+(0.00105091*x))+(-2.43972e-06*(x*x)))+(1.58902e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.07229+(0.00206098*x))+(-5.00971e-06*(x*x)))+(3.35179e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 0.5 && eta_ < 1.0) {
-	if( meanminmax == "mean" ) return ((0.958598+(0.00173458*x))+(-4.12744e-06*(x*x)))+(2.83257e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.900024+(0.00129392*x))+(-3.01708e-06*(x*x)))+(2.06723e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.01716+(0.00217335*x))+(-5.23419e-06*(x*x)))+(3.5986e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.0 && eta_ < 1.5) {
-	if( meanminmax == "mean" ) return ((0.963113+(0.00163674*x))+(-3.84776e-06*(x*x)))+(2.56918e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.90596+(0.00125465*x))+(-2.78863e-06*(x*x)))+(1.78602e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.02025+(0.0020171*x))+(-4.90389e-06*(x*x)))+(3.35329e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.5 && eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.04996+(0.00031979*x))+(-8.43322e-07*(x*x)))+(6.9451e-10*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.983472+(0.000169396*x))+(-2.82848e-07*(x*x)))+(1.52744e-10*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.11645+(0.000469873*x))+(-1.40321e-06*(x*x)))+(1.23681e-09*(x*(x*x)));
-      }
-    } // if CSVL
-
-    else if(tagger == "CSVM") {
-      if(eta_ < 0.8) {
-	if( meanminmax == "mean" ) return ((1.02213+(0.00189078*x))+(-4.59419e-06*(x*x)))+(3.0366e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.946+(0.000940317*x))+(-1.99048e-06*(x*x)))+(1.18343e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.09827+(0.00283897*x))+(-7.19354e-06*(x*x)))+(4.89013e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 0.8 && eta_ < 1.6) {
-	if( meanminmax == "mean" ) return ((1.0596+(0.00102926*x))+(-2.70312e-06*(x*x)))+(1.82871e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.974966+(0.000545735*x))+(-1.23123e-06*(x*x)))+(7.05661e-10*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.14423+(0.00151156*x))+(-4.17277e-06*(x*x)))+(2.95233e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.6 && eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.04976+(0.000897158*x))+(-3.22829e-06*(x*x)))+(2.71316e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.977166+(0.000550586*x))+(-1.91114e-06*(x*x)))+(1.44817e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.12232+(0.00124269*x))+(-4.54368e-06*(x*x)))+(3.98079e-09*(x*(x*x)));
-      }
-    } // if CSVM
-
-    else if(tagger == "CSVT") {
-      if(eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((0.985589+(0.00302526*x))+(-8.73861e-06*(x*x)))+(6.65051e-09*(x*(x*x)));
-        if( meanminmax == "min" ) return ((0.93612+(0.00131596*x))+(-4.30052e-06*(x*x)))+(3.45957e-09*(x*(x*x)));
-        if( meanminmax == "max" ) return ((1.03505+(0.00472994*x))+(-1.31661e-05*(x*x)))+(9.84151e-09*(x*(x*x)));
-      }
-    } // if CSVT
-
-  } // if SF_12 AB
-
-  else if(DataPeriod == "C") {
-    
-    if(tagger == "CSVL") {
-      if(eta_ < 0.5) {
-	if( meanminmax == "mean" ) return ((1.03512+(0.00172098*x))+(-4.10286e-06*(x*x)))+(2.72413e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.971321+(0.00117532*x))+(-2.71334e-06*(x*x)))+(1.77294e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.0989+(0.0022646*x))+(-5.48834e-06*(x*x)))+(3.67551e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 0.5 && eta_ < 1.0) {
-	if( meanminmax == "mean" ) return ((0.977454+(0.00186222*x))+(-4.30874e-06*(x*x)))+(2.82227e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.917942+(0.00139264*x))+(-3.13422e-06*(x*x)))+(2.02475e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.03695+(0.00232982*x))+(-5.47968e-06*(x*x)))+(3.62048e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.0 && eta_ < 1.5) {
-	if( meanminmax == "mean" ) return ((0.940154+(0.00214045*x))+(-5.30206e-06*(x*x)))+(3.75872e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.885078+(0.00170468*x))+(-4.08896e-06*(x*x)))+(2.85628e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((0.995215+(0.00257376*x))+(-6.5103e-06*(x*x)))+(4.66211e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.5 && eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.04882+(0.000373418*x))+(-1.00316e-06*(x*x)))+(8.52325e-10*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.982642+(0.000211816*x))+(-4.11471e-07*(x*x)))+(2.88443e-10*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.11499+(0.000534645*x))+(-1.59409e-06*(x*x)))+(1.41682e-09*(x*(x*x)));
-      }
-    } // if CSVL
-
-    else if(tagger == "CSVM") {
-      if(eta_ < 0.8) {
-	if( meanminmax == "mean" ) return ((1.0444+(0.00216756*x))+(-5.4224e-06*(x*x)))+(3.69351e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.966203+(0.00112979*x))+(-2.56147e-06*(x*x)))+(1.65183e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.1226+(0.00320252*x))+(-8.27754e-06*(x*x)))+(5.73519e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 0.8 && eta_ < 1.6) {
-	if( meanminmax == "mean" ) return ((1.05203+(0.00138588*x))+(-3.97677e-06*(x*x)))+(3.13655e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.966774+(0.000855535*x))+(-2.33883e-06*(x*x)))+(1.86063e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.13729+(0.00191432*x))+(-5.61018e-06*(x*x)))+(4.41282e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.6 && eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.06547+(0.000850114*x))+(-2.76694e-06*(x*x)))+(1.75015e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.992673+(0.000455214*x))+(-1.29572e-06*(x*x)))+(3.89704e-10*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.13823+(0.00124422*x))+(-4.23813e-06*(x*x)))+(3.11339e-09*(x*(x*x)));
-      }
-    } // if CSVM
-
-    else if(tagger == "CSVT") {
-      if(eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.00197+(0.00266395*x))+(-6.95018e-06*(x*x)))+(4.91042e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.948887+(0.00103466*x))+(-2.88118e-06*(x*x)))+(2.07782e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.05505+(0.00428961*x))+(-1.10115e-05*(x*x)))+(7.74319e-09*(x*(x*x)));
-      }
-    } // if CSVT
-
-  } // if SF_12 C
-
-  else if(DataPeriod == "D") {
-    
-    if(tagger == "CSVL") {
-      if(eta_ < 0.5) {
-	if( meanminmax == "mean" ) return ((1.1121+(0.00156291*x))+(-3.72267e-06*(x*x)))+(2.54276e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((1.04345+(0.00100049*x))+(-2.27285e-06*(x*x)))+(1.53238e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.18074+(0.00212352*x))+(-5.16888e-06*(x*x)))+(3.55347e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 0.5 && eta_ < 1.0) {
-	if( meanminmax == "mean" ) return ((1.05107+(0.0018085*x))+(-4.42378e-06*(x*x)))+(3.12722e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.986937+(0.00132072*x))+(-3.17261e-06*(x*x)))+(2.25152e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.11519+(0.00229425*x))+(-5.67093e-06*(x*x)))+(4.00366e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.0 && eta_ < 1.5) {
-	if( meanminmax == "mean" ) return ((0.984747+(0.00233796*x))+(-5.84283e-06*(x*x)))+(4.21798e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((0.927306+(0.00186598*x))+(-4.5141e-06*(x*x)))+(3.21483e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.04217+(0.0028073*x))+(-7.16639e-06*(x*x)))+(5.2225e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.5 && eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.0944+(0.000394694*x))+(-1.31095e-06*(x*x)))+(1.29556e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((1.0255+(0.000220197*x))+(-6.45505e-07*(x*x)))+(6.40579e-10*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.1633+(0.000568652*x))+(-1.97487e-06*(x*x)))+(1.95111e-09*(x*(x*x)));
-      }
-    } // if CSVL
-
-    else if(tagger == "CSVM") {
-      if(eta_ < 0.8) {
-	if( meanminmax == "mean" ) return ((1.13626+(0.00209868*x))+(-5.54303e-06*(x*x)))+(3.9911e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((1.05089+(0.00100001*x))+(-2.44384e-06*(x*x)))+(1.72918e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.22164+(0.00319447*x))+(-8.63596e-06*(x*x)))+(6.25306e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 0.8 && eta_ < 1.6) {
-	if( meanminmax == "mean" ) return ((1.13291+(0.00128329*x))+(-3.79952e-06*(x*x)))+(3.03032e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((1.04112+(0.000728221*x))+(-2.04996e-06*(x*x)))+(1.64537e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.22469+(0.0018366*x))+(-5.54498e-06*(x*x)))+(4.4159e-09*(x*(x*x)));
-      }
-      else if(eta_ >= 1.6 && eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.18705+(0.000305854*x))+(-1.86925e-06*(x*x)))+(1.79183e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((1.10587+(-8.23503e-05*x))+(-3.06139e-07*(x*x)))+(2.38667e-10*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.26821+(0.000693404*x))+(-3.43071e-06*(x*x)))+(3.34622e-09*(x*(x*x)));
-      }
-    } // if CSVM
-
-    else if(tagger == "CSVT") {
-      if(eta_ < 2.4) {
-	if( meanminmax == "mean" ) return ((1.08603+(0.0027994*x))+(-8.44182e-06*(x*x)))+(6.847e-09*(x*(x*x)));
-	if( meanminmax == "min" ) return ((1.02837+(0.00104078*x))+(-3.81136e-06*(x*x)))+(3.43028e-09*(x*(x*x)));
-	if( meanminmax == "max" ) return ((1.14368+(0.00455363*x))+(-1.30615e-05*(x*x)))+(1.0264e-08*(x*(x*x)));
-      }
-    } // if CSVT
-
-  } // if SF_12 D
+  else if(tagger == "CSVT") {
+    if(eta_ < 2.4) {
+      if( meanminmax == "mean" ) return ((1.00462+(0.00325971*x))+(-7.79184e-06*(x*x)))+(5.22506e-09*(x*(x*x)));
+      if( meanminmax == "min" ) return ((0.845757+(0.00186422*x))+(-4.6133e-06*(x*x)))+(3.21723e-09*(x*(x*x)));
+      if( meanminmax == "max" ) return ((1.16361+(0.00464695*x))+(-1.09467e-05*(x*x)))+(7.21896e-09*(x*(x*x)));
+    }
+  } // if CSVT
 
   return 0.;
 

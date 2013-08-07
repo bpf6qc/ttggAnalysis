@@ -88,91 +88,31 @@ BtagInfo::BtagInfo(susy::PFJet& iJet, TLorentzVector& iCorrP4, TString& iTagger,
   pt = iCorrP4.Pt();
   eta = fabs(iCorrP4.Eta());
 
-  if(DataPeriod == "2012") {
+  Float_t ptmax_light;
+  if((tagger == "CSVL" && eta >= 1.5) ||
+     (tagger == "CSVM" && eta >= 1.6)) ptmax_light = 850.;
+  else ptmax_light = 1000.;
 
-    // for pt > 800 GeV and 0<abs(eta)<1.5: use the SFlight value at 800 GeV with twice the quoted uncertainty 
-    if(pt > 800. && eta < 1.5) {
-      SFl = iSfInfo.GetSFlightMean(eta, "AB", 800.) * fractionAB +
-	iSfInfo.GetSFlightMean(eta, "C", 800.) * fractionC +
-	iSfInfo.GetSFlightMean(eta, "D", 800.) * fractionD;
+  // (LIGHT FLAVORS): for pt > ptmax: use the SFlight value at ptmax with twice the quoted uncertainty 
+  if(pt > ptmax_light) {
+    SFl = iSfInfo.GetSFlightMean(eta, DataPeriod, ptmax_light);
       
-      SFl_max = iSfInfo.GetSFlightMax(eta, "AB", 800.) * fractionAB +
-	iSfInfo.GetSFlightMax(eta, "C", 800.) * fractionC +
-	iSfInfo.GetSFlightMax(eta, "D", 800.) * fractionD;
-      SFl_max = 2.*SFl_max - SFl;
+    SFl_max = iSfInfo.GetSFlightMax(eta, DataPeriod, ptmax_light);
+    SFl_max = 2.*SFl_max - SFl;
 
-      SFl_min = iSfInfo.GetSFlightMin(eta, "AB", 800.) * fractionAB +
-	iSfInfo.GetSFlightMin(eta, "C", 800.) * fractionC +
-	iSfInfo.GetSFlightMin(eta, "D", 800.) * fractionD;
-      SFl_min = SFl - 2.*SFl_min;
-    }
-
-    // for pt > 700 GeV and 1.5<abs(eta): use the SFlight value at 700 GeV with twice the quoted uncertainty 
-    else if(pt > 700. && eta >= 1.5) {
-      SFl = iSfInfo.GetSFlightMean(eta, "AB", 700.) * fractionAB +
-	iSfInfo.GetSFlightMean(eta, "C", 700.) * fractionC +
-	iSfInfo.GetSFlightMean(eta, "D", 700.) * fractionD;
-      
-      SFl_max = iSfInfo.GetSFlightMax(eta, "AB", 700.) * fractionAB +
-	iSfInfo.GetSFlightMax(eta, "C", 700.) * fractionC +
-	iSfInfo.GetSFlightMax(eta, "D", 700.) * fractionD;
-      SFl_max = 2.*SFl_max - SFl;
-
-      SFl_min = iSfInfo.GetSFlightMin(eta, "AB", 700.) * fractionAB +
-	iSfInfo.GetSFlightMin(eta, "C", 700.) * fractionC +
-	iSfInfo.GetSFlightMin(eta, "D", 700.) * fractionD;
-      SFl_min = SFl - 2.*SFl_min;
-    }
-    
-    else {
-      SFl = iSfInfo.GetSFlightMean(eta, "AB", pt) * fractionAB +
-	iSfInfo.GetSFlightMean(eta, "C", pt) * fractionC +
-	iSfInfo.GetSFlightMean(eta, "D", pt) * fractionD;
-      
-      SFl_max = iSfInfo.GetSFlightMax(eta, "AB", pt) * fractionAB +
-	iSfInfo.GetSFlightMax(eta, "C", pt) * fractionC +
-	iSfInfo.GetSFlightMax(eta, "D", pt) * fractionD;
-      
-      SFl_min = iSfInfo.GetSFlightMin(eta, "AB", pt) * fractionAB +
-	iSfInfo.GetSFlightMin(eta, "C", pt) * fractionC +
-	iSfInfo.GetSFlightMin(eta, "D", pt) * fractionD;
-    }
-
-  } // if using all of 2012: AB + C + D and have fractions for those periods
+    SFl_min = iSfInfo.GetSFlightMin(eta, DataPeriod, ptmax_light);
+    SFl_min = SFl - 2.*SFl_min;
+  }
 
   else {
-
-    // for pt > 800 GeV and 0<abs(eta)<1.5: use the SFlight value at 800 GeV with twice the quoted uncertainty 
-    if(pt > 800. && eta < 1.5) {
-      SFl = iSfInfo.GetSFlightMean(eta, DataPeriod, 800.);
+    SFl = iSfInfo.GetSFlightMean(eta, DataPeriod, pt);
       
-      SFl_max = iSfInfo.GetSFlightMax(eta, DataPeriod, 800.);
-      SFl_max = 2.*SFl_max - SFl;
-
-      SFl_min = iSfInfo.GetSFlightMin(eta, DataPeriod, 800.);
-      SFl_min = SFl - 2.*SFl_min;
-    }
-
-    // for pt > 700 GeV and 1.5<abs(eta): use the SFlight value at 700 GeV with twice the quoted uncertainty 
-    else if(pt > 700. && eta >= 1.5) {
-      SFl = iSfInfo.GetSFlightMean(eta, DataPeriod, 700.);
+    SFl_max = iSfInfo.GetSFlightMax(eta, DataPeriod, pt);
       
-      SFl_max = iSfInfo.GetSFlightMax(eta, DataPeriod, 700.);
-      SFl_max = 2.*SFl_max - SFl;
+    SFl_min = iSfInfo.GetSFlightMin(eta, DataPeriod, pt);
+  }
 
-      SFl_min = iSfInfo.GetSFlightMin(eta, DataPeriod, 700.);
-      SFl_min = SFl - 2.*SFl_min;
-    }
-    
-    else {
-      SFl = iSfInfo.GetSFlightMean(eta, DataPeriod, pt);
-      
-      SFl_max = iSfInfo.GetSFlightMax(eta, DataPeriod, pt);
-      
-      SFl_min = iSfInfo.GetSFlightMin(eta, DataPeriod, pt);
-    }
-
-  } // if you're using only one of AB, C, or D
+  durp;
 
   // for pt > 800 GeV: use the SFb value at 800 GeV with twice the quoted uncertainty 
   if(pt > 800.) {
