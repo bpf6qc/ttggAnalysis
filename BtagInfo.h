@@ -112,8 +112,6 @@ BtagInfo::BtagInfo(susy::PFJet& iJet, TLorentzVector& iCorrP4, TString& iTagger,
     SFl_min = iSfInfo.GetSFlightMin(eta, DataPeriod, pt);
   }
 
-  durp;
-
   // for pt > 800 GeV: use the SFb value at 800 GeV with twice the quoted uncertainty 
   if(pt > 800.) {
     SFb = iSfInfo.GetSFbottom(800.);
