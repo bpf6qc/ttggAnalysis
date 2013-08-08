@@ -437,6 +437,8 @@ class PlotMaker : public TObject {
 		TTree * ttgjets,
 		TTree * sig_a, TTree * sig_b);
 
+  void SetUseTTbar(bool v) { useTTbar = v; }
+
   void CreatePlot(TString variable, bool isAFloat,
 		  Int_t nBinsX, Float_t bin_lo, Float_t bin_hi,
 		  TString xaxisTitle, TString yaxisTitle,
@@ -475,6 +477,8 @@ class PlotMaker : public TObject {
   Float_t egScale, egScaleErr;
   TString req;
 
+  bool useTTbar;
+
 };
 
 PlotMaker::PlotMaker(Int_t lumi, Float_t ewkScale, Float_t ewkScaleErr, TString requirement) :
@@ -486,6 +490,8 @@ PlotMaker::PlotMaker(Int_t lumi, Float_t ewkScale, Float_t ewkScaleErr, TString 
   char buffer[50];
   sprintf(buffer, "%.3f", (float)intLumi_int / 1000.);
   intLumi = buffer;
+
+  useTTbar = true;
 }
 
 void PlotMaker::SetTrees(TTree * gg, TTree * eg,
@@ -568,21 +574,21 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   bkg->Add(diphotonjets);
   bkg->Add(ewk);
   bkg->Add(ttg);
-  bkg->Add(ttbar);
+  if(useTTbar) bkg->Add(ttbar);
 
   gjet->Add(diphotonjets);
   gjet->Add(ewk);
   gjet->Add(ttg);
-  gjet->Add(ttbar);
+  if(useTTbar) gjet->Add(ttbar);
 
   diphotonjets->Add(ewk);
   diphotonjets->Add(ttg);
-  diphotonjets->Add(ttbar);
+  if(useTTbar) diphotonjets->Add(ttbar);
 
   ewk->Add(ttg);
-  ewk->Add(ttbar);
+  if(useTTbar) ewk->Add(ttbar);
   
-  ttg->Add(ttbar);
+  if(useTTbar) ttg->Add(ttbar);
 
   TH1D * errors = (TH1D*)bkg->Clone("errors");
 
@@ -603,7 +609,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   leg->AddEntry(diphotonjets, "#gamma#gamma + jets", "F");
   leg->AddEntry(ewk, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
-  leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
+  if(useTTbar) leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
   leg->SetFillColor(0);
   leg->SetTextSize(0.028);
 
@@ -677,7 +683,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   diphotonjets->Draw("same hist");
   ewk->Draw("same hist");
   ttg->Draw("same hist");
-  ttbar->Draw("same hist");
+  if(useTTbar) ttbar->Draw("same hist");
   errors->Draw("same e2");
   gg->Draw("same e1");
   bkg->Draw("same axis");
@@ -819,21 +825,21 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   bkg->Add(diphotonjets);
   bkg->Add(ewk);
   bkg->Add(ttg);
-  bkg->Add(ttbar);
+  if(useTTbar) bkg->Add(ttbar);
 
   gjet->Add(diphotonjets);
   gjet->Add(ewk);
   gjet->Add(ttg);
-  gjet->Add(ttbar);
+  if(useTTbar) gjet->Add(ttbar);
 
   diphotonjets->Add(ewk);
   diphotonjets->Add(ttg);
-  diphotonjets->Add(ttbar);
+  if(useTTbar) diphotonjets->Add(ttbar);
 
   ewk->Add(ttg);
-  ewk->Add(ttbar);
+  if(useTTbar) ewk->Add(ttbar);
   
-  ttg->Add(ttbar);
+  if(useTTbar) ttg->Add(ttbar);
 
   TH1D * errors = (TH1D*)bkg->Clone("errors");
 
@@ -856,7 +862,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   leg->AddEntry(diphotonjets, "#gamma#gamma + jets", "F");
   leg->AddEntry(ewk, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
-  leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
+  if(useTTbar) leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
   leg->SetFillColor(0);
   leg->SetTextSize(0.028);
 
@@ -930,7 +936,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   diphotonjets->Draw("same hist");
   ewk->Draw("same hist");
   ttg->Draw("same hist");
-  ttbar->Draw("same hist");
+  if(useTTbar) ttbar->Draw("same hist");
   errors->Draw("same e2");
   gg->Draw("same e1");
   bkg->Draw("same axis");
