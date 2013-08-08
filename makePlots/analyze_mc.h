@@ -559,22 +559,17 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
 
-  out->cd();
-  gg->Write();
-  ewk->Write();
-  qcd->Write();
-  gjet->Write();
-  diphotonjets->Write();
-  ttg->Write();
-  ttbar->Write();
-
-  TH1D * bkg = (TH1D*)qcd->Clone("bkg");
-
   bkg->Add(gjet);
   bkg->Add(diphotonjets);
   bkg->Add(ewk);
   bkg->Add(ttg);
   if(useTTbar) bkg->Add(ttbar);
+
+  TH1D * bkg = (TH1D*)qcd->Clone(variable+"_bkg_"+req);
+
+  out->cd();
+  gg->Write();
+  bkg->Write();
 
   gjet->Add(diphotonjets);
   gjet->Add(ewk);
@@ -810,22 +805,17 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, customBins, metCut);
   ttg = (TH1D*)DivideByBinWidth(ttg);
 
-  out->cd();
-  gg->Write();
-  ewk->Write();
-  qcd->Write();
-  gjet->Write();
-  diphotonjets->Write();
-  ttg->Write();
-  ttbar->Write();
-
-  TH1D * bkg = (TH1D*)qcd->Clone("bkg");
-
   bkg->Add(gjet);
   bkg->Add(diphotonjets);
   bkg->Add(ewk);
   bkg->Add(ttg);
   if(useTTbar) bkg->Add(ttbar);
+
+  TH1D * bkg = (TH1D*)qcd->Clone(variable+"_bkg_"+req);
+
+  out->cd();
+  gg->Write();
+  bkg->Write();
 
   gjet->Add(diphotonjets);
   gjet->Add(ewk);
