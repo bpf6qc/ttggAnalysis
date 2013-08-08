@@ -12,9 +12,10 @@ void makePlots() {
   double metCut = -1.;
 
   bool useTTbar = false;
+  bool displayKStest = true;
 
   for(int i = 0; i < 7; i++) {
-    analyze(input, addMC, i, intLumi, metCut, useTTbar);
+    analyze(input, addMC, i, intLumi, metCut, useTTbar, displayKStest);
   }  
 
   ts.Stop();

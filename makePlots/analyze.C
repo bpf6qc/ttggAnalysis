@@ -213,7 +213,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   in->Close();
 }
 
-void analyze(TString input, bool addMC, int channel, TString intLumi, int intLumi_int, bool useFF, bool useDifferenceSystematic, double metCut) {
+void analyze(TString input, bool addMC, int channel, TString intLumi, int intLumi_int, bool useFF, bool useDifferenceSystematic, double metCut, bool displayKStest) {
 
   gROOT->Reset();
   gROOT->SetBatch(true);
@@ -329,6 +329,8 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
   pMaker->SetTrees(ggTree, egTree,
 		   ffTree, gfTree,
 		   sigaTree, sigbTree);
+
+  pMaker->SetDisplayKStest(displayKStest);
 
   TFile * limitOutput = new TFile("met_reweighted_"+channels[channel]+".root", "RECREATE");
   pMaker->SaveLimitOutput(limitOutput);

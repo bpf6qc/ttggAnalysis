@@ -656,6 +656,8 @@ class PlotMaker : public TObject {
 		  bool drawSignal, bool drawLegend, bool drawPrelim,
 		  TFile*& out, double metCut);
 
+  void SetDisplayKStest(bool v) { displayKStest = v; }
+
   void SaveLimitOutput(TFile*& out);
 
  private:
@@ -678,6 +680,8 @@ class PlotMaker : public TObject {
   bool useQCDSystematic, useFF;
 
   TString req;
+
+  bool displayKStest;
 
 };
 PlotMaker::PlotMaker(Int_t lumi,
@@ -702,6 +706,8 @@ PlotMaker::PlotMaker(Int_t lumi,
   char buffer[50];
   sprintf(buffer, "%.3f", (float)intLumi_int / 1000.);
   intLumi = buffer;
+
+  displayKStest = false;
 }
 
 void PlotMaker::SetTrees(TTree * gg, TTree * eg,
@@ -795,6 +801,12 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   bkg->Add(ewk);
 
+  Double_t kolm = gg->KolmogorovTest(bkg);
+  TString kolmText = Form("KS test probability = %5.3g", kolm);
+  TText * tt = new TText(0.92, 0.5, kolmText);
+  tt->SetTextAngle(90.);
+  tt->SetNDC(); tt->SetTextSize( 0.032 );
+
   TH1D * errors = (TH1D*)bkg->Clone("errors");
 
   TH1D * sig_a;
@@ -884,6 +896,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   if(drawLegend) leg->Draw("same");
   if(drawPrelim && drawLegend) prelim->Draw("same");
+  if(displayKStest) tt->AppendPad();
 
   padlo->cd();
   padlo->SetTopMargin(0);
@@ -1026,6 +1039,12 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   bkg->Add(ewk);
 
+  Double_t kolm = gg->KolmogorovTest(bkg);
+  TString kolmText = Form("KS test probability = %5.3g", kolm);
+  TText * tt = new TText(0.92, 0.5, kolmText);
+  tt->SetTextAngle(90.);
+  tt->SetNDC(); tt->SetTextSize( 0.032 );
+
   TH1D * errors = (TH1D*)bkg->Clone("errors");
 
   TH1D * sig_a;
@@ -1117,6 +1136,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   if(drawLegend) leg->Draw("same");
   if(drawPrelim && drawLegend) prelim->Draw("same");
+  if(displayKStest) tt->AppendPad();
 
   padlo->cd();
   padlo->SetTopMargin(0);

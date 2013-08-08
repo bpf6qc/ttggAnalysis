@@ -35,7 +35,7 @@ const TString ffColor = "kOrange+10";
 const TString eeColor = "kBlue";
 const TString egColor = "kGreen";
 
-void analyze(TString input, bool addMC, int channel, int intLumi_int, double metCut, bool useTTbar) {
+void analyze(TString input, bool addMC, int channel, int intLumi_int, double metCut, bool useTTbar, bool displayKStest) {
 
   gROOT->Reset();
   gROOT->SetBatch(true);
@@ -150,6 +150,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		   sigaTree, sigbTree);
 
   pMaker->SetUseTTbar(useTTbar);
+  pMaker->SetDisplayKStest(displayKStest);
 
   // Now save the met plots out to file -- use these later for the limit-setting
   TFile * out = new TFile("mcPlots_"+channels[channel]+".root", "RECREATE");
