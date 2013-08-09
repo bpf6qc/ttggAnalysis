@@ -1728,7 +1728,7 @@ void SusyEventAnalyzer::Acceptance() {
     susy::MET* pfMetType01p2 = &(event.metMap.find("pfType01p2CorrectedMet")->second);
     susy::MET* pfNoPileUpMet = &(event.metMap.find("pfNoPileUpMet")->second);
     susy::MET* pfMVAMet      = &(event.metMap.find("pfMVAMet")->second);
-    susy::MET* genMet        = &(event.metMap.find("genMet")->second);
+    susy::MET* genMet        = &(event.metMap.find("genMetTrue")->second);
 
     findPhotons_prioritizeCount(event, candidate_pair, event_type);
     //findPhotons_prioritizeEt(event, candidate_pair, event_type);
