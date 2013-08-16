@@ -2005,6 +2005,185 @@ void SusyEventAnalyzer::Acceptance() {
 
 }
 
+// things to study after a preselection of gg+bj+X:
+// jet eta and pt requirements
+// njets requirements
+// lepton pt and eta reqs
+// lepton veto in hadronic mode
+
+void SusyEventAnalyzer::ttggStudy() {
+
+  const int nCategories = 4;
+  TString categories[nCategories] = {"gg", "eg", "ff", "gf"};
+
+  const int nChannels = 2;
+  TString channels[nChannels] = {
+    "nojet",
+    "bj"
+  };
+
+  const int NCNT = 50;
+  int nCnt[NCNT][nChannels];
+  for(int i = 0; i < NCNT; i++) {
+    for(int j = 0; j < nChannels; j++) {
+    nCnt[i][j] = 0;
+    }
+  }
+  
+  TString output_code_t = FormatName(scan);
+
+  // open histogram file and define histograms
+  TFile * out = new TFile("ttggStudy"+output_code_t+".root", "RECREATE");
+  out->cd();
+
+  // Jet trees -- filled once per gen jet in each event
+  float jet_corrpt = 0.;
+  float jet_eta = 0.;
+  float jet_csv = 0.;
+  float jet_dR_leadPhoton = 0.;
+  float jet_dR_trailPhoton = 0.;
+  bool jet_puTight = false;
+  bool jet_puMedium = false;
+  bool jet_puLoose = false;
+  int jet_flavor = 0;
+  int jet_algDef = 0;
+  int jet_mother = 0;
+
+  TTree * jetTree = new TTree("jetTree_gg"+output_code_t, "An event tree for final analysis");
+  jetTree->Branch("corrPt", &jet_corrpt, "jet_corrpt/F");
+  jetTree->Branch("eta", &jet_eta, "jet_eta/F");
+  jetTree->Branch("csv", &jet_csv, "jet_csv/F");
+  jetTree->Branch("deltaR_leadPhoton", &jet_dR_leadPhoton, "jet_dR_leadPhoton/F");
+  jetTree->Branch("deltaR_trailPhoton", &jet_dR_trailPhoton, "jet_dR_trailPhoton/F");
+  jetTree->Branch("puTight", &jet_puTight, "jet_puTight/O");
+  jetTree->Branch("puMedium", &jet_puMedium, "jet_puMedium/O");
+  jetTree->Branch("puLoose", &jet_puLoose, "jet_puLoose/O");
+  jetTree->Branch("pdgId", &jet_flavor, "jet_flavor/I");
+  jetTree->Branch("algDef", &jet_algDef, "jet_algDef/I");
+  jetTree->Branch("motherId", &jet_mother, "jet_mother/I");
+
+  ScaleFactorInfo sf(btagger);
+  TFile * btagEfficiency = new TFile("btagEfficiency"+output_code_t+".root", "READ");
+  sf.SetTaggingEfficiencies((TH1F*)btagEfficiency->Get("lEff"+output_code_t), (TH1F*)btagEfficiency->Get("cEff"+output_code_t), (TH1F*)btagEfficiency->Get("bEff"+output_code_t));
+
+  Long64_t nEntries = fTree->GetEntries();
+  cout << "Total events in files : " << nEntries << endl;
+  cout << "Events to be processed : " << processNEvents << endl;
+
+  // start event looping
+  Long64_t jentry = 0;
+  while(jentry != processNEvents && event.getEntry(jentry++) != 0) {
+
+    if(printLevel > 0 || (printInterval > 0 && (jentry >= printInterval && jentry%printInterval == 0))) {
+      cout << int(jentry) << " events processed with run = " << event.runNumber << ", event = " << event.eventNumber << endl;
+    }
+
+    nCnt[0][0]++; // events
+
+    vector<susy::Photon*> candidate_pair;
+    vector<susy::PFJet*> pfJets, btags;
+    vector<TLorentzVector> pfJets_corrP4, btags_corrP4;
+    vector<float> csvValues;
+    vector<susy::Muon*> isoMuons, looseMuons;
+    vector<susy::Electron*> isoEles, looseEles;
+    vector<BtagInfo> tagInfos;
+
+    int event_type = 0;
+
+    int nPVertex = GetNumberPV(event);
+    if(nPVertex == 0) continue;
+
+    findPhotons_prioritizeCount(event, candidate_pair, event_type);
+    
+    if(event_type == 0) {
+      nCnt[28][0]++;
+      continue;
+    }
+
+    float HT = 0.;
+    TLorentzVector hadronicSystem(0., 0., 0., 0.);
+
+    findMuons(event, candidate_pair, isoMuons, looseMuons, HT);
+    findElectrons(event, candidate_pair, isoEles, looseEles, HT);
+
+    float jet_corrpt = 0.;
+    float jet_eta = 0.;
+    float jet_csv = 0.;
+    float jet_dR_leadPhoton = 0.;
+    float jet_dR_trailPhoton = 0.;
+    bool jet_puTight = false;
+    bool jet_puMedium = false;
+    bool jet_puLoose = false;
+    int jet_flavor = 0;
+    int jet_algDef = 0;
+    int jet_mother = 0;
+
+    map<TString, susy::PFJetCollection>::iterator pfJets_it = event.pfJets.find("ak5");
+    if(pfJets_it != ev.pfJets.end()) {
+      susy::PFJetCollection& jetColl = pfJets_it->second;
+      
+      for(vector<susy::PFJet>::iterator it = jetColl.begin();
+	  it != jetColl.end(); it++) {
+	
+	map<TString, Float_t>::iterator s_it = it->jecScaleFactors.find("L1FastL2L3");
+	float scale = s_it->second;
+	
+	TLorentzVector corrP4 = scale * it->momentum;
+	
+	bool isGood = false;
+
+	if((it->neutralHadronEnergy/it->momentum.Energy() < 0.99) &&
+	   (it->neutralEmEnergy/it->momentum.Energy() < 0.99) &&
+	   ((unsigned int)it->nConstituents > 1)) {
+	  
+	  if(fabs(corrP4.Eta()) < 2.4) {
+	    if((it->chargedHadronEnergy > 0.0) &&
+	       ((int)it->chargedMultiplicity > 0) &&
+	       (it->chargedEmEnergy/it->momentum.Energy() < 0.99))
+	      isGood = true;
+	  }
+	  else isGood = true;
+	}
+
+	if(!isGood) continue;
+
+	jet_corrpt = corrP4.Pt();
+	jet_eta = corrP4.Eta();
+	jet_csv = it->bTagDiscriminators[susy::kCSV];
+	jet_dR_leadPhoton = deltaR(corrP4, candidate_pair[0]->caloPosition);
+	jet_dR_trailPhoton = deltaR(corrP4, candidate_pair[1]->caloPosition);
+	jet_puTight = it->passPuJetIdTight(susy::kPUJetIdFull);
+	jet_puMedium = it->passPuJetIdMedium(susy::kPUJetIdFull);
+	jet_puLoose = it->passPuJetIdLoose(susy::kPUJetIdFull);
+	jet_algDef = it->->algDefFlavour;
+
+	
+      } // loop over jet coll
+    } // if the jet coll exists
+    
+    findJets(event, candidate_pair, 
+	     isoMuons, looseMuons,
+	     isoEles, looseEles,
+	     pfJets, btags,
+	     sf,
+	     tagInfos, csvValues, 
+	     pfJets_corrP4, btags_corrP4, 
+	     HT, hadronicSystem);
+
+  } // for entries
+
+  cout << "-------------------Job Summary-----------------" << endl;
+  cout << "Total_events         : " << nCnt[0][0] << endl;
+  cout << "-----------------------------------------------" << endl;
+  cout << endl;
+
+  btagEfficiency->Close();
+
+  out->Write();
+  out->Close();
+
+}
+
 void SusyEventAnalyzer::SignalContent_gg() {
 
   char * tmp = getenv("CONDOR_SECTION");

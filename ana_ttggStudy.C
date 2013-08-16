@@ -1,4 +1,4 @@
-void ana_signal(TString scan = "stop-bino", TString discriminant = "CSVM", bool isMC = true, bool isFastSim = true) {
+void ana_ttggStudy(TString scan = "stop-bino", TString discriminant = "CSVM", bool isMC = true, bool isFastSim = true) {
 
   gROOT->Reset();
   gSystem->Load("libSusyEvent.so");
@@ -84,9 +84,7 @@ void ana_signal(TString scan = "stop-bino", TString discriminant = "CSVM", bool 
 
   sea->SetProcessNEvents(-1);
 
-  //sea->IncludeAJson("combinedJSON_jun1.json");
   sea->SetUseJson(false);
-
   sea->SetIsMC(isMC);
   sea->SetIsFastSim(isFastSim);
   sea->SetDoBtagScaling(false);
@@ -100,31 +98,13 @@ void ana_signal(TString scan = "stop-bino", TString discriminant = "CSVM", bool 
   sea->AddCheckSingleEvent(166890, 399, 436836287);
 
   sea->SetBtagger(discriminant);
-
-  sea->AddValidTagger("TCHPT");
-  sea->AddValidTagger("JPL");
-  sea->AddValidTagger("JPM");
-  sea->AddValidTagger("JPT");
-  sea->AddValidTagger("CSVL");
-  sea->AddValidTagger("CSVM");
-  sea->AddValidTagger("CSVT");
-
-  sea->SetDoPileupReweighting(true);
+  sea->SetDoPileupReweighting(false);
 
   TStopwatch ts;
 
   ts.Start();
 
-  std::cout << std::endl << "PileupWeights()" << std::endl;
-  sea->PileupWeights("jan3_pileup.root");
-  std::cout << std::endl << "CalculateBtagEfficiency()" << std::endl;
-  sea->CalculateBtagEfficiency();
-  std::cout << std::endl << "Acceptance()" << std::endl;
-  sea->Acceptance();
-  //std::cout << std::endl << "SignalContent_gg()" << std::endl;
-  //sea->SignalContent_gg();
-
-  //sea->Step0();
+  sea->ttggStudy();
 
   ts.Stop();
 

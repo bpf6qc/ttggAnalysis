@@ -11,7 +11,7 @@ bool isGoodJet(susy::PFJet jet, TLorentzVector corrP4) {
        ((unsigned int)jet.nConstituents > 1) &&
        jet.passPuJetIdTight(susy::kPUJetIdFull)) {
 
-      if(fabs(jet.momentum.Eta()) < 2.4) {
+      if(fabs(corrP4.Eta()) < 2.4) {
 	if((jet.chargedHadronEnergy > 0.0) &&
 	   ((int)jet.chargedMultiplicity > 0) &&
 	   (jet.chargedEmEnergy/jet.momentum.Energy() < 0.99))

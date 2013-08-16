@@ -67,6 +67,7 @@ class SusyEventAnalyzer {
   virtual void Data();
   virtual void Filter();
   virtual void Acceptance();
+  virtual void ttggStudy();
   virtual void CalculateBtagEfficiency();
   virtual void PileupWeights(TString puFile);
   virtual void SignalContent_gg();
