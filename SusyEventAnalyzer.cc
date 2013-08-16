@@ -2107,7 +2107,7 @@ void SusyEventAnalyzer::ttggStudy() {
     findElectrons(event, candidate_pair, isoEles, looseEles, HT);
 
     map<TString, susy::PFJetCollection>::iterator pfJets_it = event.pfJets.find("ak5");
-    if(pfJets_it != ev.pfJets.end()) {
+    if(pfJets_it != event.pfJets.end()) {
       susy::PFJetCollection& jetColl = pfJets_it->second;
       
       for(vector<susy::PFJet>::iterator it = jetColl.begin();
@@ -2143,7 +2143,7 @@ void SusyEventAnalyzer::ttggStudy() {
 	jet_puTight = it->passPuJetIdTight(susy::kPUJetIdFull);
 	jet_puMedium = it->passPuJetIdMedium(susy::kPUJetIdFull);
 	jet_puLoose = it->passPuJetIdLoose(susy::kPUJetIdFull);
-	jet_algDef = it->->algDefFlavour;
+	jet_algDef = it->algDefFlavour;
 
 	
       } // loop over jet coll
