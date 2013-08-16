@@ -41,7 +41,7 @@ void ana_signal(TString scan = "stop-bino", TString discriminant = "CSVM", bool 
 
   char input_file[500];
 
-  if(scan == "stop-bino") sprintf(input_file, "dcap:///pnfs/cms/WAX/resilient/bfrancis/SusyNtuples/cms538v1/naturalBinoNLSP/naturalBinoNLSP/tree_naturalHiggsinoNLSPout_mst_%d_M3_5050_mu_%d.root", index1, index2);
+  if(scan == "stop-bino") sprintf(input_file, "dcap:///pnfs/cms/WAX/resilient/bfrancis/SusyNtuples/cms538v1/naturalBinoNLSP/tree_naturalHiggsinoNLSPout_mst_%d_M3_5050_mu_%d.root", index1, index2);
   else if(scan == "stop-bino extended") sprintf(input_file, "/eos/uscms/store/user/lpcpjm/PrivateMC/FastSim/533p3_full/naturalBinoNLSP_try3/SusyNtuple/cms533v1_v1/tree_naturalBinoNLSPout_mst_%d_M3_5025_M1_%d.root", index1, index2);
 
   //sprintf(input_file, "/eos/uscms/store/user/lpcpjm/PrivateMC/FastSim/525p1v3/Spectra_gsq_B/SusyNtuple/cms533v1_v1/tree_%d_%d_375.root", index1, index2);

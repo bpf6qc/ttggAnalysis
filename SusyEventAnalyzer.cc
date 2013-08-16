@@ -2106,18 +2106,6 @@ void SusyEventAnalyzer::ttggStudy() {
     findMuons(event, candidate_pair, isoMuons, looseMuons, HT);
     findElectrons(event, candidate_pair, isoEles, looseEles, HT);
 
-    float jet_corrpt = 0.;
-    float jet_eta = 0.;
-    float jet_csv = 0.;
-    float jet_dR_leadPhoton = 0.;
-    float jet_dR_trailPhoton = 0.;
-    bool jet_puTight = false;
-    bool jet_puMedium = false;
-    bool jet_puLoose = false;
-    int jet_flavor = 0;
-    int jet_algDef = 0;
-    int jet_mother = 0;
-
     map<TString, susy::PFJetCollection>::iterator pfJets_it = event.pfJets.find("ak5");
     if(pfJets_it != ev.pfJets.end()) {
       susy::PFJetCollection& jetColl = pfJets_it->second;
