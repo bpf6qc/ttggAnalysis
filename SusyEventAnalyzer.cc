@@ -2062,6 +2062,20 @@ void SusyEventAnalyzer::ttggStudy() {
   jetTree->Branch("algDef", &jet_algDef, "jet_algDef/I");
   jetTree->Branch("motherId", &jet_mother, "jet_mother/I");
 
+  TTree * chsJetTree = new TTree("chsJetTree_gg"+output_code_t, "An event tree for final analysis");
+  chsJetTree->Branch("corrPt", &jet_corrpt, "jet_corrpt/F");
+  chsJetTree->Branch("eta", &jet_eta, "jet_eta/F");
+  chsJetTree->Branch("csv", &jet_csv, "jet_csv/F");
+  chsJetTree->Branch("deltaR_leadPhoton", &jet_dR_leadPhoton, "jet_dR_leadPhoton/F");
+  chsJetTree->Branch("deltaR_trailPhoton", &jet_dR_trailPhoton, "jet_dR_trailPhoton/F");
+  chsJetTree->Branch("puTight", &jet_puTight, "jet_puTight/O");
+  chsJetTree->Branch("puMedium", &jet_puMedium, "jet_puMedium/O");
+  chsJetTree->Branch("puLoose", &jet_puLoose, "jet_puLoose/O");
+  chsJetTree->Branch("pdgId", &jet_flavor, "jet_flavor/I");
+  chsJetTree->Branch("algDef", &jet_algDef, "jet_algDef/I");
+  chsJetTree->Branch("motherId", &jet_mother, "jet_mother/I");
+
+
   ScaleFactorInfo sf(btagger);
   TFile * btagEfficiency = new TFile("btagEfficiency"+output_code_t+".root", "READ");
   sf.SetTaggingEfficiencies((TH1F*)btagEfficiency->Get("lEff"+output_code_t), (TH1F*)btagEfficiency->Get("cEff"+output_code_t), (TH1F*)btagEfficiency->Get("bEff"+output_code_t));
@@ -2145,10 +2159,55 @@ void SusyEventAnalyzer::ttggStudy() {
 	jet_puLoose = it->passPuJetIdLoose(susy::kPUJetIdFull);
 	jet_algDef = it->algDefFlavour;
 
+	jetTree->Fill();
 	
       } // loop over jet coll
     } // if the jet coll exists
     
+    pfJets_it = event.pfJets.find("ak5chs");
+    if(pfJets_it != event.pfJets.end()) {
+      susy::PFJetCollection& jetColl = pfJets_it->second;
+      
+      for(vector<susy::PFJet>::iterator it = jetColl.begin();
+	  it != jetColl.end(); it++) {
+	
+	map<TString, Float_t>::iterator s_it = it->jecScaleFactors.find("L1FastL2L3");
+	float scale = s_it->second;
+	
+	TLorentzVector corrP4 = scale * it->momentum;
+	
+	bool isGood = false;
+
+	if((it->neutralHadronEnergy/it->momentum.Energy() < 0.99) &&
+	   (it->neutralEmEnergy/it->momentum.Energy() < 0.99) &&
+	   ((unsigned int)it->nConstituents > 1)) {
+	  
+	  if(fabs(corrP4.Eta()) < 2.4) {
+	    if((it->chargedHadronEnergy > 0.0) &&
+	       ((int)it->chargedMultiplicity > 0) &&
+	       (it->chargedEmEnergy/it->momentum.Energy() < 0.99))
+	      isGood = true;
+	  }
+	  else isGood = true;
+	}
+
+	if(!isGood) continue;
+
+	jet_corrpt = corrP4.Pt();
+	jet_eta = corrP4.Eta();
+	jet_csv = it->bTagDiscriminators[susy::kCSV];
+	jet_dR_leadPhoton = deltaR(corrP4, candidate_pair[0]->caloPosition);
+	jet_dR_trailPhoton = deltaR(corrP4, candidate_pair[1]->caloPosition);
+	jet_puTight = it->passPuJetIdTight(susy::kPUJetIdFull);
+	jet_puMedium = it->passPuJetIdMedium(susy::kPUJetIdFull);
+	jet_puLoose = it->passPuJetIdLoose(susy::kPUJetIdFull);
+	jet_algDef = it->algDefFlavour;
+
+	chsJetTree->Fill();
+	
+      } // loop over jet coll
+    } // if the jet coll exists
+
     findJets(event, candidate_pair, 
 	     isoMuons, looseMuons,
 	     isoEles, looseEles,
