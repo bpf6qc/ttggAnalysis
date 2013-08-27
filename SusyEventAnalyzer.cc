@@ -2149,6 +2149,19 @@ void SusyEventAnalyzer::ttggStudy() {
 
 	if(!isGood) continue;
 
+	for(vector<susy::Particle>::iterator genit = event.genParticles.begin(); genit != event.genParticles.end(); genit++) {
+
+	  if(genit->status != 3) continue;
+	  if(deltaR(corrP4, genit->momentum) > 0.01) continue;
+	  if(fabs(event.genParticles[genit->motherIndex].pdgId) == 6 ||
+	     fabs(event.genParticles[genit->motherIndex].pdgId) == 24 ||
+	     fabs(event.genParticles[genit->motherIndex].pdgId) == 23) {
+	    jet_flavor = genid->pdgId;
+	    jet_mother = event.genParticles[genit->motherIndex].pdgId;
+	    break;
+	  }
+	}
+
 	jet_corrpt = corrP4.Pt();
 	jet_eta = corrP4.Eta();
 	jet_csv = it->bTagDiscriminators[susy::kCSV];
@@ -2192,6 +2205,19 @@ void SusyEventAnalyzer::ttggStudy() {
 	}
 
 	if(!isGood) continue;
+
+	for(vector<susy::Particle>::iterator genit = event.genParticles.begin(); genit != event.genParticles.end(); genit++) {
+
+	  if(genit->status != 3) continue;
+	  if(deltaR(corrP4, genit->momentum) > 0.01) continue;
+	  if(fabs(event.genParticles[genit->motherIndex].pdgId) == 6 ||
+	     fabs(event.genParticles[genit->motherIndex].pdgId) == 24 ||
+	     fabs(event.genParticles[genit->motherIndex].pdgId) == 23) {
+	    jet_flavor = genid->pdgId;
+	    jet_mother = event.genParticles[genit->motherIndex].pdgId;
+	    break;
+	  }
+	}
 
 	jet_corrpt = corrP4.Pt();
 	jet_eta = corrP4.Eta();
