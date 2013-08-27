@@ -2149,27 +2149,36 @@ void SusyEventAnalyzer::ttggStudy() {
 
 	if(!isGood) continue;
 
+	bool foundParent = false;
 	for(vector<susy::Particle>::iterator genit = event.genParticles.begin(); genit != event.genParticles.end(); genit++) {
 
 	  if(genit->status != 3) continue;
 	  if(genit->momentum.Pt() < 20.) continue;
 	  if(deltaR(corrP4, genit->momentum) > 0.01) continue;
 
-	  if(fabs(event.genParticles[genit->motherIndex].pdgId) == 6 ||
-	     fabs(event.genParticles[genit->motherIndex].pdgId) == 24 ||
-	     fabs(event.genParticles[genit->motherIndex].pdgId) == 23) {
+	  bool interestingMother = 
+	    fabs(event.genParticles[genit->motherIndex].pdgId) == 6 ||
+	    fabs(event.genParticles[genit->motherIndex].pdgId) == 24 ||
+	    fabs(event.genParticles[genit->motherIndex].pdgId) == 23;
+
+	  bool notARepeat = 
+	    fabs(genit->pdgId) != 6 &&
+	    fabs(genit->pdgId) != 24 &&
+	    fabs(genit->pdgId) != 23;
+
+	  if(interestingMother && notARepeat) {
 	    jet_flavor = genit->pdgId;
 	    jet_mother = event.genParticles[genit->motherIndex].pdgId;
+	    foundParent = true;
 	    break;
 	  }
-	  else {
+	  
+	}
+	if(!foundParent) {
 	    jet_flavor = 0;
 	    jet_mother = 0;
-	    break;
-	  }
-
 	}
-
+	
 	jet_corrpt = corrP4.Pt();
 	jet_eta = corrP4.Eta();
 	jet_csv = it->bTagDiscriminators[susy::kCSV];
@@ -2214,27 +2223,36 @@ void SusyEventAnalyzer::ttggStudy() {
 
 	if(!isGood) continue;
 
+	bool foundParent = false;
 	for(vector<susy::Particle>::iterator genit = event.genParticles.begin(); genit != event.genParticles.end(); genit++) {
 
 	  if(genit->status != 3) continue;
 	  if(genit->momentum.Pt() < 20.) continue;
 	  if(deltaR(corrP4, genit->momentum) > 0.01) continue;
 
-	  if(fabs(event.genParticles[genit->motherIndex].pdgId) == 6 ||
-	     fabs(event.genParticles[genit->motherIndex].pdgId) == 24 ||
-	     fabs(event.genParticles[genit->motherIndex].pdgId) == 23) {
+	  bool interestingMother = 
+	    fabs(event.genParticles[genit->motherIndex].pdgId) == 6 ||
+	    fabs(event.genParticles[genit->motherIndex].pdgId) == 24 ||
+	    fabs(event.genParticles[genit->motherIndex].pdgId) == 23;
+
+	  bool notARepeat = 
+	    fabs(genit->pdgId) != 6 &&
+	    fabs(genit->pdgId) != 24 &&
+	    fabs(genit->pdgId) != 23;
+
+	  if(interestingMother && notARepeat) {
 	    jet_flavor = genit->pdgId;
 	    jet_mother = event.genParticles[genit->motherIndex].pdgId;
+	    foundParent = true;
 	    break;
 	  }
-	  else {
+	  
+	}
+	if(!foundParent) {
 	    jet_flavor = 0;
 	    jet_mother = 0;
-	    break;
-	  }
-
 	}
-
+	
 	jet_corrpt = corrP4.Pt();
 	jet_eta = corrP4.Eta();
 	jet_csv = it->bTagDiscriminators[susy::kCSV];
