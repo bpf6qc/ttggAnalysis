@@ -127,6 +127,7 @@ class SusyEventAnalyzer {
   // major analysis logic
   void findPhotons_prioritizeCount(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type);
   void findPhotons_prioritizeEt(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type);
+  void findPhotons_simple(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, int wp)
   void findJets(susy::Event& ev, vector<susy::Photon*> candidates,
 		vector<susy::Muon*> isoMuons, vector<susy::Muon*> looseMuons,
 		vector<susy::Electron*> isoEles, vector<susy::Electron*> looseEles,
@@ -596,6 +597,52 @@ void SusyEventAnalyzer::findPhotons_prioritizeEt(susy::Event& ev, vector<susy::P
 	      
 	  } // if dR is good
 	  
+	} // loop through trailing
+	
+	if(event_type != 0) break; // if you have a pair, stop
+      } // if leading et is valid
+    } // loop through leading    
+    
+  } // if at least 2 good photons
+  
+  return;
+}
+
+void SusyEventAnalyzer::findPhotons_simple(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, int wp) {
+
+  vector<susy::Photon*> photons;
+  
+  map<TString, vector<susy::Photon> >::iterator phoMap = ev.photons.find("photons");
+  if(phoMap != event.photons.end()) {
+    
+    for(vector<susy::Photon>::iterator it = phoMap->second.begin();
+	it != phoMap->second.end(); it++) {
+      
+      if(passCutBasedPhotonID(*it, event.rho25, wp)) photons.push_back(&*it);
+      
+    } // for photon
+  } // if
+  
+  sort(photons.begin(), photons.end(), EtGreater<susy::Photon>);
+  
+  if(photons.size() >= 2) {
+    for(unsigned int i = 0; i < photons.size(); i++) {
+      
+      if(photons[i]->momentum.Et() > 40.0) {
+	for(unsigned int j = i + 1; j < photons.size(); j++) {
+
+	  float dEta = photons[i]->caloPosition.Eta() - photons[j]->caloPosition.Eta();
+	  float dPhi = TVector2::Phi_mpi_pi(photons[i]->caloPosition.Phi() - photons[j]->caloPosition.Phi());
+	  float dR = sqrt(dEta*dEta + dPhi*dPhi);
+	    
+	  if(dR > 0.6 && fabs(dPhi) > 0.05) {
+	    event_type = 1;
+	    candidates.push_back(photons[i]);
+	    candidates.push_back(photons[j]);
+	  }
+	      
+	  if(candidates.size() == 2) break; // break out of trailing loop
+	      
 	} // loop through trailing
 	
 	if(event_type != 0) break; // if you have a pair, stop

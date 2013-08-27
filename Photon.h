@@ -59,29 +59,56 @@ float photonIso_corrected(susy::Photon gamma, float rho) {
   return iso;
 }
 
-bool isLoosePhoton(susy::Photon gamma, float rho) {
+bool passCutBasedPhotonID(susy::Photon gamma, float rho, int point) {
 
-  bool loose_barrel = gamma.momentum.Et() > 25.0 &&
-    gamma.hadTowOverEm < 0.05 &&
-    neutralHadronIso_corrected(gamma, rho) < 3.5 + 0.04*gamma.momentum.Pt() &&
-    photonIso_corrected(gamma, rho) < 1.3 + 0.005*gamma.momentum.Pt() &&
-    chargedHadronIso_corrected(gamma, rho) < 2.6 &&
-    gamma.sigmaIetaIeta < 0.012 &&
-    gamma.passelectronveto;
+  bool common = gamma.momentum.Et() > 25.0 && gamma.hadTowOverEm < 0.05 && gamma.passelectronveto;
 
-  bool loose_endcap = gamma.momentum.Et() > 25.0 &&
-    gamma.hadTowOverEm < 0.05 &&
-    neutralHadronIso_corrected(gamma, rho) < 2.9 + 0.04*gamma.momentum.Pt() &&
-    chargedHadronIso_corrected(gamma, rho) < 2.3 &&
-    gamma.sigmaIetaIeta < 0.034 &&
-    gamma.passelectronveto;
+  float chIso = chargedHadronIso_corrected(gamma, rho);
+  float nIso = neutralHadronIso_corrected(gamma, rho) - 0.04*gamma.momentum.Pt();
+  float pIso = photonIso_corrected(gamma, rho) - 0.005*gamma.momentum.Pt();
 
   float pho_eta = fabs(gamma.caloPosition.Eta());
 
-  if(pho_eta < 1.4442) return loose_barrel;
-  else if(pho_eta > 1.566 && pho_eta < 2.5) return loose_endcap;
+  if(point == 0) {
+    if(pho_eta < 1.4442) return common && 
+			   gamma.sigmaIetaIeta < 0.012 &&
+			   chIso < 2.6 &&
+			   nIso < 3.5 &&
+			   pIso < 1.3;
+    else if(pho_eta > 1.566 && pho_eta < 2.5) return common &&
+						gamma.sigmaIetaIeta < 0.034 &&
+						chIso < 2.3 &&
+						nIso < 2.9;
+  }
 
-  return false;
+  else if(point == 1) {
+    if(pho_eta < 1.4442) return common && 
+			   gamma.sigmaIetaIeta < 0.011 &&
+			   chIso < 1.5 &&
+			   nIso < 1.0 &&
+			   pIso < 0.7;
+    else if(pho_eta > 1.566 && pho_eta < 2.5) return common &&
+						gamma.sigmaIetaIeta < 0.033 &&
+						chIso < 1.2 &&
+						nIso < 1.5 &&
+						pIso < 1.0;
+  }
+
+  else if(point == 2) {
+    if(pho_eta < 1.4442) return common && 
+			   gamma.sigmaIetaIeta < 0.011 &&
+			   chIso < 0.7 &&
+			   nIso < 0.4 &&
+			   pIso < 0.5;
+    else if(pho_eta > 1.566 && pho_eta < 2.5) return common &&
+						gamma.sigmaIetaIeta < 0.031 &&
+						chIso < 0.5 &&
+						nIso < 1.5 &&
+						pIso < 1.0;
+  }
+
+  else return false;
+
 }
 
 bool is_egf(susy::Photon gamma, float rho) {

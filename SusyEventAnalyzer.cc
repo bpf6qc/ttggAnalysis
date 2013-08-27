@@ -144,6 +144,7 @@ void SusyEventAnalyzer::CalculateBtagEfficiency() {
 
     findPhotons_prioritizeCount(event, candidate_pair, event_type);
     //findPhotons_prioritizeEt(event, candidate_pair, event_type);
+    //findPhotons_simple(event, candidate_pair, 0); // 0 (L), 1 (M), 2 (T)
 
     if(event_type != 1) {
       nCnt[28][0]++;
@@ -816,6 +817,7 @@ void SusyEventAnalyzer::Data() {
 
     findPhotons_prioritizeCount(event, candidate_pair, event_type);
     //findPhotons_prioritizeEt(event, candidate_pair, event_type);
+    //findPhotons_simple(event, candidate_pair, 0); // 0 (L), 1 (M), 2 (T)
 
     if(event_type == 0) {
       nCnt[28][0]++;
@@ -1732,6 +1734,7 @@ void SusyEventAnalyzer::Acceptance() {
 
     findPhotons_prioritizeCount(event, candidate_pair, event_type);
     //findPhotons_prioritizeEt(event, candidate_pair, event_type);
+    //findPhotons_simple(event, candidate_pair, 0); // 0 (L), 1 (M), 2 (T)
 
     if(event_type == 0) {
       nCnt[28][0]++;
