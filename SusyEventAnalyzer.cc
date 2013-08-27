@@ -2156,7 +2156,7 @@ void SusyEventAnalyzer::ttggStudy() {
 	  if(fabs(event.genParticles[genit->motherIndex].pdgId) == 6 ||
 	     fabs(event.genParticles[genit->motherIndex].pdgId) == 24 ||
 	     fabs(event.genParticles[genit->motherIndex].pdgId) == 23) {
-	    jet_flavor = genid->pdgId;
+	    jet_flavor = genit->pdgId;
 	    jet_mother = event.genParticles[genit->motherIndex].pdgId;
 	    break;
 	  }
@@ -2213,7 +2213,7 @@ void SusyEventAnalyzer::ttggStudy() {
 	  if(fabs(event.genParticles[genit->motherIndex].pdgId) == 6 ||
 	     fabs(event.genParticles[genit->motherIndex].pdgId) == 24 ||
 	     fabs(event.genParticles[genit->motherIndex].pdgId) == 23) {
-	    jet_flavor = genid->pdgId;
+	    jet_flavor = genit->pdgId;
 	    jet_mother = event.genParticles[genit->motherIndex].pdgId;
 	    break;
 	  }
