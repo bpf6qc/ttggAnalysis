@@ -2152,6 +2152,7 @@ void SusyEventAnalyzer::ttggStudy() {
 	for(vector<susy::Particle>::iterator genit = event.genParticles.begin(); genit != event.genParticles.end(); genit++) {
 
 	  if(genit->status != 3) continue;
+	  if(genit->momentum.Pt() < 20.) continue;
 	  if(deltaR(corrP4, genit->momentum) > 0.01) continue;
 	  if(fabs(event.genParticles[genit->motherIndex].pdgId) == 6 ||
 	     fabs(event.genParticles[genit->motherIndex].pdgId) == 24 ||
@@ -2209,6 +2210,7 @@ void SusyEventAnalyzer::ttggStudy() {
 	for(vector<susy::Particle>::iterator genit = event.genParticles.begin(); genit != event.genParticles.end(); genit++) {
 
 	  if(genit->status != 3) continue;
+	  if(genit->momentum.Pt() < 20.) continue;
 	  if(deltaR(corrP4, genit->momentum) > 0.01) continue;
 	  if(fabs(event.genParticles[genit->motherIndex].pdgId) == 6 ||
 	     fabs(event.genParticles[genit->motherIndex].pdgId) == 24 ||
