@@ -127,7 +127,7 @@ class SusyEventAnalyzer {
   // major analysis logic
   void findPhotons_prioritizeCount(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type);
   void findPhotons_prioritizeEt(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type);
-  void findPhotons_simple(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, int wp)
+  void findPhotons_simple(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, int wp);
   void findJets(susy::Event& ev, vector<susy::Photon*> candidates,
 		vector<susy::Muon*> isoMuons, vector<susy::Muon*> looseMuons,
 		vector<susy::Electron*> isoEles, vector<susy::Electron*> looseEles,
@@ -618,7 +618,7 @@ void SusyEventAnalyzer::findPhotons_simple(susy::Event& ev, vector<susy::Photon*
     for(vector<susy::Photon>::iterator it = phoMap->second.begin();
 	it != phoMap->second.end(); it++) {
       
-      if(passCutBasedPhotonID(*it, event.rho25, wp)) photons.push_back(&*it);
+      if(fabs(it->caloPosition.Eta()) < 1.4442 && passCutBasedPhotonID(*it, event.rho25, wp)) photons.push_back(&*it);
       
     } // for photon
   } // if

@@ -107,7 +107,7 @@ bool passCutBasedPhotonID(susy::Photon gamma, float rho, int point) {
 						pIso < 1.0;
   }
 
-  else return false;
+  return false;
 
 }
 
