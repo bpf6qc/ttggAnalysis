@@ -297,6 +297,8 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     true, true, true,
 		     out, metCut);
 
+  pMaker->CreateTable();
+
   delete pMaker;
     
   out->Close();

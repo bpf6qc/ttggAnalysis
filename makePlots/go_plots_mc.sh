@@ -27,7 +27,7 @@ rm plots_*.root
 for x in nojet j b bj muJets eleJets hadronic
 do
 
-	cp template_errorTable errorTable_$x.tex
+	cp template_errorTable_mc.tex errorTable_$x.tex
 
 	while read line
 	do
