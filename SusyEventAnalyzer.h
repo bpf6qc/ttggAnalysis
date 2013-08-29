@@ -135,7 +135,8 @@ class SusyEventAnalyzer {
 		ScaleFactorInfo sf,
 		vector<BtagInfo>& tagInfos, vector<float>& csvValues, 
 		vector<TLorentzVector>& pfJets_corrP4, vector<TLorentzVector>& btags_corrP4, 
-		float& HT, TLorentzVector& hadronicSystem);
+		float& HT, TLorentzVector& hadronicSystem,
+		TH2F*& h_DR_jet_gg = NULL, bool fillDRPlot = false);
   void findMuons(susy::Event& ev, vector<susy::Photon*> candidates, vector<susy::Muon*>& isoMuons, vector<susy::Muon*>& looseMuons, float& HT);
   void findElectrons(susy::Event& ev, vector<susy::Photon*> candidates, vector<susy::Electron*>& isoEles, vector<susy::Electron*>& looseElese, float& HT);
   bool GetDiJetPt(susy::Event& ev, vector<susy::Photon*> candidates, float& diJetPt, float& leadpt, float& trailpt);
@@ -661,7 +662,8 @@ void SusyEventAnalyzer::findJets(susy::Event& ev, vector<susy::Photon*> candidat
 				 ScaleFactorInfo sf,
 				 vector<BtagInfo>& tagInfos, vector<float>& csvValues, 
 				 vector<TLorentzVector>& pfJets_corrP4, vector<TLorentzVector>& btags_corrP4, 
-				 float& HT, TLorentzVector& hadronicSystem) {
+				 float& HT, TLorentzVector& hadronicSystem,
+				 TH2F*& h_DR_jet_gg = NULL, bool fillDRPlot = false) {
 
   map<TString, susy::PFJetCollection>::iterator pfJets_it = ev.pfJets.find("ak5");
   if(pfJets_it != ev.pfJets.end()) {
@@ -678,6 +680,8 @@ void SusyEventAnalyzer::findJets(susy::Event& ev, vector<susy::Photon*> candidat
       if(!isGoodJet(*it, corrP4)) continue;
       if(JetOverlapsElectron(corrP4, isoEles, looseEles)) continue;
       if(JetOverlapsMuon(corrP4, isoMuons, looseMuons)) continue;
+
+      if(h_DR_jet_gg && fillDRPlot) h_DR_jet_gg->Fill(deltaR(corrP4, candidates[0]->caloPosition), deltaR(corrP4, candidates[1]->caloPosition));
 	  
       bool same_candidates = false;
       for(vector<susy::Photon*>::iterator m_it = candidates.begin();

@@ -33,90 +33,6 @@ using namespace std;
 
 const TString gifOrPdf = ".pdf";
 
-void formatTable(TH1D * h_gg,
-		 TH1D * h_ewk, TH1D * ewk_norm2, Float_t fakeRate, Float_t fakeRate_sys, Float_t egScale,
-		 TH1D * qcd_ff, TH1D * ff_norm2, Float_t ffScale,
-		 TH1D * qcd_gf, TH1D * gf_norm2, Float_t gfScale,
-		 TH1D * qcd_ee, TH1D * ee_norm2, Float_t eeScale,
-		 TH1D * ttgjets, bool useTTGJets,
-		 TString fileType) {
-
-  FILE* tableFile = fopen("errorTable_"+fileType+".temp", "w");
-
-  Double_t rangeLow[5] = {0, 0, 50, 80, 100};
-  Double_t rangeHigh[5] = {20, 50, -1, -1, -1};
-
-  Double_t binLow[5], binHigh[5];
-  for(int i = 0; i < 5; i++) {
-    binLow[i] = h_gg->GetXaxis()->FindBin(rangeLow[i]);
-    binHigh[i] = (rangeHigh[i] == -1) ? -1 : h_gg->GetXaxis()->FindBin(rangeHigh[i]) - 1;
-  }
-
-  for(int i = 0; i < 5; i++) {
-
-    Double_t gg, ggerr;
-    gg = h_gg->IntegralAndError(binLow[i], binHigh[i], ggerr);
-    fprintf(tableFile, "ggval%dx:%.0f\n", i+1, gg);
-    fprintf(tableFile, "ggstat%dx:%.1f\n", i+1, ggerr);
-
-    Double_t ff, fferr;
-    ff = qcd_ff->IntegralAndError(binLow[i], binHigh[i], fferr) * ffScale;
-    fferr *= ffScale;
-    fprintf(tableFile, "ffval%dx:%.1f\n", i+1, ff);
-    fprintf(tableFile, "ffstat%dx:%.2f\n", i+1, fferr);
-    Double_t ff_norm = sqrt(ff_norm2->Integral(binLow[i], binHigh[i])) * ffScale;
-    fprintf(tableFile, "ffnorm%dx:%.2f\n", i+1, ff_norm);
-
-    Double_t gf, gferr;
-    gf = qcd_gf->IntegralAndError(binLow[i], binHigh[i], gferr) * gfScale;
-    gferr *= gfScale;
-    fprintf(tableFile, "gfval%dx:%.1f\n", i+1, gf);
-    fprintf(tableFile, "gfstat%dx:%.2f\n", i+1, gferr);
-    Double_t gf_norm = sqrt(gf_norm2->Integral(binLow[i], binHigh[i])) * gfScale;
-    fprintf(tableFile, "gfnorm%dx:%.2f\n", i+1, gf_norm);
-
-    Double_t ee, eeerr;
-    ee = qcd_ee->IntegralAndError(binLow[i], binHigh[i], eeerr) * eeScale;
-    eeerr *= eeScale;
-    fprintf(tableFile, "eeval%dx:%.1f\n", i+1, ee);
-    fprintf(tableFile, "eestat%dx:%.2f\n", i+1, eeerr);
-    Double_t ee_norm = sqrt(ee_norm2->Integral(binLow[i], binHigh[i])) * eeScale;
-    fprintf(tableFile, "eenorm%dx:%.2f\n", i+1, ee_norm);
-
-    Double_t eg, egerr;
-    eg = h_ewk->IntegralAndError(binLow[i], binHigh[i], egerr) * egScale;
-    egerr *= egScale;
-    fprintf(tableFile, "ewkval%dx:%.1f\n", i+1, eg);
-    fprintf(tableFile, "ewkstat%dx:%.2f\n", i+1, egerr);
-    Double_t ewk_norm = sqrt(ewk_norm2->Integral(binLow[i], binHigh[i])) * egScale;
-    fprintf(tableFile, "ewknorm%dx:%.2f\n", i+1, ewk_norm);
-    Double_t ewk_sys = eg * fakeRate_sys / fakeRate;
-    fprintf(tableFile, "ewksyst%dx:%.2f\n", i+1, ewk_sys);
-    
-    Double_t ttgg, ttggerr;
-    ttgg = ttgjets->IntegralAndError(binLow[i], binHigh[i], ttggerr);
-    if(useTTGJets) fprintf(tableFile, "ttgval%dx:%.1f\nttgstat%dx:%.2f\n", i+1, ttgg, i+1, ttggerr);
-
-    Double_t bkg = useTTGJets ? eg + ff + ttgg : eg + ff;
-    Double_t bkgstat = useTTGJets ? sqrt(egerr*egerr + fferr*fferr + ttggerr*ttggerr) : sqrt(egerr*egerr + fferr*fferr);
-    Double_t bkgnorm = sqrt(ewk_norm*ewk_norm + ff_norm2->Integral(binLow[i], binHigh[i]));
-    fprintf(tableFile, "fftotalval%dx:%.1f\nfftotalstat%dx:%.2f\nfftotalnorm%dx:%.2f\nfftotalsyst%dx:%.2f\n", i+1, bkg, i+1, bkgstat, i+1, bkgnorm, i+1, ewk_sys);
-
-    bkg = useTTGJets ? eg + gf + ttgg : eg + gf;
-    bkgstat = useTTGJets ? sqrt(egerr*egerr + gferr*gferr + ttggerr*ttggerr) : sqrt(egerr*egerr + gferr*gferr);
-    bkgnorm = sqrt(ewk_norm*ewk_norm + gf_norm2->Integral(binLow[i], binHigh[i]));
-    fprintf(tableFile, "gftotalval%dx:%.1f\ngftotalstat%dx:%.2f\ngftotalnorm%dx:%.2f\ngftotalsyst%dx:%.2f\n", i+1, bkg, i+1, bkgstat, i+1, bkgnorm, i+1, ewk_sys);
-
-    bkg = useTTGJets ? eg + ee + ttgg : eg + ee;
-    bkgstat = useTTGJets ? sqrt(egerr*egerr + eeerr*eeerr + ttggerr*ttggerr) : sqrt(egerr*egerr + eeerr*eeerr);
-    bkgnorm = sqrt(ewk_norm*ewk_norm + ee_norm2->Integral(binLow[i], binHigh[i]));
-    fprintf(tableFile, "eetotalval%dx:%.1f\neetotalstat%dx:%.2f\neetotalnorm%dx:%.2f\neetotalsyst%dx:%.2f\n", i+1, bkg, i+1, bkgstat, i+1, bkgnorm, i+1, ewk_sys);
-    
-  }
-
-  fclose(tableFile);
-}
-
 TH1D * HistoFromTree(bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t xlo, Double_t xhi, double metCut = -1.) {
 
   TH1D * h = new TH1D(name, title, nBins, xlo, xhi);
@@ -457,6 +373,8 @@ class PlotMaker : public TObject {
 		  Float_t ratiomin, Float_t ratiomax,
 		  bool drawSignal, bool drawLegend, bool drawPrelim,
 		  TFile*& out, double metCut);
+
+  void CreateTable();
 
  private:
   TTree * ggTree;
@@ -1019,6 +937,97 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   delete can;
 
+}
+
+void PlotMaker::CreateTable() {
+
+  const int nBins = 5;
+  Double_t xbins[nBins+1] = {0, 20, 50, 80, 100, 1000};
+
+  Double_t rangeLow[nBins] = {0, 0, 50, 80, 100};
+  Double_t rangeHigh[nBins] = {20, 50, -1, -1, -1};
+
+  TH1D * gg = HistoFromTree(true, "pfMet", ggTree, "pfMet2_gg_"+req, "pfMet2", nBins, xbins, -1.);
+  TH1D * ewk = HistoFromTree(true, "pfMet", egTree, "pfMet2_eg_"+req, "pfMet2", nBins, xbins, -1.);
+  
+  TH1D * ewk_noNorm = (TH1D*)ewk->Clone();
+  ewk->Scale(egScale);
+  for(int i = 0; i < ewk->GetNbinsX(); i++) {
+    Float_t normerr = egScaleErr*(ewk_noNorm->GetBinContent(i+1));
+    Float_t staterr = ewk->GetBinError(i+1);
+    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+    ewk->SetBinError(i+1, new_err);
+  }
+
+  TH1D * qcd30to40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 2.35E-4 * 1.019 * 1.019 / 6061407., true, "pfMet", qcd30to40Tree, "pfMet2_qcd30to40_"+req, "pfMet2", nBins, xbins, -1.);
+  TH1D * qcd40 = SignalHistoFromTree(intLumi_int * 5.195E7 * 0.002175 * 1.019 * 1.019 / 9782735., true, "pfMet", qcd40Tree, "pfMet2_qcd40_"+req, "pfMet2", nBins, xbins, -1.);
+  TH1D * qcd = (TH1D*)qcd30to40->Clone("pfMet2_qcd_"+req);
+  qcd->Add(qcd40);
+
+  TH1D * gjet20to40 = SignalHistoFromTree(intLumi_int * 81930.0 * 0.001835 * 1.019 * 1.019 / 5907942., true, "pfMet", gjet20to40Tree, "pfMet2_gjet20to40_"+req, "pfMet2", nBins, xbins, -1.);
+  TH1D * gjet40 = SignalHistoFromTree(intLumi_int * 8884.0 * 0.05387 * 1.019 * 1.019 / 5956149., true, "pfMet", gjet40Tree, "pfMet2_gjet40_"+req, "pfMet2", nBins, xbins, -1.);
+  TH1D * gjet = (TH1D*)gjet20to40->Clone("pfMet2_gjet_"+req);
+  gjet->Add(gjet40);
+
+   TH1D * diphotonjets = SignalHistoFromTree(intLumi_int * 75.39 * 1.019 * 1.019 / 1156030., true, "pfMet", diphotonjetsTree, "pfMet2_diphotonjets_"+req, "pfMet2", nBins, xbins, -1.);
+
+  TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., true, "pfMet", ttHadronicTree, "pfMet2_ttHadronic_"+req, "pfMet2", nBins, xbins, -1.);
+  TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., true, "pfMet", ttSemiLepTree, "pfMet2_ttSemiLep_"+req, "pfMet2", nBins, xbins, -1.);
+  TH1D * ttbar = (TH1D*)ttHadronic->Clone("pfMet2_ttbar_"+req);
+  ttbar->Add(ttSemiLep);
+
+  TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., true, "pfMet", ttgjetsTree, "pfMet2_ttgjets_"+req, "pfMet2", nBins, xbins, -1.);
+
+  TH1D * bkg = (TH1D*)qcd->Clone("pfMet2_bkg_"+req);
+
+  bkg->Add(gjet);
+  bkg->Add(diphotonjets);
+  bkg->Add(ewk);
+  bkg->Add(ttg);
+
+  // Calculate entries
+
+  FILE * tableFile = fopen("errorTable_"+fileType+".temp", "w");
+
+  Double_t binLow[nBins], binHigh[nBins];
+  for(int i = 0; i < nBins; i++) {
+    binLow[i] = gg->GetXaxis()->FindBin(rangeLow[i]);
+    binHigh[i] = (rangeHigh[i] == -1) ? -1 : gg->GetXaxis()->FindBin(rangeHigh[i]) - 1;
+  }
+
+  for(int i = 0; i < nBins; i++) {
+
+    Double_t gg, ggerr;
+    gg = gg->IntegralAndError(binLow[i], binHigh[i], ggerr);
+    fprintf(tableFile, "ggval%dx:%.0f\nggstat%dx:%.1f\n", i+1, gg, i+1, ggerr);
+
+    Double_t qcd, qcderr;
+    qcd = qcd->IntegralAndError(binLow[i], binHigh[i], qcderr);
+    fprintf(tableFile, "qcdval%dx:%.0f\nqcdstat%dx:%.1f\n", i+1, qcd, i+1, qcderr);
+
+    Double_t gjet, gjeterr;
+    gjet = gjet->IntegralAndError(binLow[i], binHigh[i], gjeterr);
+    fprintf(tableFile, "gjetval%dx:%.0f\ngjetstat%dx:%.1f\n", i+1, gjet, i+1, gjeterr);
+
+    Double_t dipho, diphoerr;
+    dipho = dipho->IntegralAndError(binLow[i], binHigh[i], diphoerr);
+    fprintf(tableFile, "diphoval%dx:%.0f\ndiphostat%dx:%.1f\n", i+1, dipho, i+1, diphoerr);
+
+    Double_t ewk, ewkerr;
+    ewk = ewk->IntegralAndError(binLow[i], binHigh[i], ewkerr);
+    fprintf(tableFile, "ewkval%dx:%.1f\newkstat%dx:%.2f\n", i+1, ewk, i+1, ewkerr);
+    
+    Double_t ttgg, ttggerr;
+    ttgg = ttgjets->IntegralAndError(binLow[i], binHigh[i], ttggerr);
+    fprintf(tableFile, "ttgval%dx:%.1f\nttgstat%dx:%.2f\n", i+1, ttgg, i+1, ttggerr);
+
+    Double_t total, totalerr;
+    total = bkg->IntegralAndError(binLow[i], binHigh[i], totalerr);
+    fprintf(tableFile, "bkgval%dx:%.1f\nbkgstat%dx:%.2f\n", i+1, total, i+1, totalerr);
+
+  }
+
+  fclose(tableFile);
 }
 
 void prep_signal(TString req) {

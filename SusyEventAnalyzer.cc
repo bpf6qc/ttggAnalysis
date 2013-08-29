@@ -867,9 +867,8 @@ void SusyEventAnalyzer::Data() {
 	     sf,
 	     tagInfos, csvValues, 
 	     pfJets_corrP4, btags_corrP4, 
-	     HT, hadronicSystem);
-
-    for(unsigned int i = 0; i < pfJets_corrP4.size(); i++) h_DR_jet_gg->Fill(deltaR(pfJets_corrP4[i], candidate_pair[0]->caloPosition), deltaR(pfJets_corrP4[i], candidate_pair[1]->caloPosition));
+	     HT, hadronicSystem,
+	     h_DR_jet_gg, true);
 
     HT_jets_ = HT;
     hadronic_pt_ = hadronicSystem.Pt();
