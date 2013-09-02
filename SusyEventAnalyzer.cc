@@ -871,7 +871,7 @@ void SusyEventAnalyzer::Data() {
 	     tagInfos, csvValues, 
 	     pfJets_corrP4, btags_corrP4, 
 	     HT, hadronicSystem,
-	     h_DR_jet_gg, true);
+	     h_DR_jet_gg);
 
     HT_jets_ = HT;
     hadronic_pt_ = hadronicSystem.Pt();
@@ -2085,6 +2085,18 @@ void SusyEventAnalyzer::ttggStudy() {
   chsJetTree->Branch("algDef", &jet_algDef, "jet_algDef/I");
   chsJetTree->Branch("motherId", &jet_mother, "jet_mother/I");
 
+  TTree * eventTree = new TTree("eventInfo"+output_code_t, "ttbar info");
+  // nJets, nBtags, nTight/Loose leptons, event number, pt of tight/loose leptons, mvaNonTrigV0 for electrons...
+  ULong_t eventNumber_ = 0;
+  int nJets, nBtags, nVetoElectrons, nTightElectrons, nVetoMuons, nTightMuons, decayMode;
+  eventTree->Branch("eventNumber", &eventNumber_, "eventNumber_/l");
+  eventTree->Branch("nJets", &nJets, "nJets/I");
+  eventTree->Branch("nBtags", &nBtags, "nBtags/I");
+  eventTree->Branch("nVetoElectrons", &nVetoElectrons, "nVetoElectrons/I");
+  eventTree->Branch("nTightElectrons", &nTightElectrons, "nTightElectrons/I");
+  eventTree->Branch("nVetoMuons", &nVetoMuons, "nVetoMuons/I");
+  eventTree->Branch("nTightMuons", &nTightMuons, "nTightMuons/I");
+  eventTree->Branch("decayMode", &decayMode, "decayMode/I");
 
   ScaleFactorInfo sf(btagger);
   TFile * btagEfficiency = new TFile("btagEfficiency"+output_code_t+".root", "READ");
@@ -2288,6 +2300,68 @@ void SusyEventAnalyzer::ttggStudy() {
 	     HT, hadronicSystem,
 	     h_DR_jet_gg);
 
+    int nJets, nBtags, nVetoElectrons, nTightElectrons, nVetoMuons, nTightMuons, decayMode;
+
+    eventNumber_ = event.eventNumber;
+    nJets = pfJets.size();
+    nBtags = btags.size();
+    nVetoElectrons = looseEles.size();
+    nTightElectrons = isoEles.size();
+    nVetoMuons = looseMuons.size();
+    nTightMuons = isoMuons.size();
+    
+    int nElectronicWs = 0;
+    int nMuonicWs = 0;
+    int nTauonicWs = 0;
+
+    int firstWindex = -1;
+
+    for(vector<susy::Particle>::iterator it = event.genParticles.begin(); it != event.genParticles.end(); it++) {
+
+      bool isFromWfromStopOrTop = fabs(event.genParticles[it->motherIndex].pdgId) == 24 && 
+	(
+	 fabs(event.genParticles[event.genParticles[it->motherIndex].motherIndex].pdgId) == 6 || 
+	 fabs(event.genParticles[event.genParticles[it->motherIndex].motherIndex].pdgId) == 1000006
+	 );
+      
+      if(!isFromWfromStopOrTop) continue;
+    
+      if(firstWindex == it->motherIndex) continue;
+
+      if(fabs(it->pdgId) == 11 || fabs(it->pdgId) == 12) nElectronicWs++;
+      else if(fabs(it->pdgId) == 13 || fabs(it->pdgId) == 14) nMuonicWs++;
+      else if(fabs(it->pdgId) == 15 || fabs(it->pdgId) == 16) nTauonicWs++;
+
+      if(firstWindex < 0) firstWindex = it->motherIndex;
+      
+    }
+     
+    /* decayMode:
+       0 hadronic
+       1 semi-ele
+       2 semi-mu
+       3 semi-tau
+       4 di-ele
+       5 di-mu
+       6 di-tau
+       7 ele-mu
+       8 ele-tau
+       9 mu-tau
+    */
+
+    if((nElectronicWs + nMuonicWs + nTauonicWs) == 0) decayMode = 0;
+    else if(nElectronicWs == 1 && (nMuonicWs + nTauonicWs) == 0) decayMode = 1;
+    else if(nMuonicWs == 1 && (nElectronicWs + nTauonicWs) == 0) decayMode = 2;
+    else if(nTauonicWs == 1 && (nElectronicWs + nMuonicWs) == 0) decayMode = 3;
+    else if(nElectronicWs == 2 && (nMuonicWs + nTauonicWs) == 0) decayMode = 4;
+    else if(nMuonicWs == 2 && (nElectronicWs + nTauonicWs) == 0) decayMode = 5;
+    else if(nTauonicWs == 2 && (nElectronicWs + nMuonicWs) == 0) decayMode = 6;
+    else if(nElectronicWs == 1 && nMuonicWs == 1 && nTauonicWs == 0) decayMode = 7;
+    else if(nElectronicWs == 1 && nMuonicWs == 0 && nTauonicWs == 1) decayMode = 8;
+    else if(nElectronicWs == 0 && nMuonicWs == 1 && nTauonicWs == 1) decayMode = 9;
+
+    eventTree->Fill();
+  
   } // for entries
 
   cout << "-------------------Job Summary-----------------" << endl;
