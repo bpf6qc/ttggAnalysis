@@ -2362,12 +2362,13 @@ void SusyEventAnalyzer::SignalContent_gg() {
   genTree->Branch("nJets", &nJets, "nJets/I");
   genTree->Branch("nBjets", &nBjets, "nBjets/I");
   
-  float ele_pt, ele_eta, ele_iso, ele_relIso;
+  float ele_pt, ele_eta, ele_iso, ele_relIso, ele_nonTrigV0;
   TTree * eleTree = new TTree("eleTree"+code, "gen-matched electron reco info");
   eleTree->Branch("pt", &ele_pt, "ele_pt/F");
   eleTree->Branch("eta", &ele_eta, "ele_eta/F");
   eleTree->Branch("iso", &ele_iso, "ele_iso/F");
   eleTree->Branch("relIso", &ele_relIso, "ele_relIso/F");
+  eleTree->Branch("mvaNonTrigV0", &ele_mvaNonTrigV0, "ele_nonTrigV0/F");
 
   float mu_pt, mu_eta, mu_iso, mu_relIso;
   TTree * muTree = new TTree("muTree"+code, "gen-matched muon reco info");
@@ -2487,7 +2488,7 @@ void SusyEventAnalyzer::SignalContent_gg() {
     nPhotons_80 = nPhotons_40 = nPhotons_25 = nPhotons = 0;
     nMuons = nElectrons = 0;
     nJets = nBjets = 0;
-    ele_pt = ele_eta = ele_iso = ele_relIso = 0;
+    ele_pt = ele_eta = ele_iso = ele_relIso = ele_nonTrigV0 = 0;
     mu_pt = mu_eta = mu_iso = mu_relIso = 0;
     g_pt = g_eta = 0;
     jet_pt = jet_eta = jet_csv = jet_jp = jet_tchp = 0;
@@ -2616,6 +2617,7 @@ void SusyEventAnalyzer::SignalContent_gg() {
 		ele_pt = ele_it->momentum.Pt();
 		ele_eta = ele_it->momentum.Eta();
 		ele_relIso = ele_iso / ele_pt;
+		ele_nonTrigV0 = ele_it->mvaNonTrig;
 
 		elePt_leadPt->Fill(ele_pt, leading_photon_pt);
 		elePt_subPt->Fill(ele_pt, subleading_photon_pt);

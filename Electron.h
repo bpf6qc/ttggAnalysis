@@ -45,10 +45,8 @@ bool isTightElectron(susy::Electron ele, vector<susy::SuperCluster> superCluster
   
   // mvaNonTrigV0 > 0.9 if we don't use simple cuts-based
 
-  ele_eta = fabs(ele.momentum.Eta());
-
-  if(ele_eta < 1.4442) return tight_barrel;
-  else if(ele_eta > 1.566 && ele_eta < 2.5) return tight_endcap;
+  if(ele_eta <= 1.479) return tight_barrel;
+  else if(ele_eta > 1.479 && ele_eta < 2.5) return tight_endcap;
   
   return false;
 
@@ -84,7 +82,7 @@ bool isLooseElectron(susy::Electron ele, vector<susy::SuperCluster> superCluster
     fabs(1/(ele.ecalEnergy) - 1/(ele.ecalEnergy/ele.eSuperClusterOverP)) < 0.05 &&
     ele_iso / ele.momentum.Pt() < 0.15 &&
     ele.passConversionVeto &&
-    ele.nMissingHits == 1;
+    ele.nMissingHits <= 1;
       
   bool loose_endcap = ele.deltaEtaSuperClusterTrackAtVtx < 0.009 &&
     ele.deltaPhiSuperClusterTrackAtVtx < 0.1 &&
@@ -95,13 +93,11 @@ bool isLooseElectron(susy::Electron ele, vector<susy::SuperCluster> superCluster
     fabs(1/(ele.ecalEnergy) - 1/(ele.ecalEnergy/ele.eSuperClusterOverP)) < 0.05 &&
     ((ele.momentum.Pt() > 20. && ele_iso / ele.momentum.Pt() < 0.15) || (ele.momentum.Pt() <= 20. && ele_iso / ele.momentum.Pt() < 0.1)) &&
     ele.passConversionVeto &&
-    ele.nMissingHits == 1;
+    ele.nMissingHits <= 1;
   // mvaNonTrigV0 > 0.9 if we don't use simple cuts-based
 
-  ele_eta = fabs(ele.momentum.Eta());
-
-  if(ele_eta < 1.4442) return loose_barrel;
-  else if(ele_eta > 1.566 && ele_eta < 2.5) return loose_endcap;
+  if(ele_eta <= 1.479) return loose_barrel;
+  else if(ele_eta > 1.479 && ele_eta < 2.5) return loose_endcap;
 
   return false;
 
@@ -156,10 +152,9 @@ bool isVetoElectron(susy::Electron ele, vector<susy::SuperCluster> superClusters
     dz < 0.2 &&
     ele_iso / ele.momentum.Pt() < 0.15;
 
-  ele_eta = fabs(ele.momentum.Eta());
-
-  if(ele_eta < 1.4442) return veto_barrel;
-  else if(ele_eta > 1.566 && ele_eta < 2.5) return veto_endcap;
+  if(ele_eta <= 1.479) return veto_barrel;
+  else if(ele_eta > 1.479 && ele_eta < 2.5) return veto_endcap;
 
   return false;
 }
+
