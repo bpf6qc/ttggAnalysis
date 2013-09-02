@@ -113,6 +113,8 @@ void SusyEventAnalyzer::CalculateBtagEfficiency() {
   TH1F * num_ljets = new TH1F("ljets"+output_code_t, "ljets"+output_code_t, 200, 0, 1000); num_ljets->Sumw2();
   TH1F * num_ltags = new TH1F("ltags"+output_code_t, "ltags"+output_code_t, 200, 0, 1000); num_ltags->Sumw2();
 
+  TH2F * h_DR_jet_gg = new TH2F("DR_jet_gg", "#DeltaR between jets and lead/trailing #gamma#gamma candidates;#DeltaR_{lead #gamma, jet};#DeltaR_{trail #gamma, jet}", 50, 0, 5, 50, 0, 5);
+
   ScaleFactorInfo sf(btagger);
 
   Long64_t nEntries = fTree->GetEntries();
@@ -164,7 +166,7 @@ void SusyEventAnalyzer::CalculateBtagEfficiency() {
 	     tagInfos, csvValues, 
 	     pfJets_corrP4, btags_corrP4, 
 	     HT, hadronicSystem,
-	     (TH2D*)NULL, false);
+	     h_DR_jet_gg);
 
     HT += candidate_pair[0]->momentum.Pt();
     HT += candidate_pair[1]->momentum.Pt();
@@ -1412,6 +1414,8 @@ void SusyEventAnalyzer::Acceptance() {
   TH1F * h_btag_tS = new TH1F("btag_tS", "btag tight Simple", 2, 0, 2);
   TH1F * h_btag_tC = new TH1F("btag_tC", "btag tight CutBased", 2, 0, 2);
 
+  TH2F * h_DR_jet_gg = new TH2F("DR_jet_gg", "#DeltaR between jets and lead/trailing #gamma#gamma candidates;#DeltaR_{lead #gamma, jet};#DeltaR_{trail #gamma, jet}", 50, 0, 5, 50, 0, 5);
+
   float pfMET_ = 0.;
   float pfMET_t1_ = 0.;
   float pfMET_t1p2_ = 0.;
@@ -1780,7 +1784,7 @@ void SusyEventAnalyzer::Acceptance() {
 	     tagInfos, csvValues, 
 	     pfJets_corrP4, btags_corrP4, 
 	     HT, hadronicSystem,
-	     (TH2D*)NULL, false);
+	     h_DR_jet_gg);
 
     HT_jets_ = HT;
     hadronic_pt_ = hadronicSystem.Pt();
@@ -2040,6 +2044,8 @@ void SusyEventAnalyzer::ttggStudy() {
   TFile * out = new TFile("ttggStudy"+output_code_t+".root", "RECREATE");
   out->cd();
 
+  TH2F * h_DR_jet_gg = new TH2F("DR_jet_gg", "#DeltaR between jets and lead/trailing #gamma#gamma candidates;#DeltaR_{lead #gamma, jet};#DeltaR_{trail #gamma, jet}", 50, 0, 5, 50, 0, 5);
+
   // Jet trees -- filled once per gen jet in each event
   float jet_corrpt = 0.;
   float jet_eta = 0.;
@@ -2280,7 +2286,7 @@ void SusyEventAnalyzer::ttggStudy() {
 	     tagInfos, csvValues, 
 	     pfJets_corrP4, btags_corrP4, 
 	     HT, hadronicSystem,
-	     (TH2D*)NULL, false);
+	     h_DR_jet_gg);
 
   } // for entries
 
