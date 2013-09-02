@@ -163,7 +163,8 @@ void SusyEventAnalyzer::CalculateBtagEfficiency() {
 	     sf,
 	     tagInfos, csvValues, 
 	     pfJets_corrP4, btags_corrP4, 
-	     HT, hadronicSystem);
+	     HT, hadronicSystem,
+	     NULL);
 
     HT += candidate_pair[0]->momentum.Pt();
     HT += candidate_pair[1]->momentum.Pt();
@@ -1778,7 +1779,8 @@ void SusyEventAnalyzer::Acceptance() {
 	     sf,
 	     tagInfos, csvValues, 
 	     pfJets_corrP4, btags_corrP4, 
-	     HT, hadronicSystem);
+	     HT, hadronicSystem,
+	     NULL);
 
     HT_jets_ = HT;
     hadronic_pt_ = hadronicSystem.Pt();
@@ -2277,7 +2279,8 @@ void SusyEventAnalyzer::ttggStudy() {
 	     sf,
 	     tagInfos, csvValues, 
 	     pfJets_corrP4, btags_corrP4, 
-	     HT, hadronicSystem);
+	     HT, hadronicSystem,
+	     NULL);
 
   } // for entries
 
