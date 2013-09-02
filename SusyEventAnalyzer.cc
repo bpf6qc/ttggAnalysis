@@ -2368,7 +2368,7 @@ void SusyEventAnalyzer::SignalContent_gg() {
   eleTree->Branch("eta", &ele_eta, "ele_eta/F");
   eleTree->Branch("iso", &ele_iso, "ele_iso/F");
   eleTree->Branch("relIso", &ele_relIso, "ele_relIso/F");
-  eleTree->Branch("mvaNonTrigV0", &ele_mvaNonTrigV0, "ele_nonTrigV0/F");
+  eleTree->Branch("mvaNonTrigV0", &ele_nonTrigV0, "ele_nonTrigV0/F");
 
   float mu_pt, mu_eta, mu_iso, mu_relIso;
   TTree * muTree = new TTree("muTree"+code, "gen-matched muon reco info");
