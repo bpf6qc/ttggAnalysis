@@ -909,7 +909,7 @@ int SusyEventAnalyzer::FigureTTbarDecayMode(susy::Event& ev) {
   
   for(vector<susy::Particle>::iterator it = event.genParticles.begin(); it != event.genParticles.end(); it++) {
     
-    if(it->status != 3) continue;
+    //if(it->status != 3) continue;
     //if(it->momentum.Pt() < 20.) continue;
     
     bool isFromWfromStopOrTop = fabs(event.genParticles[it->motherIndex].pdgId) == 24 && 

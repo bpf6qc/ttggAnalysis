@@ -21,7 +21,7 @@ bool isTightElectron(susy::Electron ele, vector<susy::SuperCluster> superCluster
   float ele_iso = max(0., (ele.photonIso + ele.neutralHadronIso - rho*ea));
   ele_iso += ele.chargedHadronIso;
 
-  bool tight_barrel = ele.deltaEtaSuperClusterTrackAtVtx < 0.004 &&
+  bool tight_barrel = fabs(ele.deltaEtaSuperClusterTrackAtVtx) < 0.004 &&
     fabs(ele.deltaPhiSuperClusterTrackAtVtx) < 0.03 &&
     fabs(ele.sigmaIetaIeta) < 0.01 &&
     ele.hcalOverEcalBc < 0.12 &&
@@ -32,7 +32,7 @@ bool isTightElectron(susy::Electron ele, vector<susy::SuperCluster> superCluster
     ele.passConversionVeto &&
     ele.nMissingHits == 0;
      
-  bool tight_endcap = ele.deltaEtaSuperClusterTrackAtVtx < 0.005 &&
+  bool tight_endcap = fabs(ele.deltaEtaSuperClusterTrackAtVtx) < 0.005 &&
     ele.deltaPhiSuperClusterTrackAtVtx < 0.02 &&
     ele.sigmaIetaIeta < 0.03 &&
     ele.hcalOverEcalBc < 0.1 &&
@@ -73,7 +73,7 @@ bool isLooseElectron(susy::Electron ele, vector<susy::SuperCluster> superCluster
   float ele_iso = max(0., (ele.photonIso + ele.neutralHadronIso - rho*ea));
   ele_iso += ele.chargedHadronIso;
 
-  bool loose_barrel = ele.deltaEtaSuperClusterTrackAtVtx < 0.007 &&
+  bool loose_barrel = fabs(ele.deltaEtaSuperClusterTrackAtVtx) < 0.007 &&
     fabs(ele.deltaPhiSuperClusterTrackAtVtx) < 0.15 &&
     fabs(ele.sigmaIetaIeta) < 0.01 &&
     ele.hcalOverEcalBc < 0.12 &&
@@ -84,7 +84,7 @@ bool isLooseElectron(susy::Electron ele, vector<susy::SuperCluster> superCluster
     ele.passConversionVeto &&
     ele.nMissingHits <= 1;
       
-  bool loose_endcap = ele.deltaEtaSuperClusterTrackAtVtx < 0.009 &&
+  bool loose_endcap = fabs(ele.deltaEtaSuperClusterTrackAtVtx) < 0.009 &&
     ele.deltaPhiSuperClusterTrackAtVtx < 0.1 &&
     ele.sigmaIetaIeta < 0.03 &&
     ele.hcalOverEcalBc < 0.1 &&
@@ -137,7 +137,7 @@ bool isVetoElectron(susy::Electron ele, vector<susy::SuperCluster> superClusters
   float ele_iso = max(0., (ele.photonIso + ele.neutralHadronIso - rho*ea));
   ele_iso += ele.chargedHadronIso;
 
-  bool veto_barrel = ele.deltaEtaSuperClusterTrackAtVtx < 0.007 &&
+  bool veto_barrel = fabs(ele.deltaEtaSuperClusterTrackAtVtx) < 0.007 &&
     fabs(ele.deltaPhiSuperClusterTrackAtVtx) < 0.8 &&
     fabs(ele.sigmaIetaIeta) < 0.01 &&
     ele.hcalOverEcalBc < 0.15 &&
@@ -145,7 +145,7 @@ bool isVetoElectron(susy::Electron ele, vector<susy::SuperCluster> superClusters
     fabs(dz) < 0.2 &&
     ele_iso / ele.momentum.Pt() < 0.15;
       
-  bool veto_endcap = ele.deltaEtaSuperClusterTrackAtVtx < 0.01 &&
+  bool veto_endcap = fabs(ele.deltaEtaSuperClusterTrackAtVtx) < 0.01 &&
     ele.deltaPhiSuperClusterTrackAtVtx < 0.7 &&
     ele.sigmaIetaIeta < 0.03 &&
     d0 < 0.04 &&

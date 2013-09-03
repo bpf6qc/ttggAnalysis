@@ -1772,7 +1772,7 @@ void SusyEventAnalyzer::Acceptance() {
     leadptOverInvmass_ = candidate_pair[0]->momentum.Pt() / ((candidate_pair[0]->momentum + candidate_pair[1]->momentum).M());
     trailptOverInvmass_ = candidate_pair[1]->momentum.Pt() / ((candidate_pair[0]->momentum + candidate_pair[1]->momentum).M());
 
-    ttbarDecayMode_ = FigureTTbarDecayMode(event);
+    if(scan == "stop-bino") ttbarDecayMode_ = FigureTTbarDecayMode(event);
 
     float HT = 0.;
     TLorentzVector hadronicSystem(0., 0., 0., 0.);
@@ -2105,6 +2105,30 @@ void SusyEventAnalyzer::ttggStudy() {
   eventTree->Branch("nTightMuons", &nTightMuons, "nTightMuons/I");
   eventTree->Branch("decayMode", &decayMode, "decayMode/I");
 
+  Float_t ele_pt, ele_eta, ele_relIso, ele_dEtaIn, ele_dPhiIn, ele_sIetaIeta, ele_hOverE, ele_d0, ele_dz, ele_fabs, ele_mvaNonTrigV0, ele_dRLeadPhoton, ele_dRTrailPhoton;
+  bool ele_conversionVeto, ele_isTight, ele_isVeto;
+  int ele_nMissingHits;
+  TTree * electronTree = new TTree("eleTree"+output_code_t, "electron info");
+  electronTree->Branch("eventNumber", &eventNumber_, "eventNumber_/l");
+  electronTree->Branch("decayMode", &decayMode, "decayMode/I");
+  electronTree->Branch("pt", &ele_pt, "ele_pt/F");
+  electronTree->Branch("eta", &ele_eta, "ele_eta/F");
+  electronTree->Branch("relIso", &ele_relIso, "ele_relIso/F");
+  electronTree->Branch("dEtaIn", &ele_dEtaIn, "ele_dEtaIn/F");
+  electronTree->Branch("dPhiIn", &ele_dPhiIn, "ele_dPhiIn/F");
+  electronTree->Branch("sIetaIeta", &ele_sIetaIeta, "ele_sIetaIeta/F");
+  electronTree->Branch("hOverE", &ele_hOverE, "ele_hOverE/F");
+  electronTree->Branch("d0", &ele_d0, "ele_d0/F");
+  electronTree->Branch("dz", &ele_dz, "ele_dz/F");
+  electronTree->Branch("fabs", &ele_fabs, "ele_fabs/F");
+  electronTree->Branch("mvaNonTrigV0", &ele_mvaNonTrigV0, "ele_mvaNonTrigV0/F");
+  electronTree->Branch("dRLeadPhoton", &ele_dRLeadPhoton, "ele_dRLeadPhoton/F");
+  electronTree->Branch("dRTrailPhoton", &ele_dRTrailPhoton, "ele_dRTrailPhoton/F");
+  electronTree->Branch("conversionVeto", &ele_conversionVeto, "ele_conversionVeto/O");
+  electronTree->Branch("isTight", &ele_isTight, "ele_isTight/O");
+  electronTree->Branch("isVeto", &ele_isVeto, "ele_isVeto/O");
+  electronTree->Branch("nMissingHits", &ele_nMissingHits, "ele_nMissingHits/I");
+  
   ScaleFactorInfo sf(btagger);
   TFile * btagEfficiency = new TFile("btagEfficiency"+output_code_t+".root", "READ");
   sf.SetTaggingEfficiencies((TH1F*)btagEfficiency->Get("lEff"+output_code_t), (TH1F*)btagEfficiency->Get("cEff"+output_code_t), (TH1F*)btagEfficiency->Get("bEff"+output_code_t));
@@ -2143,8 +2167,68 @@ void SusyEventAnalyzer::ttggStudy() {
       continue;
     }
 
+    decayMode = FigureTTbarDecayMode(event);
+
     float HT = 0.;
     TLorentzVector hadronicSystem(0., 0., 0., 0.);
+
+    // already ahve a gamma-gamma candidate event at this point
+    // study electrons
+    map<TString, vector<susy::Electron> >::iterator eleMap = ev.electrons.find("gsfElectrons");
+    if(eleMap != ev.electrons.end()) {
+      for(vector<susy::Electron>::iterator ele_it = eleMap->second.begin(); ele_it != eleMap->second.end(); ele_it++) {
+
+	if((int)ele_it->gsfTrackIndex >= (int)(event->tracks).size() || (int)ele_it->gsfTrackIndex < 0) continue;
+	if((int)ele_it->superClusterIndex >= (int)event->superClusters.size() || (int)ele_it->superClusterIndex < 0) continue;
+	if(ele_it->momentum.Pt() < 2.) continue;
+
+	ele_pt = ele_it->momentum.Pt();
+	ele_eta = fabs(event->superClusters[ele_it->superClusterIndex].position.Eta());
+
+	float ea;
+	if(ele_eta < 1.0) ea = 0.13;        // ± 0.001
+	else if(ele_eta < 1.479) ea = 0.14; // ± 0.002
+	else if(ele_eta < 2.0) ea = 0.07;   // ± 0.001
+	else if(ele_eta < 2.2) ea = 0.09;   // ± 0.001
+	else if(ele_eta < 2.3) ea = 0.11;   // ± 0.002
+	else if(ele_eta < 2.4) ea = 0.11;   // ± 0.003
+	else ea = 0.14;                     // ± 0.004
+
+	ele_relIso = max(0., (ele_it->photonIso + ele_it->neutralHadronIso - event->rho*ea));
+	ele_relIso += ele_it->chargedHadronIso;
+	ele_relIso /= ele_pt;
+
+	ele_dEtaIn = fabs(ele_it->deltaEtaSuperClusterTrackAtVtx);
+	ele_dPhiIn = fabs(ele_it->deltaPhiSuperClusterTrackAtVtx);
+	ele_sIetaIeta = fabs(ele_it->sigmaIetaIeta);
+	ele_hOverE = ele_it->hcalOverEcalBc;
+	ele_d0 = fabs(d0correction(event->vertices[0].position, event->tracks[ele_it->gsfTrackIndex]));
+	ele_dz = fabs(dZcorrection(event->vertices[0].position, event->tracks[ele_it->gsfTrackIndex]));
+	ele_fabs = fabs(1/(ele_it->ecalEnergy) - 1/(ele_it->ecalEnergy/ele_it->eSuperClusterOverP));
+	ele_conversionVeto = ele_it->passConversionVeto;
+	ele_nMissingHits = ele_it->nMissingHits;
+	 
+	ele_isTight = isTightElectron(*ele_it, 
+				      event.superClusters, 
+				      event.rho25, 
+				      d0correction(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]), 
+				      dZcorrection(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]));
+
+	ele_isVeto = isVetoElectron(*ele_it,
+				    event.superClusters, 
+				    event.rho25, 
+				    d0correction(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]), 
+				    dZcorrection(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]));
+
+	ele_mvaNonTrigV0 = ele_it->mvaNonTrig;
+	
+	ele_dRLeadPhoton = deltaR(candidates[0]->momentum, ele_it->momentum);
+	ele_dRTrailPhoton = deltaR(candidates[1]->momentum, ele_it->momentum);
+	
+	electronTree->Fill();
+	
+      }
+    }
 
     findMuons(event, candidate_pair, isoMuons, looseMuons, HT);
     findElectrons(event, candidate_pair, isoEles, looseEles, HT);
@@ -2315,8 +2399,6 @@ void SusyEventAnalyzer::ttggStudy() {
     nVetoMuons = looseMuons.size();
     nTightMuons = isoMuons.size();
     
-    decayMode = FigureTTbarDecayMode(event);
-
     eventTree->Fill();
   
   } // for entries
