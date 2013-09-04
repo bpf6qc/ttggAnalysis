@@ -2107,7 +2107,7 @@ void SusyEventAnalyzer::ttggStudy() {
 
   Float_t ele_pt, ele_eta, ele_relIso, ele_dEtaIn, ele_dPhiIn, ele_sIetaIeta, ele_hOverE, ele_d0, ele_dz, ele_fabs, ele_mvaNonTrigV0, ele_dRLeadPhoton, ele_dRTrailPhoton;
   bool ele_conversionVeto, ele_isTight, ele_isVeto;
-  int ele_nMissingHits;
+  int ele_nMissingHits, ele_genMatchID, ele_genMatchMotherID;
   TTree * electronTree = new TTree("eleTree"+output_code_t, "electron info");
   electronTree->Branch("eventNumber", &eventNumber_, "eventNumber_/l");
   electronTree->Branch("decayMode", &decayMode, "decayMode/I");
@@ -2128,6 +2128,8 @@ void SusyEventAnalyzer::ttggStudy() {
   electronTree->Branch("isTight", &ele_isTight, "ele_isTight/O");
   electronTree->Branch("isVeto", &ele_isVeto, "ele_isVeto/O");
   electronTree->Branch("nMissingHits", &ele_nMissingHits, "ele_nMissingHits/I");
+  electronTree->Branch("genMatchID", &ele_genMatchID, "ele_genMatchID/I");
+  electronTree->Branch("genMatchMotherID", &ele_genMatchMotherID, "ele_genMatchMotherID/I");
   
   ScaleFactorInfo sf(btagger);
   TFile * btagEfficiency = new TFile("btagEfficiency"+output_code_t+".root", "READ");
@@ -2194,7 +2196,7 @@ void SusyEventAnalyzer::ttggStudy() {
 	else if(ele_eta < 2.4) ea = 0.11;   // ± 0.003
 	else ea = 0.14;                     // ± 0.004
 
-	ele_relIso = max(0., (ele_it->photonIso + ele_it->neutralHadronIso - event.rho*ea));
+	ele_relIso = max(0., (double)(ele_it->photonIso + ele_it->neutralHadronIso - event.rho25*ea));
 	ele_relIso += ele_it->chargedHadronIso;
 	ele_relIso /= ele_pt;
 
@@ -2225,6 +2227,24 @@ void SusyEventAnalyzer::ttggStudy() {
 	ele_dRLeadPhoton = deltaR(candidate_pair[0]->momentum, ele_it->momentum);
 	ele_dRTrailPhoton = deltaR(candidate_pair[1]->momentum, ele_it->momentum);
 	
+	bool foundGenMatch = false;
+	for(vector<susy::Particle>::iterator genit = event.genParticles.begin(); genit != event.genParticles.end(); genit++) {
+
+	  if(genit->status != 3) continue;
+	  if(genit->pdgId == event.genParticles[genit->motherIndex].pdgId) continue;
+	  if(deltaR(ele_it->momentum, genit->momentum) >= 0.1) continue;
+
+	  ele_genMatchID = genit->pdgId;
+	  ele_genMatchMotherID = event.genParticles[genit->motherIndex].pdgId;
+	  foundGenMatch = true;
+	  break;
+	}
+    
+	if(!foundGenMatch) {
+	  ele_genMatchID = 0;
+	  ele_genMatchMotherID = 0;
+	}
+	     
 	electronTree->Fill();
 	
       }

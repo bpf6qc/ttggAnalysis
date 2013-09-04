@@ -209,6 +209,24 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     true, true, false,
 		     out, metCut);
 
+  pMaker->CreatePlot("Nelectrons", false,
+		     20, 0., 20.,
+		     "nElectrons", "Number of Events",
+		     0, 4, 
+		     2.e-3, 3.e6,
+		     0., 2.1,
+		     true, true, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("Nmuons", false,
+		     20, 0., 20.,
+		     "nMuons", "Number of Events",
+		     0, 4, 
+		     2.e-3, 3.e6,
+		     0., 2.1,
+		     true, true, false,
+		     out, metCut);
+
   const int nKinematicBins = 41;
   Double_t xbins_kinematic[nKinematicBins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
 						110, 120, 130, 140, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1250, 1500, 2000};
