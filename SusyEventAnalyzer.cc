@@ -2507,8 +2507,9 @@ void SusyEventAnalyzer::SignalContent_gg() {
   
   Float_t ele_pt, ele_eta, ele_relIso, ele_dEtaIn, ele_dPhiIn, ele_sIetaIeta, ele_hOverE, ele_d0, ele_dz, ele_fabs, ele_mvaNonTrigV0, ele_dRLeadPhoton, ele_dRTrailPhoton;
   bool ele_conversionVeto, ele_isTight, ele_isVeto;
-  int ele_nMissingHits, ele_genMatchID, ele_genMatchMotherID;
-  TTree * electronTree = new TTree("eleTree"+output_code_t, "electron info");
+  int ele_nMissingHits, ele_genMatchID, ele_genMatchMotherID, decayMode;
+  ULong_t eventNumber_ = 0;
+  TTree * electronTree = new TTree("eleTree", "electron info");
   electronTree->Branch("eventNumber", &eventNumber_, "eventNumber_/l");
   electronTree->Branch("decayMode", &decayMode, "decayMode/I");
   electronTree->Branch("pt", &ele_pt, "ele_pt/F");
@@ -2649,7 +2650,6 @@ void SusyEventAnalyzer::SignalContent_gg() {
     nPhotons_80 = nPhotons_40 = nPhotons_25 = nPhotons = 0;
     nMuons = nElectrons = 0;
     nJets = nBjets = 0;
-    ele_pt = ele_eta = ele_iso = ele_relIso = ele_nonTrigV0 = 0;
     mu_pt = mu_eta = mu_iso = mu_relIso = 0;
     g_pt = g_eta = 0;
     jet_pt = jet_eta = jet_csv = jet_jp = jet_tchp = 0;
@@ -2815,12 +2815,11 @@ void SusyEventAnalyzer::SignalContent_gg() {
 					    dZcorrection(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]));
 		
 		ele_mvaNonTrigV0 = ele_it->mvaNonTrig;
-		
-		ele_dRLeadPhoton = deltaR(candidate_pair[0]->momentum, ele_it->momentum);
-		ele_dRTrailPhoton = deltaR(candidate_pair[1]->momentum, ele_it->momentum);
-		
+
 		ele_genMatchID = it->pdgId;
 		ele_genMatchMotherID = event.genParticles[it->motherIndex].pdgId;
+
+		decayMode = FigureTTbarDecayMode(event);
 		
 		electronTree->Fill();
 	
