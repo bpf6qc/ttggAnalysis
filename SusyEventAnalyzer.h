@@ -773,31 +773,18 @@ void SusyEventAnalyzer::findElectrons(susy::Event& ev, vector<susy::Photon*> can
 
       if((int)ele_it->gsfTrackIndex >= (int)(event.tracks).size() || (int)ele_it->gsfTrackIndex < 0) continue;
 
-      if(isTightElectron(*ele_it, 
-			 event.superClusters, 
-			 event.rho25, 
-			 d0correction(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]), 
-			 dZcorrection(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]))) {
-	  
+      if(isMVAElectron(*ele_it, 
+		       event.superClusters, 
+		       event.rho25, 
+		       d0correction(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]), 
+		       dZcorrection(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]))) {
+	
 	if(deltaR(candidates[0]->momentum, ele_it->momentum) > 0.5 &&
 	   deltaR(candidates[1]->momentum, ele_it->momentum) > 0.5) {
 	  isoEles.push_back(&*ele_it);
 	  HT += ele_it->momentum.Pt();
 	}
 	 	  
-      }
-
-      else if(isVetoElectron(*ele_it,
-			     event.superClusters, 
-			     event.rho25, 
-			     d0correction(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]), 
-			     dZcorrection(event.vertices[0].position, event.tracks[ele_it->gsfTrackIndex]))) {
-
-	if(deltaR(candidates[0]->momentum, ele_it->momentum) > 0.5 &&
-	   deltaR(candidates[1]->momentum, ele_it->momentum) > 0.5) {
-	  looseEles.push_back(&*ele_it);
-	  HT += ele_it->momentum.Pt();
-	}
       }
 
     }
