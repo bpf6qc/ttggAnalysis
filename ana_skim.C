@@ -22,6 +22,7 @@ void ana_skim(TString discriminant = "CSVM", bool isMC = false) {
   }
 
   SusyEventAnalyzer* sea = new SusyEventAnalyzer(chain);
+  sea->SetUseDPhiCut(true);
 
   // configuration parameters
   // any values given here will replace the default values

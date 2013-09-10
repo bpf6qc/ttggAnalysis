@@ -59,6 +59,7 @@ void ana_ttggStudy(TString scan = "stop-bino", TString discriminant = "CSVM", bo
   }
 
   SusyEventAnalyzer * sea = new SusyEventAnalyzer(chain);
+  sea->SetUseDPhiCut(true);
 
   sea->SetScanName(scan);
   sea->SetPrintInterval(1e4);

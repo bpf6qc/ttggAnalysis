@@ -144,9 +144,9 @@ void SusyEventAnalyzer::CalculateBtagEfficiency() {
     int nPVertex = GetNumberPV(event);
     if(nPVertex == 0) continue;
 
-    findPhotons_prioritizeCount(event, candidate_pair, event_type);
-    //findPhotons_prioritizeEt(event, candidate_pair, event_type);
-    //findPhotons_simple(event, candidate_pair, event_type, 0); // 0 (L), 1 (M), 2 (T)
+    findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
+    //findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
+    //findPhotons_simple(event, candidate_pair, event_type, 0, useDPhiCut); // 0 (L), 1 (M), 2 (T)
 
     if(event_type != 1) {
       nCnt[28][0]++;
@@ -818,9 +818,9 @@ void SusyEventAnalyzer::Data() {
     susy::MET* pfNoPileUpMet = &(event.metMap.find("pfNoPileUpMet")->second);
     susy::MET* pfMVAMet      = &(event.metMap.find("pfMVAMet")->second);
 
-    findPhotons_prioritizeCount(event, candidate_pair, event_type);
-    //findPhotons_prioritizeEt(event, candidate_pair, event_type);
-    //findPhotons_simple(event, candidate_pair, event_type, 0); // 0 (L), 1 (M), 2 (T)
+    findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
+    //findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
+    //findPhotons_simple(event, candidate_pair, event_type, 0, useDPhiCut); // 0 (L), 1 (M), 2 (T)
 
     if(event_type == 0) {
       nCnt[28][0]++;
@@ -1741,9 +1741,9 @@ void SusyEventAnalyzer::Acceptance() {
     susy::MET* pfMVAMet      = &(event.metMap.find("pfMVAMet")->second);
     susy::MET* genMet        = &(event.metMap.find("genMetTrue")->second);
 
-    findPhotons_prioritizeCount(event, candidate_pair, event_type);
-    //findPhotons_prioritizeEt(event, candidate_pair, event_type);
-    //findPhotons_simple(event, candidate_pair, event_type, 0); // 0 (L), 1 (M), 2 (T)
+    findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
+    //findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
+    //findPhotons_simple(event, candidate_pair, event_type, 0, useDPhiCut); // 0 (L), 1 (M), 2 (T)
 
     if(event_type == 0) {
       nCnt[28][0]++;
@@ -2162,7 +2162,7 @@ void SusyEventAnalyzer::ttggStudy() {
     int nPVertex = GetNumberPV(event);
     if(nPVertex == 0) continue;
 
-    findPhotons_prioritizeCount(event, candidate_pair, event_type);
+    findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
     
     if(event_type == 0) {
       nCnt[28][0]++;

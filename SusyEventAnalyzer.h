@@ -117,6 +117,8 @@ class SusyEventAnalyzer {
   void SetUseTrigger(bool v) { useTrigger = v; }
   void SetUseJson(bool v)    { useJson = v; }
 
+  void SetUseDPhiCut(bool v) { useDPhiCut = v; }
+
   void IncludeAJson(TString const&);
   void SetOutput(TString const& v) { outputName = v; }
   void SetPrintInterval(int v) { printInterval = v; }
@@ -125,9 +127,9 @@ class SusyEventAnalyzer {
   void CopyEvents(bool v) { copyEvents = v; }
 
   // major analysis logic
-  void findPhotons_prioritizeCount(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type);
-  void findPhotons_prioritizeEt(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type);
-  void findPhotons_simple(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, int wp);
+  void findPhotons_prioritizeCount(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, bool doDPhiCut);
+  void findPhotons_prioritizeEt(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, bool doDPhiCut);
+  void findPhotons_simple(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, int wp, bool doDPhiCut);
   void findJets(susy::Event& ev, vector<susy::Photon*> candidates,
 		vector<susy::Muon*> isoMuons, vector<susy::Muon*> looseMuons,
 		vector<susy::Electron*> isoEles, vector<susy::Electron*> looseEles,
@@ -185,6 +187,8 @@ class SusyEventAnalyzer {
   bool doPileupReweighting;
   bool useTrigger;
   bool useJson;
+
+  bool useDPhiCut;
 
   TString scan;
 
@@ -408,7 +412,7 @@ double SusyEventAnalyzer::dZcorrection(TVector3& beamSpot, susy::Track& track) c
   return dz;
 }
 
-void SusyEventAnalyzer::findPhotons_prioritizeCount(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type) {
+void SusyEventAnalyzer::findPhotons_prioritizeCount(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, bool doDPhiCut) {
 
   vector<susy::Photon*> g_photons, ef_photons;
 
@@ -439,7 +443,7 @@ void SusyEventAnalyzer::findPhotons_prioritizeCount(susy::Event& ev, vector<susy
 	  float dPhi = TVector2::Phi_mpi_pi(g_photons[i]->caloPosition.Phi() - g_photons[j]->caloPosition.Phi());
 	  float dR = sqrt(dEta*dEta + dPhi*dPhi);
 	  
-	  if(dR > 0.6 && fabs(dPhi) > 0.05) {
+	  if(dR > 0.6 && (!doDPhiCut || fabs(dPhi) > 0.05)) {
 	    event_type = 1;
 	    candidates.push_back(g_photons[i]);
 	    candidates.push_back(g_photons[j]);
@@ -464,7 +468,7 @@ void SusyEventAnalyzer::findPhotons_prioritizeCount(susy::Event& ev, vector<susy
 	float dPhi = TVector2::Phi_mpi_pi(g_photons[i]->caloPosition.Phi() - ef_photons[j]->caloPosition.Phi());
 	float dR = sqrt(dEta*dEta + dPhi*dPhi);
 	
-	if(dR > 0.6 && fabs(dPhi) > 0.05) {
+	if(dR > 0.6 && (!doDPhiCut || fabs(dPhi) > 0.05)) {
 	  
 	  if(ef_photons[j]->nPixelSeeds == 0) event_type = 5; //gf
 	  else event_type = 2; //ge
@@ -493,7 +497,7 @@ void SusyEventAnalyzer::findPhotons_prioritizeCount(susy::Event& ev, vector<susy
 	  float dPhi = TVector2::Phi_mpi_pi(ef_photons[i]->caloPosition.Phi() - ef_photons[j]->caloPosition.Phi());
 	  float dR = sqrt(dEta*dEta + dPhi*dPhi);
 	  
-	  if(dR > 0.6 && fabs(dPhi) > 0.05) {
+	  if(dR > 0.6 && (!doDPhiCut || fabs(dPhi) > 0.05)) {
 	    
 	    if(!(ef_photons[i]->nPixelSeeds == 0) && !(ef_photons[j]->nPixelSeeds == 0)) {
 	      event_type = 3;
@@ -523,7 +527,7 @@ void SusyEventAnalyzer::findPhotons_prioritizeCount(susy::Event& ev, vector<susy
 
 }
 
-void SusyEventAnalyzer::findPhotons_prioritizeEt(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type) {
+void SusyEventAnalyzer::findPhotons_prioritizeEt(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, bool doDPhiCut) {
 
   vector<susy::Photon*> em_objects;
   
@@ -558,7 +562,7 @@ void SusyEventAnalyzer::findPhotons_prioritizeEt(susy::Event& ev, vector<susy::P
 	  float dPhi = TVector2::Phi_mpi_pi(em_objects[i]->caloPosition.Phi() - em_objects[j]->caloPosition.Phi());
 	  float dR = sqrt(dEta*dEta + dPhi*dPhi);
 	    
-	  if(dR > 0.6 && fabs(dPhi) > 0.05) {
+	  if(dR > 0.6 && (!doDPhiCut || fabs(dPhi) > 0.05)) {
 	      
 	    if(is_eg(*em_objects[i], event.rho25) && is_eg(*em_objects[j], event.rho25)) {
 	      if(em_objects[i]->nPixelSeeds == 0 &&
@@ -610,7 +614,7 @@ void SusyEventAnalyzer::findPhotons_prioritizeEt(susy::Event& ev, vector<susy::P
   return;
 }
 
-void SusyEventAnalyzer::findPhotons_simple(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, int wp) {
+void SusyEventAnalyzer::findPhotons_simple(susy::Event& ev, vector<susy::Photon*>& candidates, int& event_type, int wp, bool doDPhiCut) {
 
   vector<susy::Photon*> photons;
   
@@ -637,7 +641,7 @@ void SusyEventAnalyzer::findPhotons_simple(susy::Event& ev, vector<susy::Photon*
 	  float dPhi = TVector2::Phi_mpi_pi(photons[i]->caloPosition.Phi() - photons[j]->caloPosition.Phi());
 	  float dR = sqrt(dEta*dEta + dPhi*dPhi);
 	    
-	  if(dR > 0.6 && fabs(dPhi) > 0.05) {
+	  if(dR > 0.6 && (!doDPhiCut || fabs(dPhi) > 0.05)) {
 	    event_type = 1;
 	    candidates.push_back(photons[i]);
 	    candidates.push_back(photons[j]);
