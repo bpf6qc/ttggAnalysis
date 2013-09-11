@@ -65,13 +65,11 @@ class SusyEventAnalyzer {
   virtual ~SusyEventAnalyzer();
 
   virtual void Data();
-  virtual void Filter();
   virtual void Acceptance();
   virtual void ttggStudy();
   virtual void CalculateBtagEfficiency();
   virtual void PileupWeights(TString puFile);
   virtual void SignalContent_gg();
-  virtual void Step0();
 
   // utility functions
   float deltaR(TLorentzVector& p1, TLorentzVector& p2);

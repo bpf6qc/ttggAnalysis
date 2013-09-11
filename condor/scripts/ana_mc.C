@@ -21,7 +21,7 @@ void ana_mc(TString scan = "DATASETNAME", TString discriminant = "CSVM", bool is
   }
 
   SusyEventAnalyzer* sea = new SusyEventAnalyzer(chain);
-  sea->SetUseDPhiCut(true);
+  sea->SetUseDPhiCut(false);
 
   // configuration parameters
   // any values given here will replace the default values

@@ -59,7 +59,7 @@ void ana_signal(TString scan = "stop-bino", TString discriminant = "CSVM", bool 
   }
 
   SusyEventAnalyzer * sea = new SusyEventAnalyzer(chain);
-  sea->SetUseDPhiCut(true);
+  sea->SetUseDPhiCut(false);
 
   sea->SetScanName(scan);
   sea->SetPrintInterval(1e4);
