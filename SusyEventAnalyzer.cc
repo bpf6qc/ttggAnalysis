@@ -1493,10 +1493,10 @@ void SusyEventAnalyzer::Acceptance() {
 	  ffTrees[chan]->Fill();
 	}
 
-	else if(abs(event_type) == 5) {
+	else if(abs(event_type) == cGF) {
 	  nCnt[5][chan]++;
 	  gfTrees[chan]->Fill();
-	} // if ff jet event
+	}
 
       } // for channels
 

@@ -15,10 +15,10 @@ TString categories[nCategories] = {"gg", "eg", "ff", "gf"};
 const int nChannels = 8;
 
 TString channels[nChannels] = {"nojet", "j", "b", "jj", "bj", "muJets", "eleJets", "hadronic"};
-unsigned int nJetReq[nChannels] = {0, 1, 1, 2, 2, 2, 4};
-unsigned int nBtagReq[nChannels] = {0, 0, 1, 1, 1, 1, 1};
-int nEleReq[nChannels] = {-1, -1, -1, -1, 0, 1, 0};
-int nMuonReq[nChannels] = {-1, -1, -1, -1, 1, 0, 0};
+unsigned int nJetReq[nChannels] = {0, 1, 1, 2, 2, 2, 2, 4};
+unsigned int nBtagReq[nChannels] = {0, 0, 1, 0, 1, 1, 1, 1};
+int nEleReq[nChannels] = {-1, -1, -1, -1, -1, 0, 1, 0};
+int nMuonReq[nChannels] = {-1, -1, -1, -1, -1, 1, 0, 0};
 
 typedef std::vector<std::vector<TH1F*> > VTH1F;
 typedef std::vector<std::vector<TH2F*> > VTH2F;
@@ -31,13 +31,13 @@ Double_t mst_ext[22] = {100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 6
 Double_t mGluino_ext = 5025;
 Double_t mBino_ext[5] = {25, 50, 75, 100, 125};
 
-VTH1F BookTH1FVector(TString name, TString title, Int_t nBinsX, Double_t xlo, Double_t xhi, int nCategories, TString categories[], int nChannels, TString channels[]) {
+VTH1F BookTH1FVector(TString name, TString title, Int_t nBinsX, Double_t xlo, Double_t xhi, int nCategs, TString categs[], int nChans, TString chans[]) {
   
   VTH1F vv;
-  for(int i = 0; i < nCategories; i++) {
+  for(int i = 0; i < nCategs; i++) {
     vector<TH1F*> v;
-    for(int j = 0; j < nChannels; j++) {
-      v.push_back(new TH1F(name+"_"+categories[i]+"_"+channels[j], title, nBinsX, xlo, xhi));
+    for(int j = 0; j < nChans; j++) {
+      v.push_back(new TH1F(name+"_"+categs[i]+"_"+chans[j], title, nBinsX, xlo, xhi));
       v[j]->Sumw2();
     }
     vv.push_back(v);
@@ -47,13 +47,13 @@ VTH1F BookTH1FVector(TString name, TString title, Int_t nBinsX, Double_t xlo, Do
   return vv;
 }
 
-VTH2F BookTH2FVector(TString name, TString title, Int_t nBinsX, Double_t xlo, Double_t xhi, Int_t nBinsY, Double_t ylo, Double_t yhi, int nCategories, TString categories[], int nChannels, TString channels[]) {
+VTH2F BookTH2FVector(TString name, TString title, Int_t nBinsX, Double_t xlo, Double_t xhi, Int_t nBinsY, Double_t ylo, Double_t yhi, int nCategs, TString categs[], int nChans, TString chans[]) {
 
   VTH2F vv;
-  for(int i = 0; i < nCategories; i++) {
+  for(int i = 0; i < nCategs; i++) {
     vector<TH2F*> v;
-    for(int j = 0; j < nChannels; j++) {
-      v.push_back(new TH2F(name+"_"+categories[i]+"_"+channels[j], title, nBinsX, xlo, xhi, nBinsY, ylo, yhi));
+    for(int j = 0; j < nChans; j++) {
+      v.push_back(new TH2F(name+"_"+categs[i]+"_"+chans[j], title, nBinsX, xlo, xhi, nBinsY, ylo, yhi));
     }
     vv.push_back(v);
     v.clear();
