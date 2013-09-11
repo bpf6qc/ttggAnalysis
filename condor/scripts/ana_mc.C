@@ -43,6 +43,7 @@ void ana_mc(TString scan = "DATASETNAME", TString discriminant = "CSVM", bool is
   f_names.push_back("HLT_Photon36_R9Id85_Photon22_R9Id85_v");
   std::vector<int> f_types;
   f_types.push_back(4);
+  f_types.push_back(5);
   sea->AddHlt(f_names, f_types);
 
   sea->SetUseTrigger(true);

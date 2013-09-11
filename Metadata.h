@@ -8,13 +8,7 @@
 
 using namespace std;
 
-enum eventTypes = {
-  cNothing,
-  cGG,
-  cEG,
-  cEE,
-  cFF,
-  cGF};
+enum eventTypes {cNothing, cGG, cEG, cEE, cFF, cGF};
 
 const int nCategories = 4;
 TString categories[nCategories] = {"gg", "eg", "ff", "gf"};
