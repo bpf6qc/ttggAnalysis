@@ -1062,9 +1062,6 @@ void prep_signal(TString req) {
     sprintf(code, "_mst_%d_m1_%d", index1, index2);
     TString code_t = code;
 
-// DURP
-if(index1 != 460 || index2 != 175) continue;
-
     TFile * f = new TFile("../acceptance/signal_contamination"+code_t+".root", "READ");
     if(f->IsZombie()) {
       f->Close();
@@ -1073,9 +1070,13 @@ if(index1 != 460 || index2 != 175) continue;
     
     TTree * ggTree = (TTree*)f->Get("gg_"+req+"_EvtTree"+code_t);
     TTree * ffTree = (TTree*)f->Get("ff_"+req+"_EvtTree"+code_t);
+
+    TH1D * gg;
+    TH1D * ff;
+
     if(ggTree->GetEntries() > 0) {
-      TH1D * gg = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", ggTree, "met_gg_"+req+code_t, "met_gg_"+req+code_t, 400, 0., 2000.);
-      TH1D * ff = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", ffTree, "met_ff_"+req+code_t, "met_ff_"+req+code_t, 400, 0., 2000.);
+      gg = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", ggTree, "met_gg_"+req+code_t, "met_gg_"+req+code_t, 400, 0., 2000.);
+      ff = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", ffTree, "met_ff_"+req+code_t, "met_ff_"+req+code_t, 400, 0., 2000.);
 
       out->cd();
       gg->Write();
@@ -1090,12 +1091,10 @@ if(index1 != 460 || index2 != 175) continue;
     //double n = h->GetBinContent(1);
     double n = 15000.;
 
-    TH1D * met_gg = (TH1D*)f->Get("met"+code_t+"_gg_"+req);
-    double acceptance = met_gg->Integral();
+    double acceptance = gg->Integral();
     if(n > 0) h_acc->Fill(index1, index2, acceptance / n);
 
-    TH1D * met_ff = (TH1D*)f->Get("met"+code_t+"_ff_"+req);
-    double contamination = met_ff->Integral();
+    double contamination = ff->Integral();
     if(n > 0) h_contam->Fill(index1, index2, contamination / acceptance);
 
     f->Close();

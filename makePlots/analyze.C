@@ -33,10 +33,11 @@ using namespace std;
 
 void mvaTreeMaker(TString input, int channelNumber) {
 
-  const int nChannels = 7;
+  const int nChannels = 8;
   TString channels[nChannels] = {
     "nojet",
     "j", "b",
+    "jj",
     "bj",
     "muJets", // gg+mu+bj + X (dilep veto)
     "eleJets",
@@ -221,11 +222,11 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
   gStyle->SetOptStat(0000);
   gStyle->SetOptTitle(0);
 
-  const int nChannels = 7;
+  const int nChannels = 8;
   TString channels[nChannels] = {
     "nojet",
     "j", "b",
-    "bj",
+    "jj", "bj",
     "muJets", // gg+mu+bj + X (dilep veto)
     "eleJets",
     "hadronic" // gg+5j1b + X (lep veto)
@@ -244,9 +245,8 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
   TFile * fSig460 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/acceptance/signal_contamination_mst_460_m1_175.root", "READ");
   TTree * sigaTree = (TTree*)fSig460->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175");
 
-  TFile * fSig800 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/acceptance/signal_contamination_mst_560_m1_325.root", "READ");
-  //TTree * ggTree_800 = (TTree*)fSig800->Get("gg_"+channels[channel]+"_EvtTree_mst_560_m1_325");
-  TTree * sigbTree = (TTree*)fSig800->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175"); // DURP
+  TFile * fSig560 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/acceptance/signal_contamination_mst_560_m1_325.root", "READ");
+  TTree * sigbTree = (TTree*)fSig560->Get("gg_"+channels[channel]+"_EvtTree_mst_560_m1_325");
   
   // pixel veto
   Float_t fakeRate = 0.0199;

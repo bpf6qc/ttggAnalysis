@@ -43,11 +43,11 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   gStyle->SetOptStat(0000);
   gStyle->SetOptTitle(0);
 
-  const int nChannels = 7;
+  const int nChannels = 8;
   TString channels[nChannels] = {
     "nojet",
     "j", "b",
-    "bj",
+    "jj", "bj",
     "muJets", // gg+mu+bj + X (dilep veto)
     "eleJets",
     "hadronic" // gg+5j1b + X (lep veto)
@@ -102,8 +102,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   TTree * sigaTree = (TTree*)fSigA->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175");
 
   TFile * fSigB = new TFile("../acceptance/signal_contamination_mst_560_m1_325.root", "READ");
-  //TTree * sigbTree = (TTree*)fSigB->Get("gg_"+channels[channel]+"_EvtTree_mst_560_m1_325");
-  TTree * sigbTree = (TTree*)fSigB->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175"); // DURP
+  TTree * sigbTree = (TTree*)fSigB->Get("gg_"+channels[channel]+"_EvtTree_mst_560_m1_325");
 
   TCanvas * can = new TCanvas("canvas", "Plot", 10, 10, 2000, 2000);
 
