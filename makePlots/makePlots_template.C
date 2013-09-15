@@ -7,8 +7,8 @@ void makePlots() {
 
   TString input = "FILE_TO_RUN";
   bool addMC = true;
-  TString intLumi = "19.789";
-  int intLumi_int = 19789;
+  TString intLumi = "19.7";
+  int intLumi_int = 19.712;
   
   bool useFF = true;
   bool useDifferenceSystematic = false;
@@ -17,7 +17,7 @@ void makePlots() {
 
   bool displayKStest = true;
 
-  for(int i = 0; i < 7; i++) {
+  for(int i = 0; i < 8; i++) {
     mvaTreeMaker(input, i);
     analyze(input, addMC, i, intLumi, intLumi_int, useFF, useDifferenceSystematic, metCut, displayKStest);
   }  

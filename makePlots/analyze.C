@@ -242,10 +242,10 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
   TTree * ffTree = (TTree*)in->Get("ff_"+channels[channel]+"_EvtTree");
   TTree * egTree = (TTree*)in->Get("eg_"+channels[channel]+"_EvtTree");
 
-  TFile * fSig460 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/acceptance/signal_contamination_mst_460_m1_175.root", "READ");
+  TFile * fSig460 = new TFile("../acceptance/signal_contamination_mst_460_m1_175.root", "READ");
   TTree * sigaTree = (TTree*)fSig460->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175");
 
-  TFile * fSig560 = new TFile("/uscms_data/d2/bfrancis/btagRA3/CMSSW_5_3_8_patch3/src/SusyAnalysis/SusyNtuplizer/macro/acceptance/signal_contamination_mst_560_m1_325.root", "READ");
+  TFile * fSig560 = new TFile("../acceptance/signal_contamination_mst_560_m1_325.root", "READ");
   TTree * sigbTree = (TTree*)fSig560->Get("gg_"+channels[channel]+"_EvtTree_mst_560_m1_325");
   
   // pixel veto
@@ -504,6 +504,6 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 
   in->Close();
   fSig460->Close();
-  fSig800->Close();
+  fSig560->Close();
 
 }

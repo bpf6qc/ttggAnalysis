@@ -1283,17 +1283,21 @@ void prep_signal(TString req) {
     }
     
     TTree * ggTree = (TTree*)f->Get("gg_"+req+"_EvtTree"+code_t);
+    TTree * gfTree = (TTree*)f->Get("gf_"+req+"_EvtTree"+code_t);
     TTree * ffTree = (TTree*)f->Get("ff_"+req+"_EvtTree"+code_t);
 
     TH1D * gg;
+    TH1D * gf;
     TH1D * ff;
 
     if(ggTree->GetEntries() > 0) {
       gg = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", ggTree, "met_gg_"+req+code_t, "met_gg_"+req+code_t, 400, 0., 2000.);
+      gf = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", ggTree, "met_gf_"+req+code_t, "met_gf_"+req+code_t, 400, 0., 2000.);
       ff = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", ffTree, "met_ff_"+req+code_t, "met_ff_"+req+code_t, 400, 0., 2000.);
 
       out->cd();
       gg->Write();
+      gf->Write();
       ff->Write();
     }
     else {

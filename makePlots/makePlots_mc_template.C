@@ -7,14 +7,14 @@ void makePlots() {
 
   TString input = "FILE_TO_RUN";
   bool addMC = true;
-  int intLumi = 19789;
+  int intLumi = 19712; // quote to 19.7
 
   double metCut = -1.;
 
   bool useTTbar = false;
   bool displayKStest = true;
 
-  for(int i = 0; i < 7; i++) {
+  for(int i = 0; i < 8; i++) {
     analyze(input, addMC, i, intLumi, metCut, useTTbar, displayKStest);
   }  
 
