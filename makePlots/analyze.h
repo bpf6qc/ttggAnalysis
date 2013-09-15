@@ -1292,7 +1292,7 @@ void prep_signal(TString req) {
 
     if(ggTree->GetEntries() > 0) {
       gg = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", ggTree, "met_gg_"+req+code_t, "met_gg_"+req+code_t, 400, 0., 2000.);
-      gf = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", ggTree, "met_gf_"+req+code_t, "met_gf_"+req+code_t, 400, 0., 2000.);
+      gf = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", gfTree, "met_gf_"+req+code_t, "met_gf_"+req+code_t, 400, 0., 2000.);
       ff = (TH1D*)SignalHistoFromTree(1.0, true, "pfMET", ffTree, "met_ff_"+req+code_t, "met_ff_"+req+code_t, 400, 0., 2000.);
 
       out->cd();
