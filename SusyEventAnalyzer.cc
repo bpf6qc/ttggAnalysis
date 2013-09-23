@@ -2524,6 +2524,14 @@ void SusyEventAnalyzer::SignalContent_gg() {
 
 void SusyEventAnalyzer::PhotonInfo() {
 
+  const int NCNT = 50;
+  int nCnt[NCNT][nChannels];
+  for(int i = 0; i < NCNT; i++) {
+    for(int j = 0; j < nChannels; j++) {
+    nCnt[i][j] = 0;
+    }
+  }
+
   TFile* out = new TFile("photonInfo_"+outputName+"_"+btagger+".root", "RECREATE");
   out->cd();
 
@@ -2587,8 +2595,6 @@ void SusyEventAnalyzer::PhotonInfo() {
   Long64_t jentry = 0;
   while(jentry != processNEvents && event.getEntry(jentry++) != 0) {
 
-    jentry_ = jentry;
-
     if(printLevel > 0 || (printInterval > 0 && (jentry >= printInterval && jentry%printInterval == 0))) {
       cout << int(jentry) << " events processed with run = " << event.runNumber << ", event = " << event.eventNumber << endl;
     }
@@ -2629,7 +2635,7 @@ void SusyEventAnalyzer::PhotonInfo() {
       continue;
     }
 
-    map<TString, susy::PFJetCollection>::iterator iJets = ev.pfJets.find("ak5");
+    map<TString, susy::PFJetCollection>::iterator iJets = event.pfJets.find("ak5");
     susy::PFJetCollection& jetColl = iJets->second;
 
     for(unsigned int i = 0; i < candidate_pair.size(); i++) {
