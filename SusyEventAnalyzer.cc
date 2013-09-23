@@ -2521,3 +2521,251 @@ void SusyEventAnalyzer::SignalContent_gg() {
 
   
 }
+
+void SusyEventAnalyzer::PhotonInfo() {
+
+  TFile* out = new TFile("photonInfo_"+outputName+"_"+btagger+".root", "RECREATE");
+  out->cd();
+
+  float eta, et, phi, hOverE, neutralHadIso, photonIso, chargedHadIso, r9, sIetaIeta, sIphiIphi, worstOtherVtxChargedHadronIso, MVAregEnergy;
+  int nPixelSeeds;
+  bool isGamma, isFake, isElectron, hasJetMatch;
+
+  float jet_dR, jet_dPhi;
+
+  float chargedHadronEnergy, neutralHadronEnergy, photonEnergy, electronEnergy, muonEnergy, HFHadronEnergy, HFEMEnergy, chargedEmEnergy, chargedMuEnergy, neutralEmEnergy;
+  int chargedHadronMultiplicity, neutralHadronMultiplicity, photonMultiplicity, electronMultiplicity, muonMultiplicity, HFHadronMultiplicity, HFEMMultiplicity, chargedMultiplicity, neutralMultiplicity;
+    
+  TTree * photonTree = new TTree("photonTree", "photon info");
+  photonTree->Branch("eta", &eta, "eta/F");
+  photonTree->Branch("et", &et, "et/F");
+  photonTree->Branch("phi", &phi, "phi/F");
+  photonTree->Branch("hOverE", &hOverE, "hOverE/F");
+  photonTree->Branch("neutralHadIso", &neutralHadIso, "neutralHadIso/F");
+  photonTree->Branch("photonIso", &photonIso, "photonIso/F");
+  photonTree->Branch("chargedHadIso", &chargedHadIso, "chargedHadIso/F");
+  photonTree->Branch("r9", &r9, "r9/F");
+  photonTree->Branch("sIetaIeta", &sIetaIeta, "sIetaIeta/F");
+  photonTree->Branch("sIphiIphi", &sIphiIphi, "sIphiIphi/F");
+  photonTree->Branch("worstOtherVtxChargedHadronIso", &worstOtherVtxChargedHadronIso, "worstOtherVtxChargedHadronIso/F");
+  photonTree->Branch("MVAregEnergy", &MVAregEnergy, "MVAregEnergy/F");
+  photonTree->Branch("nPixelSeeds", &nPixelSeeds, "nPixelSeeds/I");
+  photonTree->Branch("isGamma", &isGamma, "isGamma/O");
+  photonTree->Branch("isFake", &isFake, "isFake/O");
+  photonTree->Branch("isElectron", &isElectron, "isElectron/O");
+  photonTree->Branch("hasJetMatch", &hasJetMatch, "hasJetMatch/O");
+  photonTree->Branch("jet_dR", &jet_dR, "jet_dR/F");
+  photonTree->Branch("jet_dPhi", &jet_dPhi, "jet_dPhi/F");
+
+  photonTree->Branch("jet_chargedHadronEnergy", &chargedHadronEnergy, "chargedHadronEnergy/F");
+  photonTree->Branch("jet_neutralHadronEnergy", &neutralHadronEnergy, "neutralHadronEnergy/F");
+  photonTree->Branch("jet_photonEnergy", &photonEnergy, "photonEnergy/F");
+  photonTree->Branch("jet_electronEnergy", &electronEnergy, "electronEnergy/F");
+  photonTree->Branch("jet_muonEnergy", &muonEnergy, "muonEnergy/F");
+  photonTree->Branch("jet_HFHadronEnergy", &HFHadronEnergy, "HFHadronEnergy/F");
+  photonTree->Branch("jet_HFEMEnergy", &HFEMEnergy, "HFEMEnergy/F");
+  photonTree->Branch("jet_chargedEmEnergy", &chargedEmEnergy, "chargedEmEnergy/F");
+  photonTree->Branch("jet_chargedMuEnergy", &chargedMuEnergy, "chargedMuEnergy/F");
+  photonTree->Branch("jet_neutralEmEnergy", &neutralEmEnergy, "neutralEmEnergy/F");
+  photonTree->Branch("jet_chargedHadronMultiplicity", &chargedHadronMultiplicity, "chargedHadronMultiplicity/I");
+  photonTree->Branch("jet_neutralHadronMultiplicity", &neutralHadronMultiplicity, "neutralHadronMultiplicity/I");
+  photonTree->Branch("jet_photonMultiplicity", &photonMultiplicity, "photonMultiplicity/I");
+  photonTree->Branch("jet_electronMultiplicity", &electronMultiplicity, "electronMultiplicity/I");
+  photonTree->Branch("jet_muonMultiplicity", &muonMultiplicity, "muonMultiplicity/I");
+  photonTree->Branch("jet_HFHadronMultiplicity", &HFHadronMultiplicity, "HFHadronMultiplicity/I");
+  photonTree->Branch("jet_HFEMMultiplicity", &HFEMMultiplicity, "HFEMMultiplicity/I");
+  photonTree->Branch("jet_chargedMultiplicity", &chargedMultiplicity, "chargedMultiplicity/I");
+  photonTree->Branch("jet_neutralMultiplicity", &neutralMultiplicity, "neutralMultiplicity/I");
+
+  bool quitAfterProcessing = false;
+
+  Long64_t nEntries = fTree->GetEntries();
+  cout << "Total events in files : " << nEntries << endl;
+  cout << "Events to be processed : " << processNEvents << endl;
+
+  // start event looping
+  Long64_t jentry = 0;
+  while(jentry != processNEvents && event.getEntry(jentry++) != 0) {
+
+    jentry_ = jentry;
+
+    if(printLevel > 0 || (printInterval > 0 && (jentry >= printInterval && jentry%printInterval == 0))) {
+      cout << int(jentry) << " events processed with run = " << event.runNumber << ", event = " << event.eventNumber << endl;
+    }
+    
+    nCnt[0][0]++; // events
+
+    if(useJson && event.isRealData && !IsGoodLumi(event.runNumber, event.luminosityBlockNumber)) continue;
+    nCnt[1][0]++;
+
+    if(event.isRealData) {
+      if(event.passMetFilters() != 1 ||
+	 event.passMetFilter(susy::kEcalLaserCorr) != 1 ||
+	 event.passMetFilter(susy::kManyStripClus53X) != 1 ||
+	 event.passMetFilter(susy::kTooManyStripClus53X) != 1) {
+	nCnt[21][0]++;
+	continue;
+      }
+    }
+
+    vector<susy::Photon*> candidate_pair;
+
+    int event_type = 0;
+
+    int nPVertex = GetNumberPV(event);
+    if(nPVertex == 0) continue;
+
+    findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
+
+    if(event_type == 0) {
+      nCnt[28][0]++;
+      continue;
+    }
+
+    bool passHLT = useTrigger ? PassTriggers(abs(event_type)) : true;
+    if(!passHLT) {
+      const int nPos = 30 + abs(event_type);
+      nCnt[nPos][0]++;
+      continue;
+    }
+
+    map<TString, susy::PFJetCollection>::iterator iJets = ev.pfJets.find("ak5");
+    susy::PFJetCollection& jetColl = iJets->second;
+
+    for(unsigned int i = 0; i < candidate_pair.size(); i++) {
+      
+      eta = candidate_pair[i]->caloPosition.Eta();
+      phi = candidate_pair[i]->caloPosition.Phi();
+      et = candidate_pair[i]->momentum.Et();
+      hOverE = candidate_pair[i]->hadTowOverEm;
+      neutralHadIso = neutralHadronIso_corrected(candidate_pair[i], event.rho25);
+      photonIso = photonIso_corrected(candidate_pair[i], event.rho25);
+      chargedHadIso = chargedHadronIso_corrected(candidate_pair[i], event.rho25);
+      r9 = candidate_pair[i]->r9;
+      sIetaIeta = candidate_pair[i]->sigmaIetaIeta;
+      sIphiIphi = candidate_pair[i]->sigmaIphiIphi;
+      worstOtherVtxChargedHadronIso = candidate_pair[i]->worstOtherVtxChargedHadronIso;
+      MVAregEnergy = candidate_pair[i]->MVAregEnergy;
+      nPixelSeeds = candidate_pair[i]->nPixelSeeds;
+      isGamma = is_eg(candidate_pair[i], event.rho25) && nPixelSeeds == 0;
+      isElectron = is_eg(candidate_pair[i], event.rho25) && nPixelSeeds != 0;
+      isFake = is_f(candidate_pair[i], event.rho25) && nPixelSeeds == 0;
+
+      bool matched = false;
+      
+      for(vector<susy::PFJet>::iterator iJet = jetColl.begin(); iJet != jetColl.end(); iJet++) {
+	float theJES = 1.0;
+	map<TString, Float_t>::const_iterator iCorr1 = iJet->jecScaleFactors.find("L1FastL2L3");
+	map<TString, Float_t>::const_iterator iCorr2 = iJet->jecScaleFactors.find("L2L3");
+	TLorentzVector corrP4 = iJet->momentum;
+	if(iCorr1 != iJet->jecScaleFactors.end()) {
+	  if(iCorr2 != iJet->jecScaleFactors.end()) {
+	    theJES = iCorr1->second / iCorr2->second;
+	    corrP4 = theJES * iJet->momentum;
+	  }
+	  else {
+	    theJES = iCorr1->second;
+	    corrP4 = theJES * iJet->momentum;
+	  }
+	}
+	
+	float dEta = corrP4.Eta() - (*it)->caloPosition.Eta();
+	float dPhi = TVector2::Phi_mpi_pi(corrP4.Phi() - (*it)->caloPosition.Phi());
+	float dR = sqrt(dEta*dEta + dPhi*dPhi);
+	
+	if(corrP4.Et() > 20. &&
+	   fabs(corrP4.Eta()) < 2.6 &&
+	   dR < 0.3) {
+	  
+	  matched = true;
+
+	  hasJetMatch = true;
+	  jet_dR = dR;
+	  jet_dPhi = dPhi;
+
+	  chargedHadronEnergy = iJet->chargedHadronEnergy;
+	  neutralHadronEnergy = iJet->neutralHadronEnergy;
+	  photonEnergy = iJet->photonEnergy;
+	  electronEnergy = iJet->electronEnergy;
+	  muonEnergy = iJet->muonEnergy;
+	  HFHadronEnergy = iJet->HFHadronEnergy;
+	  HFEMEnergy = iJet->HFEMEnergy;
+	  chargedEmEnergy = iJet->chargedEmEnergy;
+	  chargedMuEnergy = iJet->chargedMuEnergy;
+	  neutralEmEnergy = iJet->neutralEmEnergy;
+	  chargedHadronMultiplicity = iJet->chargedHadronMultiplicity;
+	  neutralHadronMultiplicity = iJet->neutralHadronMultiplicity;
+	  photonMultiplicity = iJet->photonMultiplicity;
+	  electronMultiplicity = iJet->electronMultiplicity;
+	  muonMultiplicity = iJet->muonMultiplicity;
+	  HFHadronMultiplicity = iJet->HFHadronMultiplicity;
+	  HFEMMultiplicity = iJet->HFEMMultiplicity;
+	  chargedMultiplicity = iJet->chargedMultiplicity;
+	  neutralMultiplicity = iJet->neutralMultiplicity;
+
+	  break;
+	}
+	
+      }
+      
+      if(!matched) {
+	
+	hasJetMatch = false;
+	jet_dR = -1;
+	jet_dPhi = -1;
+	
+	chargedHadronEnergy = -1;
+	neutralHadronEnergy = -1;
+	photonEnergy = -1;
+	electronEnergy = -1;
+	muonEnergy = -1;
+	HFHadronEnergy = -1;
+	HFEMEnergy = -1;
+	chargedEmEnergy = -1;
+	chargedMuEnergy = -1;
+	neutralEmEnergy = -1;
+	chargedHadronMultiplicity = -1;
+	neutralHadronMultiplicity = -1;
+	photonMultiplicity = -1;
+	electronMultiplicity = -1;
+	muonMultiplicity = -1;
+	HFHadronMultiplicity = -1;
+	HFEMMultiplicity = -1;
+	chargedMultiplicity = -1;
+	neutralMultiplicity = -1;
+	
+      }
+     
+      photonTree->Fill();
+ 
+    }
+  
+    if(quitAfterProcessing) break;
+  } // for entries
+  
+  cout << "-------------------Job Summary-----------------" << endl;
+  cout << "Total_events         : " << nCnt[0][0] << endl;
+  cout << "in_JSON              : " << nCnt[1][0] << endl;
+  cout << "-----------------------------------------------" << endl;
+  cout << endl;
+  for(int i = 0; i < nChannels; i++) {
+    cout << "----------------" << channels[i] << " Requirement-------------" << endl;
+    cout << "gg+" << channels[i] << " events              : " << nCnt[2][i] << endl;
+    cout << "eg+" << channels[i] << " events              : " << nCnt[3][i] << endl;
+    cout << "ff+" << channels[i] << " events              : " << nCnt[4][i] << endl;
+    cout << "gf+" << channels[i] << " events              : " << nCnt[5][i] << endl;
+  }
+  cout << "-----------------------------------------------" << endl;
+  cout << endl;
+  cout << "----------------Continues, info----------------" << endl;
+  cout << "fail MET filters          : " << nCnt[21][0] << endl;
+  cout << "no passing candidates     : " << nCnt[28][0] << endl;
+  cout << "-----------------------------------------------" << endl;
+  cout << endl;
+  cout << "events with no dijetpt    : " << nCnt[46][0] << endl;
+
+  out->cd();
+  out->Write();
+  out->Close();
+
+}

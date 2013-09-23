@@ -70,6 +70,7 @@ class SusyEventAnalyzer {
   virtual void CalculateBtagEfficiency();
   virtual void PileupWeights(TString puFile);
   virtual void SignalContent_gg();
+  virtual void PhotonInfo();
 
   // utility functions
   float deltaR(TLorentzVector& p1, TLorentzVector& p2);
@@ -854,6 +855,7 @@ bool SusyEventAnalyzer::GetDiJetPt(susy::Event& ev, vector<susy::Photon*> candid
       jetP4s.push_back(candidates[1]->momentum);
       break;
     }
+      
   }
   
   sort(jetP4s.begin(), jetP4s.end(), CorrPtGreater);
