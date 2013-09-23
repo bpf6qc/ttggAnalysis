@@ -2675,8 +2675,8 @@ void SusyEventAnalyzer::PhotonInfo() {
 	  }
 	}
 	
-	float dEta = corrP4.Eta() - (*it)->caloPosition.Eta();
-	float dPhi = TVector2::Phi_mpi_pi(corrP4.Phi() - (*it)->caloPosition.Phi());
+	float dEta = corrP4.Eta() - (*candidate_pair[i])->caloPosition.Eta();
+	float dPhi = TVector2::Phi_mpi_pi(corrP4.Phi() - (*candidate_pair[i])->caloPosition.Phi());
 	float dR = sqrt(dEta*dEta + dPhi*dPhi);
 	
 	if(corrP4.Et() > 20. &&
