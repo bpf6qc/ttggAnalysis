@@ -2644,18 +2644,18 @@ void SusyEventAnalyzer::PhotonInfo() {
       phi = candidate_pair[i]->caloPosition.Phi();
       et = candidate_pair[i]->momentum.Et();
       hOverE = candidate_pair[i]->hadTowOverEm;
-      neutralHadIso = neutralHadronIso_corrected(candidate_pair[i], event.rho25);
-      photonIso = photonIso_corrected(candidate_pair[i], event.rho25);
-      chargedHadIso = chargedHadronIso_corrected(candidate_pair[i], event.rho25);
+      neutralHadIso = neutralHadronIso_corrected(*candidate_pair[i], event.rho25);
+      photonIso = photonIso_corrected(*candidate_pair[i], event.rho25);
+      chargedHadIso = chargedHadronIso_corrected(*candidate_pair[i], event.rho25);
       r9 = candidate_pair[i]->r9;
       sIetaIeta = candidate_pair[i]->sigmaIetaIeta;
       sIphiIphi = candidate_pair[i]->sigmaIphiIphi;
       worstOtherVtxChargedHadronIso = candidate_pair[i]->worstOtherVtxChargedHadronIso;
       MVAregEnergy = candidate_pair[i]->MVAregEnergy;
       nPixelSeeds = candidate_pair[i]->nPixelSeeds;
-      isGamma = is_eg(candidate_pair[i], event.rho25) && nPixelSeeds == 0;
-      isElectron = is_eg(candidate_pair[i], event.rho25) && nPixelSeeds != 0;
-      isFake = is_f(candidate_pair[i], event.rho25) && nPixelSeeds == 0;
+      isGamma = is_eg(*candidate_pair[i], event.rho25) && nPixelSeeds == 0;
+      isElectron = is_eg(*candidate_pair[i], event.rho25) && nPixelSeeds != 0;
+      isFake = is_f(*candidate_pair[i], event.rho25) && nPixelSeeds == 0;
 
       bool matched = false;
       
