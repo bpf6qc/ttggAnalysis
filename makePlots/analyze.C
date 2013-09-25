@@ -498,6 +498,8 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     true, true, true,
 		     out, metCut);
 
+  pMaker->PlotKolmogorovValues();
+
   delete pMaker;
     
   out->Close();
