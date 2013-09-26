@@ -198,7 +198,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
 		   ratio_gf_0, ratio_gf_1, ratio_gf_2,
 		   diemptWeight_gf, diemptWeightErr_gf);
     /*
-      evaluateTrialWeight(leadPhotonEt,
+      evaluateTrialWeight(leadPhotonEt_gf,
                           trialWeights_gf,
                           diemptWeight_gf, diemptWeightErr_gf);
     */
@@ -446,6 +446,15 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     true, true, false,
 		     out, metCut);
 
+  pMaker->CreatePlot("max_csv", false,
+		     20, 0., 1.,
+		     "max csv", "Number of Events",
+		     0, 4, 
+		     2.e-3, 3.e6,
+		     0., 2.1,
+		     true, true, false,
+		     out, metCut);
+
   const int nKinematicBins = 41;
   Double_t xbins_kinematic[nKinematicBins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
 						110, 120, 130, 140, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1250, 1500, 2000};
@@ -498,6 +507,60 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
   pMaker->CreatePlot("trailPhotonEt", true,
 		     nKinematicBins, xbins_kinematic,
 		     "Et of trailing #gamma",
+		     0, 1200, 
+		     2.e-3, 5.e4,
+		     0., 5.1,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("diEMpT", true,
+		     nKinematicBins, xbins_kinematic,
+		     "di-EM Pt",
+		     0, 1200, 
+		     2.e-3, 5.e4,
+		     0., 5.1,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("diJetPt", true,
+		     nKinematicBins, xbins_kinematic,
+		     "di-Jet Pt",
+		     0, 1200, 
+		     2.e-3, 5.e4,
+		     0., 5.1,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("leadMatchedJetPt", true,
+		     nKinematicBins, xbins_kinematic,
+		     "Pt of jet matched to leading #gamma",
+		     0, 1200, 
+		     2.e-3, 5.e4,
+		     0., 5.1,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("trailMatchedJetPt", true,
+		     nKinematicBins, xbins_kinematic,
+		     "Pt of jet matched to trailing #gamma",
+		     0, 1200, 
+		     2.e-3, 5.e4,
+		     0., 5.1,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("leadptOverInvmass", true,
+		     nKinematicBins, xbins_kinematic,
+		     "Pt(lead #gamma) / m_{#gamma#gamma}",
+		     0, 1200, 
+		     2.e-3, 5.e4,
+		     0., 5.1,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("trailptOverInvmass", true,
+		     nKinematicBins, xbins_kinematic,
+		     "Pt(trail #gamma) / m_{#gamma#gamma}",
 		     0, 1200, 
 		     2.e-3, 5.e4,
 		     0., 5.1,

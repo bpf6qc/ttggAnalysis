@@ -347,8 +347,8 @@ void evaluateTrialWeight(Float_t et,
 			 TH1D * weights,
 			 Float_t& w, Float_t& err) {
 
-  w = weights->GetBinContent(weights->GetXaxis()->FindBin(et), weights->GetYaxis()->FindBin(et));
-  err = weights->GetBinError(weights->GetXaxis()->FindBin(et), weights->GetYaxis()->FindBin(et));
+  w = weights->GetBinContent(weights->FindBin(et));
+  err = weights->GetBinError(weights->FindBin(et));
 
 }
 
@@ -457,8 +457,8 @@ TH1D * GetAlternativeWeights(TTree * ggtree, TTree * bkgtree, TString variable, 
 
 void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH1D*& weights) {
 
-  TH1D * h_gg = new TH2D("h_gg_durp_"+req, "h_gg_durp_"+req, 40, 0, 400); h_gg->Sumw2();
-  TH1D * h_bkg = new TH2D("h_bkg_durp_"+req, "h_bkg_durp_"+req, 40, 0, 400); h_bkg->Sumw2();
+  TH1D * h_gg = new TH1D("h_gg_durp_"+req, "h_gg_durp_"+req, 40, 0, 400); h_gg->Sumw2();
+  TH1D * h_bkg = new TH1D("h_bkg_durp_"+req, "h_bkg_durp_"+req, 40, 0, 400); h_bkg->Sumw2();
 
   float met, leadEt, trailEt;
   ggtree->SetBranchAddress("pfMET", &met);
