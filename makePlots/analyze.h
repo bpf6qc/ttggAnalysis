@@ -344,13 +344,14 @@ void evaluateWeight(Int_t njets, Float_t diempt,
 }
 
 void evaluateTrialWeight(Float_t leadEt, Float_t trailEt,
-			 TH1D * leadWeights, TH1D * trailWeights,
+			 TH2D * weights,
 			 Float_t& w, Float_t& err) {
 
   float a = leadWeights->GetBinContent(leadWeights->FindBin(leadEt));
   float b = trailWeights->GetBinContent(trailWeights->FindBin(trailEt));
-  w = a*b;
-  err = w/100.;
+
+  w = weights->GetBinContent(weights->GetXaxis()->FindBin(leadEt), weights->GetYaxis()->FindBin(trailEt));
+  err = weights->GetBinError(weights->GetXaxis()->FindBin(leadEt), weights->GetYaxis()->FindBin(trailEt));
 
 }
 
@@ -457,13 +458,10 @@ TH1D * GetAlternativeWeights(TTree * ggtree, TTree * bkgtree, TString variable, 
   return weight;
 }
 
-void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH1D*& leadWeights, TH1D*& trailWeights) {
+void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH2D*& weights) {
 
-  TH1D * gg_lead = new TH1D("gg_leadEt_"+req, "gg_leadEt_"+req, 40, 0, 400);
-  TH1D * bkg_lead = new TH1D("bkg_leadEt_"+req, "bkg_leadEt_"+req, 40, 0, 400);
-
-  TH1D * gg_trail = new TH1D("gg_trailEt_"+req, "gg_trailEt_"+req, 40, 0, 400);
-  TH1D * bkg_trail = new TH1D("bkg_trailEt_"+req, "bkg_trailEt_"+req, 40, 0, 400);
+  TH2D * h_gg = new TH2D("h_gg_durp_"+req, "h_gg_durp_"+req, 40, 0, 400, 40, 0, 400); h_gg->Sumw2();
+  TH2D * h_bkg = new TH2D("h_bkg_durp_"+req, "h_bkg_durp_"+req, 40, 0, 400, 40, 0, 400); h_bkg->Sumw2();
 
   float met, leadEt, trailEt;
   ggtree->SetBranchAddress("pfMET", &met);
@@ -476,26 +474,19 @@ void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH1D*& leadWe
   for(int i = 0; i < ggtree->GetEntries(); i++) {
     ggtree->GetEntry(i);
     if(met >= 50.) continue;
-    gg_lead->Fill(leadEt);
-    gg_trail->Fill(trailEt);
+    h_gg->Fill(leadEt, trailEt);
   }
-  gg_lead->Scale(1./(float)gg_lead->Integral());
-  gg_trail->Scale(1./(float)gg_trail->Integral());
+  h_gg->Scale(1./(float)h_gg->Integral());
 
   for(int i = 0; i < bkgtree->GetEntries(); i++) {
     bkgtree->GetEntry(i);
     if(met >= 50.) continue;
-    bkg_lead->Fill(leadEt);
-    bkg_trail->Fill(trailEt);
+    h_bkg->Fill(leadEt, trailEt);
   }
-  bkg_lead->Scale(1./(float)bkg_lead->Integral());
-  bkg_trail->Scale(1./(float)bkg_trail->Integral());  
+  h_bkg->Scale(1./(float)h_bkg->Integral());
 
-  leadWeights = (TH1D*)gg_lead->Clone("leadWeights_"+req);
-  leadWeights->Divide(bkg_lead);
-
-  trailWeights = (TH1D*)gg_trail->Clone("trailWeights_"+req);
-  trailWeights->Divide(bkg_trail);
+  weights = (TH2D*)h_gg->Clone("weights_"+req);
+  weights->Divide(h_bkg);
 
   ggtree->ResetBranchAddresses();
   bkgtree->ResetBranchAddresses();

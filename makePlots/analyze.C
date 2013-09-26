@@ -75,13 +75,11 @@ void mvaTreeMaker(TString input, int channelNumber) {
   TH1D * ratio_gf_1 = GetWeights(diempt_gg_1, diempt_gf->ProjectionX("gf_px1", 2, 2, "e"), gg_total, gf_total);
   TH1D * ratio_gf_2 = GetWeights(diempt_gg_2, diempt_gf->ProjectionX("gf_px2", 3, -1, "e"), gg_total, gf_total);
 
-  TH1D * trialWeights_ff_lead;
-  TH1D * trialWeights_ff_trail;
-  GetTrialWeights(ggTree, ffTree, channel, trialWeights_ff_lead, trialWeights_ff_trail);
+  TH2D * trialWeights_ff;
+  GetTrialWeights(ggTree, ffTree, channel, trialWeights_ff);
 
-  TH1D * trialWeights_gf_lead;
-  TH1D * trialWeights_gf_trail;
-  GetTrialWeights(ggTree, gfTree, channel, trialWeights_gf_lead, trialWeights_gf_trail);
+  TH2D * trialWeights_gf;
+  GetTrialWeights(ggTree, gfTree, channel, trialWeights_gf);
 
   TFile * out = new TFile("mvaTree_"+channel+".root", "RECREATE");
   out->cd();
