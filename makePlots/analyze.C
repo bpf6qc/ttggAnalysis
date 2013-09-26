@@ -106,6 +106,11 @@ void mvaTreeMaker(TString input, int channelNumber) {
   floatNames.push_back("jet1_pt");
   floatNames.push_back("jet2_pt");
   floatNames.push_back("diEMpT");
+  floatNames.push_back("max_csv");
+  floatNames.push_back("leadptOverInvmass");
+  floatNames.push_back("trailptOverInvmass");
+  floatNames.push_back("leadMatchedJetPt");
+  floatNames.push_back("trailMatchedJetPt");
 
   vector<TString> intNames;
   intNames.push_back("Nbtags");
