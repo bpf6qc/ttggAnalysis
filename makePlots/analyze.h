@@ -347,9 +347,6 @@ void evaluateTrialWeight(Float_t leadEt, Float_t trailEt,
 			 TH2D * weights,
 			 Float_t& w, Float_t& err) {
 
-  float a = leadWeights->GetBinContent(leadWeights->FindBin(leadEt));
-  float b = trailWeights->GetBinContent(trailWeights->FindBin(trailEt));
-
   w = weights->GetBinContent(weights->GetXaxis()->FindBin(leadEt), weights->GetYaxis()->FindBin(trailEt));
   err = weights->GetBinError(weights->GetXaxis()->FindBin(leadEt), weights->GetYaxis()->FindBin(trailEt));
 
@@ -460,8 +457,8 @@ TH1D * GetAlternativeWeights(TTree * ggtree, TTree * bkgtree, TString variable, 
 
 void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH2D*& weights) {
 
-  TH2D * h_gg = new TH2D("h_gg_durp_"+req, "h_gg_durp_"+req, 40, 0, 400, 40, 0, 400); h_gg->Sumw2();
-  TH2D * h_bkg = new TH2D("h_bkg_durp_"+req, "h_bkg_durp_"+req, 40, 0, 400, 40, 0, 400); h_bkg->Sumw2();
+  TH2D * h_gg = new TH2D("durp_"+ggtree->GetName(), "h_gg_durp_"+req, 40, 0, 400, 40, 0, 400); h_gg->Sumw2();
+  TH2D * h_bkg = new TH2D("durp_"+bkgtree->GetName(), "h_bkg_durp_"+req, 40, 0, 400, 40, 0, 400); h_bkg->Sumw2();
 
   float met, leadEt, trailEt;
   ggtree->SetBranchAddress("pfMET", &met);
@@ -490,6 +487,9 @@ void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH2D*& weight
 
   ggtree->ResetBranchAddresses();
   bkgtree->ResetBranchAddresses();
+
+  delete h_gg;
+  delete h_bkg;
 
   return;
 }
