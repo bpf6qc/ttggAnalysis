@@ -75,10 +75,10 @@ void mvaTreeMaker(TString input, int channelNumber) {
   TH1D * ratio_gf_1 = GetWeights(diempt_gg_1, diempt_gf->ProjectionX("gf_px1", 2, 2, "e"), gg_total, gf_total);
   TH1D * ratio_gf_2 = GetWeights(diempt_gg_2, diempt_gf->ProjectionX("gf_px2", 3, -1, "e"), gg_total, gf_total);
 
-  TH2D * trialWeights_ff;
+  TH1D * trialWeights_ff;
   GetTrialWeights(ggTree, ffTree, channel, trialWeights_ff);
 
-  TH2D * trialWeights_gf;
+  TH1D * trialWeights_gf;
   GetTrialWeights(ggTree, gfTree, channel, trialWeights_gf);
 
   TFile * out = new TFile("mvaTree_"+channel+".root", "RECREATE");
@@ -170,6 +170,11 @@ void mvaTreeMaker(TString input, int channelNumber) {
     evaluateWeight(njets, diempt,
 		   ratio_ff_0, ratio_ff_1, ratio_ff_2,
 		   diemptWeight, diemptWeightErr);
+    /*
+      evaluateTrialWeight(leadPhotonEt,
+                          trialWeights_ff,
+                          diemptWeight, diemptWeightErr);
+    */
     ffNewTree->Fill();
   }
 
@@ -192,6 +197,11 @@ void mvaTreeMaker(TString input, int channelNumber) {
     evaluateWeight(njets_gf, diempt_gf_value,
 		   ratio_gf_0, ratio_gf_1, ratio_gf_2,
 		   diemptWeight_gf, diemptWeightErr_gf);
+    /*
+      evaluateTrialWeight(leadPhotonEt,
+                          trialWeights_gf,
+                          diemptWeight_gf, diemptWeightErr_gf);
+    */
     gfNewTree->Fill();
   }
 

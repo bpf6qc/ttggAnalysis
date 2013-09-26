@@ -343,12 +343,12 @@ void evaluateWeight(Int_t njets, Float_t diempt,
 
 }
 
-void evaluateTrialWeight(Float_t leadEt, Float_t trailEt,
-			 TH2D * weights,
+void evaluateTrialWeight(Float_t et,
+			 TH1D * weights,
 			 Float_t& w, Float_t& err) {
 
-  w = weights->GetBinContent(weights->GetXaxis()->FindBin(leadEt), weights->GetYaxis()->FindBin(trailEt));
-  err = weights->GetBinError(weights->GetXaxis()->FindBin(leadEt), weights->GetYaxis()->FindBin(trailEt));
+  w = weights->GetBinContent(weights->GetXaxis()->FindBin(et), weights->GetYaxis()->FindBin(et));
+  err = weights->GetBinError(weights->GetXaxis()->FindBin(et), weights->GetYaxis()->FindBin(et));
 
 }
 
@@ -455,10 +455,10 @@ TH1D * GetAlternativeWeights(TTree * ggtree, TTree * bkgtree, TString variable, 
   return weight;
 }
 
-void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH2D*& weights) {
+void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH1D*& weights) {
 
-  TH2D * h_gg = new TH2D("h_gg_durp_"+req, "h_gg_durp_"+req, 40, 0, 400, 40, 0, 400); h_gg->Sumw2();
-  TH2D * h_bkg = new TH2D("h_bkg_durp_"+req, "h_bkg_durp_"+req, 40, 0, 400, 40, 0, 400); h_bkg->Sumw2();
+  TH1D * h_gg = new TH2D("h_gg_durp_"+req, "h_gg_durp_"+req, 40, 0, 400); h_gg->Sumw2();
+  TH1D * h_bkg = new TH2D("h_bkg_durp_"+req, "h_bkg_durp_"+req, 40, 0, 400); h_bkg->Sumw2();
 
   float met, leadEt, trailEt;
   ggtree->SetBranchAddress("pfMET", &met);
@@ -471,18 +471,18 @@ void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH2D*& weight
   for(int i = 0; i < ggtree->GetEntries(); i++) {
     ggtree->GetEntry(i);
     if(met >= 50.) continue;
-    h_gg->Fill(leadEt, trailEt);
+    h_gg->Fill(leadEt);
   }
   h_gg->Scale(1./(float)h_gg->Integral());
 
   for(int i = 0; i < bkgtree->GetEntries(); i++) {
     bkgtree->GetEntry(i);
     if(met >= 50.) continue;
-    h_bkg->Fill(leadEt, trailEt);
+    h_bkg->Fill(leadEt);
   }
   h_bkg->Scale(1./(float)h_bkg->Integral());
 
-  weights = (TH2D*)h_gg->Clone("weights_"+req);
+  weights = (TH1D*)h_gg->Clone("weights_"+req);
   weights->Divide(h_bkg);
 
   ggtree->ResetBranchAddresses();
@@ -1318,7 +1318,8 @@ void PlotMaker::PlotKolmogorovValues() {
   }
 
   TCanvas * can = new TCanvas("ks_can_"+req, "Plot", 10, 10, 2000, 2000);
-  
+  can->SetLogy(true);
+
   h_ks->Draw("hist");
   can->SaveAs("ksScores_"+req+".pdf");
 
