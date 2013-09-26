@@ -92,7 +92,6 @@ void mvaTreeMaker(TString input, int channelNumber) {
   // Define here which variables you want to keep.
   vector<TString> floatNames;
   floatNames.push_back("diJetPt");
-  floatNames.push_back("Njets");
   floatNames.push_back("pfMET");
   floatNames.push_back("HT");
   floatNames.push_back("invmass");
@@ -114,6 +113,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   floatNames.push_back("trailMatchedJetPt");
 
   vector<TString> intNames;
+  intNames.push_back("Njets");
   intNames.push_back("Nbtags");
   intNames.push_back("Nelectrons");
   intNames.push_back("Nmuons");
@@ -165,11 +165,11 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
   for(int j = 0; j < ffTree->GetEntries(); j++) {
     ffTree->GetEntry(j);
-    evaluateWeight(floatVariablesFF[1], floatVariablesFF[0],
+    evaluateWeight(intVariablesFF[0], floatVariablesFF[0],
 		   ratio_ff_0, ratio_ff_1, ratio_ff_2,
 		   diemptWeight, diemptWeightErr);
     /*
-      evaluateTrialWeight(floatVariablesFF[5],
+      evaluateTrialWeight(floatVariablesFF[4],
                           trialWeights_ff,
                           diemptWeight, diemptWeightErr);
     */
@@ -184,11 +184,11 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
   for(int j = 0; j < gfTree->GetEntries(); j++) {
     gfTree->GetEntry(j);
-    evaluateWeight(floatVariablesGF[1], floatVariablesGF[0],
+    evaluateWeight(intVariablesGF[0], floatVariablesGF[0],
 		   ratio_gf_0, ratio_gf_1, ratio_gf_2,
 		   diemptWeight, diemptWeightErr);
     /*
-      evaluateTrialWeight(floatVariablesGF[5],
+      evaluateTrialWeight(floatVariablesGF[4],
                           trialWeights_gf,
                           diemptWeight_gf, diemptWeightErr_gf);
     */
