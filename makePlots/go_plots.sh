@@ -14,7 +14,7 @@ eval `scramv1 runtime -sh`
 
 FILE_TO_RUN=$1
 cat makePlots_template.C | sed s:FILE_TO_RUN:$FILE_TO_RUN: > makePlots.C
-root -b -q -l makePlots.C
+root -b -q -l makePlots.C | sed -E '/.root does not exist/d'
 rm makePlots.C
 
 file=`date +"%b%d"`

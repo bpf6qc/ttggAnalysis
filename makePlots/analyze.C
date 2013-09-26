@@ -90,15 +90,16 @@ void mvaTreeMaker(TString input, int channelNumber) {
   TTree * ggNewTree = new TTree("gg_"+channel+"_EvtTree", "An event tree for MVA analysis");
 
   // Define here which variables you want to keep.
-  // DO NOT PUT "Njets" or "diJetPt", since those are needed for reweighting and are automatically included.
   vector<TString> floatNames;
+  floatNames.push_back("diJetPt");
+  floatNames.push_back("Njets");
   floatNames.push_back("pfMET");
   floatNames.push_back("HT");
   floatNames.push_back("invmass");
-  //floatNames.push_back("leadPhotonEt");
+  floatNames.push_back("leadPhotonEt");
   floatNames.push_back("leadPhotonEta");
   floatNames.push_back("leadPhotonPhi");
-  //floatNames.push_back("trailPhotonEt");
+  floatNames.push_back("trailPhotonEt");
   floatNames.push_back("trailPhotonEta");
   floatNames.push_back("trailPhotonPhi");
   floatNames.push_back("photon_dR");
@@ -157,101 +158,71 @@ void mvaTreeMaker(TString input, int channelNumber) {
     ggNewTree->Branch(intNames[i], &(intVariablesGG[i]), intNames[i]+"/I");
   }
 
-  Int_t njets;
-  Float_t diempt, diemptWeight, diemptWeightErr;
-  Float_t leadPhotonEt, trailPhotonEt;
-  ffTree->SetBranchAddress("Njets", &njets);
-  ffTree->SetBranchAddress("diJetPt", &diempt);
-  ffTree->SetBranchAddress("leadPhotonEt", &leadPhotonEt);
-  ffTree->SetBranchAddress("trailPhotonEt", &trailPhotonEt);
+  Float_t diemptWeight, diemptWeightErr;
 
-  ffNewTree->Branch("Njets", &njets);
-  ffNewTree->Branch("diJetPt", &diempt);
   ffNewTree->Branch("weight", &diemptWeight);
   ffNewTree->Branch("weightError", &diemptWeightErr);
-  ffNewTree->Branch("leadPhotonEt", &leadPhotonEt);
-  ffNewTree->Branch("trailPhotonEt", &trailPhotonEt);
 
   for(int j = 0; j < ffTree->GetEntries(); j++) {
     ffTree->GetEntry(j);
-    evaluateWeight(njets, diempt,
+    evaluateWeight(floatVariablesFF[1], floatVariablesFF[0],
 		   ratio_ff_0, ratio_ff_1, ratio_ff_2,
 		   diemptWeight, diemptWeightErr);
     /*
-      evaluateTrialWeight(leadPhotonEt,
+      evaluateTrialWeight(floatVariablesFF[5],
                           trialWeights_ff,
                           diemptWeight, diemptWeightErr);
     */
     ffNewTree->Fill();
   }
 
-  Int_t njets_gf;
-  Float_t diempt_gf_value, diemptWeight_gf, diemptWeightErr_gf;
-  Float_t leadPhotonEt_gf, trailPhotonEt_gf;
-  gfTree->SetBranchAddress("Njets", &njets_gf);
-  gfTree->SetBranchAddress("diJetPt", &diempt_gf_value);
-  gfTree->SetBranchAddress("leadPhotonEt", &leadPhotonEt_gf);
-  gfTree->SetBranchAddress("trailPhotonEt", &trailPhotonEt_gf);
+  ffTree->ResetBranchAddresses();
+  ffNewTree->ResetBranchAddresses();
 
-  gfNewTree->Branch("Njets", &njets_gf);
-  gfNewTree->Branch("diJetPt", &diempt_gf);
-  gfNewTree->Branch("weight", &diemptWeight_gf);
-  gfNewTree->Branch("weightError", &diemptWeightErr_gf);
-  gfNewTree->Branch("leadPhotonEt", &leadPhotonEt_gf);
-  gfNewTree->Branch("trailPhotonEt", &trailPhotonEt_gf);
+  gfNewTree->Branch("weight", &diemptWeight);
+  gfNewTree->Branch("weightError", &diemptWeightErr);
 
   for(int j = 0; j < gfTree->GetEntries(); j++) {
     gfTree->GetEntry(j);
-    evaluateWeight(njets_gf, diempt_gf_value,
+    evaluateWeight(floatVariablesGF[1], floatVariablesGF[0]
 		   ratio_gf_0, ratio_gf_1, ratio_gf_2,
-		   diemptWeight_gf, diemptWeightErr_gf);
+		   diemptWeight, diemptWeightErr);
     /*
-      evaluateTrialWeight(leadPhotonEt_gf,
+      evaluateTrialWeight(floatVariablesGF[5],
                           trialWeights_gf,
                           diemptWeight_gf, diemptWeightErr_gf);
     */
     gfNewTree->Fill();
   }
 
-  Int_t njets_eg;
-  Float_t diemptWeight_eg, diemptWeightErr_eg;
-  Float_t leadPhotonEt_eg, trailPhotonEt_eg;
-  egTree->SetBranchAddress("Njets", &njets_eg);
-  egTree->SetBranchAddress("leadPhotonEt", &leadPhotonEt_eg);
-  egTree->SetBranchAddress("trailPhotonEt", &trailPhotonEt_eg);
+  gfTree->ResetBranchAddresses();
+  gfNewTree->ResetBranchAddresses();
 
-  egNewTree->Branch("Njets", &njets_eg);
-  egNewTree->Branch("weight", &diemptWeight_eg);
-  egNewTree->Branch("weightError", &diemptWeightErr_eg);
-  egNewTree->Branch("leadPhotonEt", &leadPhotonEt_eg);
-  egNewTree->Branch("trailPhotonEt", &trailPhotonEt_eg);
+  egNewTree->Branch("weight", &diemptWeight);
+  egNewTree->Branch("weightError", &diemptWeightErr);
 
   for(int j = 0; j < egTree->GetEntries(); j++) {
     egTree->GetEntry(j);
-    diemptWeight_eg = 1.0;
-    diemptWeightErr_eg = 0.0;
+    diemptWeight = 1.0;
+    diemptWeightErr = 0.0;
     egNewTree->Fill();
   }
 
-  Int_t njets_gg;
-  Float_t diemptWeight_gg, diemptWeightErr_gg;
-  Float_t leadPhotonEt_gg, trailPhotonEt_gg;
-  ggTree->SetBranchAddress("Njets", &njets_gg);
-  ggTree->SetBranchAddress("leadPhotonEt", &leadPhotonEt_gg);
-  ggTree->SetBranchAddress("trailPhotonEt", &trailPhotonEt_gg);
+  egTree->ResetBranchAddresses();
+  egNewTree->ResetBranchAddresses();
 
-  ggNewTree->Branch("Njets", &njets_gg);
   ggNewTree->Branch("weight", &diemptWeight_gg);
   ggNewTree->Branch("weightError", &diemptWeightErr_gg);
-  ggNewTree->Branch("leadPhotonEt", &leadPhotonEt_gg);
-  ggNewTree->Branch("trailPhotonEt", &trailPhotonEt_gg);
 
   for(int j = 0; j < ggTree->GetEntries(); j++) {
     ggTree->GetEntry(j);
-    diemptWeight_gg = 1.0;
-    diemptWeightErr_gg = 0.0;
+    diemptWeight = 1.0;
+    diemptWeightErr = 0.0;
     ggNewTree->Fill();
   }
+
+  ggTree->ResetBranchAddresses();
+  ggNewTree->ResetBranchAddresses();
 
   out->Write();
   out->Close();
@@ -454,7 +425,7 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     true, true, false,
 		     out, metCut);
 
-  pMaker->CreatePlot("max_csv", false,
+  pMaker->CreatePlot("max_csv", true,
 		     20, 0., 1.,
 		     "max csv", "Number of Events",
 		     0, 4, 
