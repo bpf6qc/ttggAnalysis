@@ -457,8 +457,8 @@ TH1D * GetAlternativeWeights(TTree * ggtree, TTree * bkgtree, TString variable, 
 
 void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH2D*& weights) {
 
-  TH2D * h_gg = new TH2D("durp_"+ggtree->GetName(), "h_gg_durp_"+req, 40, 0, 400, 40, 0, 400); h_gg->Sumw2();
-  TH2D * h_bkg = new TH2D("durp_"+bkgtree->GetName(), "h_bkg_durp_"+req, 40, 0, 400, 40, 0, 400); h_bkg->Sumw2();
+  TH2D * h_gg = new TH2D("h_gg_durp_"+req, "h_gg_durp_"+req, 40, 0, 400, 40, 0, 400); h_gg->Sumw2();
+  TH2D * h_bkg = new TH2D("h_bkg_durp_"+req, "h_bkg_durp_"+req, 40, 0, 400, 40, 0, 400); h_bkg->Sumw2();
 
   float met, leadEt, trailEt;
   ggtree->SetBranchAddress("pfMET", &met);
