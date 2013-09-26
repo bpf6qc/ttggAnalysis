@@ -105,6 +105,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   floatNames.push_back("photon_dPhi");
   floatNames.push_back("jet1_pt");
   floatNames.push_back("jet2_pt");
+  floatNames.push_back("diEMpT");
 
   vector<TString> intNames;
   intNames.push_back("Nbtags");
@@ -160,6 +161,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   ffTree->SetBranchAddress("trailPhotonEt", &trailPhotonEt);
 
   ffNewTree->Branch("Njets", &njets);
+  ffNewTree->Branch("diJetPt", &diempt);
   ffNewTree->Branch("weight", &diemptWeight);
   ffNewTree->Branch("weightError", &diemptWeightErr);
   ffNewTree->Branch("leadPhotonEt", &leadPhotonEt);
@@ -187,6 +189,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   gfTree->SetBranchAddress("trailPhotonEt", &trailPhotonEt_gf);
 
   gfNewTree->Branch("Njets", &njets_gf);
+  gfNewTree->Branch("diJetPt", &diempt_gf);
   gfNewTree->Branch("weight", &diemptWeight_gf);
   gfNewTree->Branch("weightError", &diemptWeightErr_gf);
   gfNewTree->Branch("leadPhotonEt", &leadPhotonEt_gf);
