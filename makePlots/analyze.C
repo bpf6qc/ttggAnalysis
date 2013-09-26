@@ -208,7 +208,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   egNewTree->Branch("weight", &diemptWeight_eg);
   egNewTree->Branch("weightError", &diemptWeightErr_eg);
   egNewTree->Branch("leadPhotonEt", &leadPhotonEt_eg);
-  egNewTree->Branch("trailPhotonEt", &trailPhoton_eg);
+  egNewTree->Branch("trailPhotonEt", &trailPhotonEt_eg);
 
   for(int j = 0; j < egTree->GetEntries(); j++) {
     egTree->GetEntry(j);
