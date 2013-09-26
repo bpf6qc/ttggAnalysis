@@ -75,6 +75,14 @@ void mvaTreeMaker(TString input, int channelNumber) {
   TH1D * ratio_gf_1 = GetWeights(diempt_gg_1, diempt_gf->ProjectionX("gf_px1", 2, 2, "e"), gg_total, gf_total);
   TH1D * ratio_gf_2 = GetWeights(diempt_gg_2, diempt_gf->ProjectionX("gf_px2", 3, -1, "e"), gg_total, gf_total);
 
+  TH1D * trialWeights_ff_lead;
+  TH1D * trialWeights_ff_trail;
+  GetTrialWeights(ggTree, ffTree, channel, trialWeights_ff_lead, trialWeights_ff_trail);
+
+  TH1D * trialWeights_gf_lead;
+  TH1D * trialWeights_gf_trail;
+  GetTrialWeights(ggTree, gfTree, channel, trialWeights_gf_lead, trialWeights_gf_trail);
+
   TFile * out = new TFile("mvaTree_"+channel+".root", "RECREATE");
   out->cd();
 
@@ -89,10 +97,10 @@ void mvaTreeMaker(TString input, int channelNumber) {
   floatNames.push_back("pfMET");
   floatNames.push_back("HT");
   floatNames.push_back("invmass");
-  floatNames.push_back("leadPhotonEt");
+  //floatNames.push_back("leadPhotonEt");
   floatNames.push_back("leadPhotonEta");
   floatNames.push_back("leadPhotonPhi");
-  floatNames.push_back("trailPhotonEt");
+  //floatNames.push_back("trailPhotonEt");
   floatNames.push_back("trailPhotonEta");
   floatNames.push_back("trailPhotonPhi");
   floatNames.push_back("photon_dR");
@@ -147,12 +155,17 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
   Int_t njets;
   Float_t diempt, diemptWeight, diemptWeightErr;
+  Float_t leadPhotonEt, trailPhotonEt;
   ffTree->SetBranchAddress("Njets", &njets);
   ffTree->SetBranchAddress("diJetPt", &diempt);
+  ffTree->SetBranchAddress("leadPhotonEt", &leadPhotonEt);
+  ffTree->SetBranchAddress("trailPhotonEt", &trailPhotonEt);
 
   ffNewTree->Branch("Njets", &njets);
   ffNewTree->Branch("weight", &diemptWeight);
   ffNewTree->Branch("weightError", &diemptWeightErr);
+  ffNewTree->Branch("leadPhotonEt", &leadPhotonEt);
+  ffNewTree->Branch("trailPhotonEt", &trailPhotonEt);
 
   for(int j = 0; j < ffTree->GetEntries(); j++) {
     ffTree->GetEntry(j);
@@ -164,12 +177,17 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
   Int_t njets_gf;
   Float_t diempt_gf_value, diemptWeight_gf, diemptWeightErr_gf;
+  Float_t leadPhotonEt_gf, trailPhotonEt_gf;
   gfTree->SetBranchAddress("Njets", &njets_gf);
   gfTree->SetBranchAddress("diJetPt", &diempt_gf_value);
+  gfTree->SetBranchAddress("leadPhotonEt", &leadPhotonEt_gf);
+  gfTree->SetBranchAddress("trailPhotonEt", &trailPhotonEt_gf);
 
   gfNewTree->Branch("Njets", &njets_gf);
   gfNewTree->Branch("weight", &diemptWeight_gf);
   gfNewTree->Branch("weightError", &diemptWeightErr_gf);
+  gfNewTree->Branch("leadPhotonEt", &leadPhotonEt_gf);
+  gfNewTree->Branch("trailPhotonEt", &trailPhotonEt_gf);
 
   for(int j = 0; j < gfTree->GetEntries(); j++) {
     gfTree->GetEntry(j);
@@ -181,11 +199,16 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
   Int_t njets_eg;
   Float_t diemptWeight_eg, diemptWeightErr_eg;
+  Float_t leadPhotonEt_eg, trailPhotonEt_eg;
   egTree->SetBranchAddress("Njets", &njets_eg);
+  egTree->SetBranchAddress("leadPhotonEt", &leadPhotonEt_eg);
+  egTree->SetBranchAddress("trailPhotonEt", &trailPhotonEt_eg);
 
   egNewTree->Branch("Njets", &njets_eg);
   egNewTree->Branch("weight", &diemptWeight_eg);
   egNewTree->Branch("weightError", &diemptWeightErr_eg);
+  egNewTree->Branch("leadPhotonEt", &leadPhotonEt_eg);
+  egNewTree->Branch("trailPhotonEt", &trailPhoton_eg);
 
   for(int j = 0; j < egTree->GetEntries(); j++) {
     egTree->GetEntry(j);
@@ -196,11 +219,16 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
   Int_t njets_gg;
   Float_t diemptWeight_gg, diemptWeightErr_gg;
+  Float_t leadPhotonEt_gg, trailPhotonEt_gg;
   ggTree->SetBranchAddress("Njets", &njets_gg);
+  ggTree->SetBranchAddress("leadPhotonEt", &leadPhotonEt_gg);
+  ggTree->SetBranchAddress("trailPhotonEt", &trailPhotonEt_gg);
 
   ggNewTree->Branch("Njets", &njets_gg);
   ggNewTree->Branch("weight", &diemptWeight_gg);
   ggNewTree->Branch("weightError", &diemptWeightErr_gg);
+  ggNewTree->Branch("leadPhotonEt", &leadPhotonEt_gg);
+  ggNewTree->Branch("trailPhotonEt", &trailPhotonEt_gg);
 
   for(int j = 0; j < ggTree->GetEntries(); j++) {
     ggTree->GetEntry(j);

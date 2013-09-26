@@ -343,6 +343,17 @@ void evaluateWeight(Int_t njets, Float_t diempt,
 
 }
 
+void evaluateTrialWeight(Float_t leadEt, Float_t trailEt,
+			 TH1D * leadWeights, TH1D * trailWeights,
+			 Float_t& w, Float_t& err) {
+
+  float a = leadWeights->GetBinContent(leadWeights->FindBin(leadEt));
+  float b = trailWeights->GetBinContent(trailWeights->FindBin(trailEt));
+  w = a*b;
+  err = w/100.;
+
+}
+
 bool calculateScaling(TTree * ggTree, TTree * egTree, TTree * qcdTree,
 		      Float_t egScale, Float_t egScaleErr,
 		      Float_t& scale, Float_t& scaleErr) {
@@ -444,6 +455,52 @@ TH1D * GetAlternativeWeights(TTree * ggtree, TTree * bkgtree, TString variable, 
   bkgtree->ResetBranchAddresses();
 
   return weight;
+}
+
+void GetTrialWeights(TTree * ggtree, TTree * bkgtree, TString req, TH1D*& leadWeights, TH1D*& trailWeights) {
+
+  TH1D * gg_lead = new TH1D("gg_leadEt_"+req, "gg_leadEt_"+req, 40, 0, 400);
+  TH1D * bkg_lead = new TH1D("bkg_leadEt_"+req, "bkg_leadEt_"+req, 40, 0, 400);
+
+  TH1D * gg_trail = new TH1D("gg_trailEt_"+req, "gg_trailEt_"+req, 40, 0, 400);
+  TH1D * bkg_trail = new TH1D("bkg_trailEt_"+req, "bkg_trailEt_"+req, 40, 0, 400);
+
+  float met, leadEt, trailEt;
+  ggtree->SetBranchAddress("pfMET", &met);
+  ggtree->SetBranchAddress("leadPhotonEt", &leadEt);
+  ggtree->SetBranchAddress("trailPhotonEt", &trailEt);
+  bkgtree->SetBranchAddress("pfMET", &met);
+  bkgtree->SetBranchAddress("leadPhotonEt", &leadEt);
+  bkgtree->SetBranchAddress("trailPhotonEt", &trailEt);
+
+  for(int i = 0; i < ggtree->GetEntries(); i++) {
+    ggtree->GetEntry(i);
+    if(met >= 50.) continue;
+    gg_lead->Fill(leadEt);
+    gg_trail->Fill(trailEt);
+  }
+  gg_lead->Scale(1./(float)gg_lead->Integral());
+  gg_trail->Scale(1./(float)gg_trail->Integral());
+
+  for(int i = 0; i < bkgtree->GetEntries(); i++) {
+    bkgtree->GetEntry(i);
+    if(met >= 50.) continue;
+    bkg_lead->Fill(leadEt);
+    bkg_trail->Fill(trailEt);
+  }
+  bkg_lead->Scale(1./(float)bkg_lead->Integral());
+  bkg_trail->Scale(1./(float)bkg_trail->Integral());  
+
+  leadWeights = (TH1D*)gg_lead->Clone("leadWeights_"+req);
+  leadWeights->Divide(bkg_lead);
+
+  trailWeights = (TH1D*)gg_trail->Clone("trailWeights_"+req);
+  trailWeights->Divide(bkg_trail);
+
+  ggtree->ResetBranchAddresses();
+  bkgtree->ResetBranchAddresses();
+
+  return;
 }
 
 TH1D * AlternativeReweight(TString outVariable, bool outIsAFloat,
@@ -1307,6 +1364,9 @@ void prep_signal(TString req) {
 
     index1 = mst[int(i)/31];
     index2 = mBino[int(i)%31];
+
+    if(index2 > index1) continue;
+
     sprintf(code, "_mst_%d_m1_%d", index1, index2);
     TString code_t = code;
 
