@@ -184,7 +184,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
   for(int j = 0; j < gfTree->GetEntries(); j++) {
     gfTree->GetEntry(j);
-    evaluateWeight(floatVariablesGF[1], floatVariablesGF[0]
+    evaluateWeight(floatVariablesGF[1], floatVariablesGF[0],
 		   ratio_gf_0, ratio_gf_1, ratio_gf_2,
 		   diemptWeight, diemptWeightErr);
     /*
@@ -211,8 +211,8 @@ void mvaTreeMaker(TString input, int channelNumber) {
   egTree->ResetBranchAddresses();
   egNewTree->ResetBranchAddresses();
 
-  ggNewTree->Branch("weight", &diemptWeight_gg);
-  ggNewTree->Branch("weightError", &diemptWeightErr_gg);
+  ggNewTree->Branch("weight", &diemptWeight);
+  ggNewTree->Branch("weightError", &diemptWeightErr);
 
   for(int j = 0; j < ggTree->GetEntries(); j++) {
     ggTree->GetEntry(j);
