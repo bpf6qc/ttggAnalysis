@@ -501,8 +501,11 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     true, true, true,
 		     out, metCut);
 
+
+  const int ndijetptbins = 30;
+  Double_t dijetptbins[ndijetptbins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 200, 300, 400, 600, 1000};
   pMaker->CreatePlot("diJetPt", true,
-		     nKinematicBins, xbins_kinematic,
+		     ndijetptbins, dijetptbins,
 		     "di-Jet Pt",
 		     0, 1200, 
 		     2.e-3, 5.e4,
