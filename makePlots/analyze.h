@@ -310,8 +310,8 @@ TH1D * GetWeights(TH1D* ggDiEMpT, TH1D* h_diempt, Float_t gg_test, Float_t other
   TH1D * ratio = (TH1D*)ggDiEMpT->Clone();
   TH1D * diempt = (TH1D*)h_diempt->Clone();
 
-  const int ndiemptbins = 30;
-  Double_t diemptbins[ndiemptbins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 200, 300, 400, 600, 1000};
+  const int ndiemptbins = 31;
+  Double_t diemptbins[ndiemptbins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 200, 300, 400, 600, 1000, 1400};
 
   TH1D * ratio2 = (TH1D*)ratio->Rebin(ndiemptbins, "ratio2", diemptbins);
   TH1D * diempt2 = (TH1D*)diempt->Rebin(ndiemptbins, "diempt2", diemptbins);

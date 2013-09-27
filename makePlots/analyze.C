@@ -264,9 +264,9 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
   TTree * sigbTree = (TTree*)fSig560->Get("gg_"+channels[channel]+"_EvtTree_mst_560_m1_325");
   
   // pixel veto
-  Float_t fakeRate = 0.0199;
+  Float_t fakeRate = 0.019;
   Float_t fakeRate_err = 0.0001;
-  Float_t fakeRate_sys = 0.0006;
+  Float_t fakeRate_sys = 0.002;
 
   // electron conversion veto
   //Float_t fakeRate = 0.08;
@@ -502,12 +502,12 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     out, metCut);
 
 
-  const int ndijetptbins = 30;
-  Double_t dijetptbins[ndijetptbins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 200, 300, 400, 600, 1000};
+  const int ndijetptbins = 31;
+  Double_t dijetptbins[ndijetptbins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 200, 300, 400, 600, 1000, 1400};
   pMaker->CreatePlot("diJetPt", true,
 		     ndijetptbins, dijetptbins,
 		     "di-Jet Pt",
-		     0, 1200, 
+		     0, 1400, 
 		     2.e-3, 5.e4,
 		     0., 5.1,
 		     true, true, true,

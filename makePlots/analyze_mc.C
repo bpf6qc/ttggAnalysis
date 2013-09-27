@@ -58,7 +58,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   TFile * in = new TFile(input, "READ");
 
   // pixel veto
-  Float_t fakeRate = 0.0199;
+  Float_t fakeRate = 0.019;
   Float_t fakeRate_err = 0.0001;
 
   // electron conversion veto

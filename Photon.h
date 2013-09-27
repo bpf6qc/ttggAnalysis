@@ -149,3 +149,82 @@ bool is_f(susy::Photon gamma, float rho) {
   }
   return false;
 }
+
+//////////////
+bool is_egf_m(susy::Photon gamma, float rho) {
+
+  if(fabs(gamma.caloPosition.Eta()) < 1.4442 &&
+     gamma.momentum.Et() > 25.0 &&
+     gamma.hadTowOverEm < 0.05 &&
+     neutralHadronIso_corrected(gamma, rho) < 1.0 + 0.04*gamma.momentum.Pt() &&
+     photonIso_corrected(gamma, rho) < 0.7 + 0.005*gamma.momentum.Pt() &&
+     chargedHadronIso_corrected(gamma, rho) < 15.0 &&
+     gamma.r9 < 1.0 &&
+     gamma.sigmaIetaIeta > 0.001 &&
+     gamma.sigmaIphiIphi > 0.001) {
+    
+    return true;
+
+  }
+  
+  return false;
+}
+
+bool is_eg_m(susy::Photon gamma, float rho) {
+  if(is_egf(gamma, rho) &&
+     chargedHadronIso_corrected(gamma, rho) < 1.5 &&
+     gamma.sigmaIetaIeta < 0.011) {
+    return true;
+  }
+  
+  return false;
+}
+
+bool is_f_m(susy::Photon gamma, float rho) {
+
+  if(is_egf(gamma, rho) &&
+     gamma.nPixelSeeds == 0 &&
+     (gamma.sigmaIetaIeta >= 0.011 || chargedHadronIso_corrected(gamma, rho) >= 1.5 )) {
+    return true;
+  }
+  return false;
+}
+
+bool is_egf_t(susy::Photon gamma, float rho) {
+
+  if(fabs(gamma.caloPosition.Eta()) < 1.4442 &&
+     gamma.momentum.Et() > 25.0 &&
+     gamma.hadTowOverEm < 0.05 &&
+     neutralHadronIso_corrected(gamma, rho) < 0.4 + 0.04*gamma.momentum.Pt() &&
+     photonIso_corrected(gamma, rho) < 0.5 + 0.005*gamma.momentum.Pt() &&
+     chargedHadronIso_corrected(gamma, rho) < 15.0 &&
+     gamma.r9 < 1.0 &&
+     gamma.sigmaIetaIeta > 0.001 &&
+     gamma.sigmaIphiIphi > 0.001) {
+    
+    return true;
+
+  }
+  
+  return false;
+}
+
+bool is_eg_t(susy::Photon gamma, float rho) {
+  if(is_egf(gamma, rho) &&
+     chargedHadronIso_corrected(gamma, rho) < 0.7 &&
+     gamma.sigmaIetaIeta < 0.011) {
+    return true;
+  }
+  
+  return false;
+}
+
+bool is_f_t(susy::Photon gamma, float rho) {
+
+  if(is_egf(gamma, rho) &&
+     gamma.nPixelSeeds == 0 &&
+     (gamma.sigmaIetaIeta >= 0.011 || chargedHadronIso_corrected(gamma, rho) >= 0.7 )) {
+    return true;
+  }
+  return false;
+}
