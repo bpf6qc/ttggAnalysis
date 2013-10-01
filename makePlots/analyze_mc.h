@@ -330,6 +330,8 @@ class PlotMaker : public TObject {
 	    TString requirement);
   virtual ~PlotMaker() { 
 
+    KSscores.clear();
+
     delete ggTree;
     delete egTree;
     delete qcd30to40Tree;
@@ -376,6 +378,8 @@ class PlotMaker : public TObject {
 
   void CreateTable();
 
+  void PlotKolmogorovValues();
+
  private:
   TTree * ggTree;
   TTree * egTree;
@@ -399,6 +403,8 @@ class PlotMaker : public TObject {
   bool useTTbar;
   bool displayKStest;
 
+  vector<pair<TString, double> > KSscores;
+  
 };
 
 PlotMaker::PlotMaker(Int_t lumi, Float_t ewkScale, Float_t ewkScaleErr, TString requirement) :
@@ -413,6 +419,8 @@ PlotMaker::PlotMaker(Int_t lumi, Float_t ewkScale, Float_t ewkScaleErr, TString 
 
   useTTbar = true;
   displayKStest = false;
+
+  KSscores.clear();
 }
 
 void PlotMaker::SetTrees(TTree * gg, TTree * eg,
@@ -624,7 +632,10 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   if(drawLegend) leg->Draw("same");
   if(drawPrelim && drawLegend) prelim->Draw("same");
-  if(displayKStest) tt->AppendPad();
+  if(displayKStest) {
+    tt->AppendPad();
+    KSscores.push_back(make_pair(variable, kolm));
+  }
 
   padlo->cd();
   padlo->SetTopMargin(0);
@@ -1028,6 +1039,27 @@ void PlotMaker::CreateTable() {
   }
 
   fclose(tableFile);
+}
+
+void PlotMaker::PlotKolmogorovValues() {
+
+  if(!displayKStest) return;
+
+  TH1D * h_ks = new TH1D("h_ks_"+req, "h_ks_"+req, (int)KSscores.size(), 0, (int)KSscores.size());
+
+  for(unsigned int i = 0; i < KSscores.size(); i++) {
+    h_ks->SetBinContent(i+1, KSscores[i].second);
+    h_ks->GetXaxis()->SetBinLabel(i+1, KSscores[i].first);
+  }
+
+  TCanvas * can = new TCanvas("ks_can_"+req, "Plot", 10, 10, 2000, 2000);
+  can->SetLogy(true);
+
+  h_ks->Draw("hist");
+  can->SaveAs("ksScores_"+req+".pdf");
+
+  delete can;
+
 }
 
 void prep_signal(TString req) {
