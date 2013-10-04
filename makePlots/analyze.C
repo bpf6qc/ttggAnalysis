@@ -359,7 +359,7 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     0.5, 5., 
 		     2.e-2, 3.e5,
 		     0., 2.1,
-		     true, true, false,
+		     true, false, false,
 		     out, metCut);
 
   pMaker->CreatePlot("photon_dPhi", true,
