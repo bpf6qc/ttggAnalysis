@@ -366,7 +366,7 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     35, 0., 3.14159,
 		     "#phi of leading #gamma", "Number of Events",
 		     0., 3.14159, 
-		     2.e-3, 3.e4,
+		     2.e-2, 3.e5,
 		     0., 2.1,
 		     true, false, false,
 		     out, metCut);

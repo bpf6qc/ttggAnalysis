@@ -160,14 +160,14 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     0.5, 5., 
 		     2.e-2, 3.e5,
 		     0., 2.1,
-		     true, true, false,
+		     true, false, false,
 		     out, metCut);
 
   pMaker->CreatePlot("photon_dPhi", true,
 		     35, 0., 3.14159,
 		     "#phi of leading #gamma", "Number of Events",
 		     0., 3.14159, 
-		     2.e-3, 3.e4,
+		     2.e-2, 3.e5,
 		     0., 2.1,
 		     true, false, false,
 		     out, metCut);
