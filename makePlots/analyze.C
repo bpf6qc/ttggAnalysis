@@ -353,6 +353,24 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 
   TFile * out = new TFile("plots_"+channels[channel]+".root", "RECREATE");
 
+  pMaker->CreatePlot("photon_dR", true,
+		     50, 0., 5.,
+		     "#eta of leading #gamma", "Number of Events",
+		     0., 5., 
+		     2.e-3, 3.e4,
+		     0., 2.1,
+		     true, true, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("photon_dR", true,
+		     35, 0., 3.14159,
+		     "#eta of leading #gamma", "Number of Events",
+		     0., 3.14159, 
+		     2.e-3, 3.e4,
+		     0., 2.1,
+		     true, false, false,
+		     out, metCut);
+
   pMaker->CreatePlot("leadPhotonEta", true,
 		     40, -1.5, 1.5,
 		     "#eta of leading #gamma", "Number of Events",
