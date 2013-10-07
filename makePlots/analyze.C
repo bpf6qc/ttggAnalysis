@@ -355,7 +355,25 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 
   pMaker->CreatePlot("photon_dR", true,
 		     50, 0., 5.,
-		     "#eta of leading #gamma", "Number of Events",
+		     "#DeltaR_{#gamma#gamma}", "Number of Events",
+		     0.5, 5., 
+		     2.e-2, 3.e5,
+		     0., 2.1,
+		     true, false, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("minDR_leadPhoton_jets", true,
+		     50, 0., 5.,
+		     "min(#DeltaR_{#gamma_{lead}, jets}", "Number of Events",
+		     0.5, 5., 
+		     2.e-2, 3.e5,
+		     0., 2.1,
+		     true, false, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("minDR_trailPhoton_jets", true,
+		     50, 0., 5.,
+		     "min(#DeltaR_{#gamma_{trail}, jets}", "Number of Events",
 		     0.5, 5., 
 		     2.e-2, 3.e5,
 		     0., 2.1,
@@ -364,7 +382,7 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 
   pMaker->CreatePlot("photon_dPhi", true,
 		     35, 0., 3.14159,
-		     "#phi of leading #gamma", "Number of Events",
+		     "#Delta#phi_{#gamma#gamma}", "Number of Events",
 		     0., 3.14159, 
 		     2.e-2, 3.e5,
 		     0., 2.1,
@@ -452,9 +470,36 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     true, true, false,
 		     out, metCut);
 
+  pMaker->CreatePlot("submax_csv", true,
+		     20, 0., 1.,
+		     "sub-max csv", "Number of Events",
+		     0, 4, 
+		     2.e-3, 3.e6,
+		     0., 2.1,
+		     true, true, false,
+		     out, metCut);
+
   const int nKinematicBins = 41;
   Double_t xbins_kinematic[nKinematicBins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100,
 						110, 120, 130, 140, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1250, 1500, 2000};
+
+  pMaker->CreatePlot("HT_jets", true,
+		     nKinematicBins, xbins_kinematic,
+		     "HT (jets only) (GeV/c^{2})",
+		     0, 2000, 
+		     2.e-3, 3.e4,
+		     0., 11.5,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("hadronic_pt", true,
+		     nKinematicBins, xbins_kinematic,
+		     "Jet System Pt (GeV/c)",
+		     0, 2000, 
+		     2.e-3, 3.e4,
+		     0., 11.5,
+		     true, true, true,
+		     out, metCut);
 
   pMaker->CreatePlot("invmass", true,
 		     nKinematicBins, xbins_kinematic,
@@ -486,6 +531,42 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
   pMaker->CreatePlot("jet2_pt", true,
 		     nKinematicBins, xbins_kinematic,
 		     "Pt of sub-leading jet",
+		     0, 1400, 
+		     2.e-3, 8.e3,
+		     0., 4.5,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("jet3_pt", true,
+		     nKinematicBins, xbins_kinematic,
+		     "Pt of third-leading jet",
+		     0, 1400, 
+		     2.e-3, 8.e3,
+		     0., 4.5,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("jet4_pt", true,
+		     nKinematicBins, xbins_kinematic,
+		     "Pt of fourth-leading jet",
+		     0, 1400, 
+		     2.e-3, 8.e3,
+		     0., 4.5,
+		     true, true, true,
+		     out, metCut);
+
+  pMaker->CreatePlot("btag1_pt", true,
+		     nKinematicBins, xbins_kinematic,
+		     "Pt of leading btag",
+		     0, 1400, 
+		     2.e-3, 8.e3,
+		     0., 4.5,
+		     true, true, true,
+		     out, metCut);
+  
+  pMaker->CreatePlot("btag2_pt", true,
+		     nKinematicBins, xbins_kinematic,
+		     "Pt of sub-leading btag",
 		     0, 1400, 
 		     2.e-3, 8.e3,
 		     0., 4.5,
