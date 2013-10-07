@@ -190,6 +190,24 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		     true, false, false,
 		     out, metCut);
 
+  pMaker->CreatePlot("minDPhi_gMET", true,
+		     35, 0., 3.14159,
+		     "min(#Delta#phi_{#gamma, MET})", "Number of Events",
+		     0., 3.14159, 
+		     2.e-2, 3.e5,
+		     0., 2.1,
+		     false, false, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("minDPhi_jMET", true,
+		     35, 0., 3.14159,
+		     "min(#Delta#phi_{jets, MET})", "Number of Events",
+		     0., 3.14159, 
+		     2.e-2, 3.e5,
+		     0., 2.1,
+		     false, false, false,
+		     out, metCut);
+
   pMaker->CreatePlot("leadPhotonEta", true,
 		     40, -1.5, 1.5,
 		     "#eta of leading #gamma", "Number of Events",

@@ -111,6 +111,18 @@ void mvaTreeMaker(TString input, int channelNumber) {
   floatNames.push_back("trailptOverInvmass");
   floatNames.push_back("leadMatchedJetPt");
   floatNames.push_back("trailMatchedJetPt");
+  floatNames.push_back("btag1_pt");
+  floatNames.push_back("btag2_pt");
+  floatNames.push_back("jet3_pt");
+  floatNames.push_back("jet4_pt");
+  floatNames.push_back("HT_jets");
+  floatNames.push_back("hadronic_pt");
+  floatNames.push_back("minDR_leadPhoton_jets");
+  floatNames.push_back("minDR_trailPhoton_jets");
+  floatNames.push_back("minDPhi_gMET");
+  floatNames.push_back("minDPhi_jMET");
+  floatNames.push_back("submax_csv");
+  
 
   vector<TString> intNames;
   intNames.push_back("Njets");
@@ -368,7 +380,7 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     0.5, 5., 
 		     2.e-2, 3.e5,
 		     0., 2.1,
-		     true, false, false,
+		     false, false, false,
 		     out, metCut);
 
   pMaker->CreatePlot("minDR_trailPhoton_jets", true,
@@ -377,7 +389,7 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     0.5, 5., 
 		     2.e-2, 3.e5,
 		     0., 2.1,
-		     true, false, false,
+		     false, false, false,
 		     out, metCut);
 
   pMaker->CreatePlot("photon_dPhi", true,
@@ -387,6 +399,24 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 		     2.e-2, 3.e5,
 		     0., 2.1,
 		     true, false, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("minDPhi_gMET", true,
+		     35, 0., 3.14159,
+		     "min(#Delta#phi_{#gamma, MET})", "Number of Events",
+		     0., 3.14159, 
+		     2.e-2, 3.e5,
+		     0., 2.1,
+		     false, false, false,
+		     out, metCut);
+
+  pMaker->CreatePlot("minDPhi_jMET", true,
+		     35, 0., 3.14159,
+		     "min(#Delta#phi_{jets, MET})", "Number of Events",
+		     0., 3.14159, 
+		     2.e-2, 3.e5,
+		     0., 2.1,
+		     false, false, false,
 		     out, metCut);
 
   pMaker->CreatePlot("leadPhotonEta", true,
