@@ -165,7 +165,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 
   pMaker->CreatePlot("minDR_leadPhoton_jets", true,
 		     50, 0., 5.,
-		     "min(#DeltaR_{#gamma_{lead}, jets}", "Number of Events",
+		     "min(#DeltaR_{#gamma_{lead}, jets})", "Number of Events",
 		     0.5, 5., 
 		     2.e-2, 3.e5,
 		     0., 2.1,
@@ -174,7 +174,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 
   pMaker->CreatePlot("minDR_trailPhoton_jets", true,
 		     50, 0., 5.,
-		     "min(#DeltaR_{#gamma_{trail}, jets}", "Number of Events",
+		     "min(#DeltaR_{#gamma_{trail}, jets})", "Number of Events",
 		     0.5, 5., 
 		     2.e-2, 3.e5,
 		     0., 2.1,

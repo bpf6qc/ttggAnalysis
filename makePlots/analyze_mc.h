@@ -386,12 +386,23 @@ class PlotMaker : public TObject {
   
   TTree * qcd30to40Tree;
   TTree * qcd40Tree;
+
   TTree * gjet20to40Tree;
   TTree * gjet40Tree;
+
   TTree * diphotonjetsTree;
+
+  TTree * diphotonBox10to25Tree;
+  TTree * diphotonBox25to250Tree;
+  TTree * diphotonBox250toInfTree;
+
   TTree * ttHadronicTree;
   TTree * ttSemiLepTree;
+
   TTree * ttgjetsTree;
+
+  TTree * ttjetsTree;
+
   TTree * sigaTree;
   TTree * sigbTree;
 
@@ -427,8 +438,10 @@ void PlotMaker::SetTrees(TTree * gg, TTree * eg,
 			 TTree * qcd30to40, TTree * qcd40,
 			 TTree * gjet20to40, TTree * gjet40,
 			 TTree * diphotonjets,
+			 TTree * diphoBox10to25, TTree * diphoBox25to250, TTree * diphoBox250toInf,
 			 TTree * ttHadronic, TTree * ttSemiLep,
 			 TTree * ttgjets,
+			 TTree * ttbar,
 			 TTree * sig_a, TTree * sig_b) {
 
   ggTree = gg;
@@ -436,12 +449,22 @@ void PlotMaker::SetTrees(TTree * gg, TTree * eg,
   
   qcd30to40Tree = qcd30to40;
   qcd40Tree = qcd40;
+
   gjet20to40Tree = gjet20to40;
   gjet40Tree = gjet40;
+
   diphotonjetsTree = diphotonjets;
+
+  diphotonBox10to25Tree = diphoBox10to25;
+  diphotonBox25to250Tree = diphoBox25to250;
+  diphotonBox250toInfTree = diphoBox250toInf;
+  
   ttHadronicTree = ttHadronic;
   ttSemiLepTree = ttSemiLep;
+
   ttgjetsTree = ttgjets;
+
+  ttjetsTree = ttbar;
 
   sigaTree = sig_a;
   sigbTree = sig_b;
@@ -480,6 +503,13 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gjet->Add(gjet40);
 
   TH1D * diphotonjets = SignalHistoFromTree(intLumi_int * 75.39 * 1.019 * 1.019 / 1156030., isAFloat, variable, diphotonjetsTree, variable+"_diphotonjets_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+
+  TH1D * diphoBox10to25 = SignalHistoFromTree(intLumi_int * 424.8 * 1.019 * 1.019 / 500400., isAFloat, variable, diphotonBox10to25Tree, variable+"_diphoBox10to25_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+  TH1D * diphoBox25to250 = SignalHistoFromTree(intLumi_int * 15.54 * 1.019 * 1.019 / 832275., isAFloat, variable, diphotonBox25to250Tree, variable+"_diphoBox25to250_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+  TH1D * diphoBox250toInf = SignalHistoFromTree(intLumi_int * 1.18e-3 * 1.019 * 1.019 / 966976., isAFloat, variable, diphotonBox250toInfTree, variable+"_diphoBox250toInf_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+  TH1D * diphoBox = (TH1D*)diphoBox250toInf("diphoBox");
+  diphoBox->Add(diphoBox25to250);
+  diphoBox->Add(diphoBox10to25);
   
   TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
   TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
@@ -488,10 +518,13 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
 
+  TH1D * ttMBD = SignalHistoFromTree(intLumi_int * 136.3 * 1.019 * 1.019 / 6923652., isAFloat, variable, ttjetsTree, variable+"_ttMBD_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+
   TH1D * bkg = (TH1D*)qcd->Clone(variable+"_bkg_"+req);
 
   bkg->Add(gjet);
   bkg->Add(diphotonjets);
+  bkg->Add(diphoBox);
   bkg->Add(ewk);
   bkg->Add(ttg);
   if(useTTbar) bkg->Add(ttbar);
@@ -507,13 +540,19 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   bkg->Write();
 
   gjet->Add(diphotonjets);
+  gjet->Add(diphoBox);
   gjet->Add(ewk);
   gjet->Add(ttg);
   if(useTTbar) gjet->Add(ttbar);
 
+  diphotonjets->Add(diphoBox);
   diphotonjets->Add(ewk);
   diphotonjets->Add(ttg);
   if(useTTbar) diphotonjets->Add(ttbar);
+
+  diphoBox->Add(ewk);
+  diphoBox->Add(ttg);
+  if(useTTbar) diphoBox->Add(ttbar);
 
   ewk->Add(ttg);
   if(useTTbar) ewk->Add(ttbar);
@@ -537,6 +576,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   leg->AddEntry(bkg, "QCD", "F");
   leg->AddEntry(gjet, "#gamma + jets", "F");
   leg->AddEntry(diphotonjets, "#gamma#gamma + jets", "F");
+  leg->AddEntry(diphoBox, "#gamma#gamma Box", "F");
   leg->AddEntry(ewk, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
   if(useTTbar) leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
@@ -571,6 +611,10 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   diphotonjets->SetFillColor(kYellow);
   diphotonjets->SetMarkerSize(0);
   diphotonjets->SetLineColor(1);
+
+  diphoBox->SetFillColor(kViolet);
+  diphoBox->SetMarkerSize(0);
+  diphoBox->SetLineColor(1);
 
   ewk->SetFillColor(8);
   ewk->SetMarkerSize(0);
@@ -611,6 +655,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   bkg->Draw("hist");
   gjet->Draw("same hist");
   diphotonjets->Draw("same hist");
+  diphoBox->Draw("same hist");
   ewk->Draw("same hist");
   ttg->Draw("same hist");
   if(useTTbar) ttbar->Draw("same hist");
@@ -735,6 +780,14 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
    TH1D * diphotonjets = SignalHistoFromTree(intLumi_int * 75.39 * 1.019 * 1.019 / 1156030., isAFloat, variable, diphotonjetsTree, variable+"_diphotonjets_"+req, variable, nBinsX, customBins, metCut);
    diphotonjets = (TH1D*)DivideByBinWidth(diphotonjets);
 
+   TH1D * diphoBox10to25 = SignalHistoFromTree(intLumi_int * 424.8 * 1.019 * 1.019 / 500400., isAFloat, variable, diphotonBox10to25Tree, variable+"_diphoBox10to25_"+req, variable, nBinsX, customBins, metCut);
+  TH1D * diphoBox25to250 = SignalHistoFromTree(intLumi_int * 15.54 * 1.019 * 1.019 / 832275., isAFloat, variable, diphotonBox25to250Tree, variable+"_diphoBox25to250_"+req, variable, nBinsX, customBins, metCut);
+  TH1D * diphoBox250toInf = SignalHistoFromTree(intLumi_int * 1.18e-3 * 1.019 * 1.019 / 966976., isAFloat, variable, diphotonBox250toInfTree, variable+"_diphoBox250toInf_"+req, variable, nBinsX, customBins, metCut);
+  TH1D * diphoBox = (TH1D*)diphoBox250toInf("diphoBox");
+  diphoBox->Add(diphoBox25to250);
+  diphoBox->Add(diphoBox10to25);
+  diphoBox = (TH1D*)DivideByBinWidth(diphoBox);
+
   TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, customBins, metCut);
   TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, customBins, metCut);
   TH1D * ttbar = (TH1D*)ttHadronic->Clone(variable+"_ttbar_"+req);
@@ -744,10 +797,14 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, customBins, metCut);
   ttg = (TH1D*)DivideByBinWidth(ttg);
 
+  TH1D * ttMBD = SignalHistoFromTree(intLumi_int * 136.3 * 1.019 * 1.019 / 6923652., isAFloat, variable, ttjetsTree, variable+"_ttMBD_"+req, variable, nBinsX, customBins, metCut);
+  ttMBD = (TH1D*)DivideByBinWidth(ttMBD);
+
   TH1D * bkg = (TH1D*)qcd->Clone(variable+"_bkg_"+req);
 
   bkg->Add(gjet);
   bkg->Add(diphotonjets);
+  bkg->Add(diphoBox);
   bkg->Add(ewk);
   bkg->Add(ttg);
   if(useTTbar) bkg->Add(ttbar);
@@ -763,13 +820,19 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   bkg->Write();
 
   gjet->Add(diphotonjets);
+  gjet->Add(diphoBox);
   gjet->Add(ewk);
   gjet->Add(ttg);
   if(useTTbar) gjet->Add(ttbar);
 
+  diphotonjets->Add(diphoBox);
   diphotonjets->Add(ewk);
   diphotonjets->Add(ttg);
   if(useTTbar) diphotonjets->Add(ttbar);
+
+  diphoBox->Add(ewk);
+  diphoBox->Add(ttg);
+  if(useTTbar) diphoBox->Add(ttbar);
 
   ewk->Add(ttg);
   if(useTTbar) ewk->Add(ttbar);
@@ -795,6 +858,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   leg->AddEntry(bkg, "QCD", "F");
   leg->AddEntry(gjet, "#gamma + jets", "F");
   leg->AddEntry(diphotonjets, "#gamma#gamma + jets", "F");
+  leg->AddEntry(diphoBox, "#gamma#gamma Box", "F");
   leg->AddEntry(ewk, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
   if(useTTbar) leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
@@ -829,6 +893,10 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   diphotonjets->SetFillColor(kYellow);
   diphotonjets->SetMarkerSize(0);
   diphotonjets->SetLineColor(1);
+
+  diphoBox->SetFillColor(kViolet);
+  diphoBox->SetMarkerSize(0);
+  diphoBox->SetLineColor(1);
 
   ewk->SetFillColor(8);
   ewk->SetMarkerSize(0);
@@ -869,6 +937,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   bkg->Draw("hist");
   gjet->Draw("same hist");
   diphotonjets->Draw("same hist");
+  diphoBox->Draw("same hist");
   ewk->Draw("same hist");
   ttg->Draw("same hist");
   if(useTTbar) ttbar->Draw("same hist");

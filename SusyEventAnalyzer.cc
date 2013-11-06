@@ -1521,6 +1521,11 @@ void SusyEventAnalyzer::Acceptance() {
   cout << "no passing candidates     : " << nCnt[28][0] << endl;
   cout << "diJet matching failed     : " << nCnt[31][0] << endl;
   if(rejectFakeElectrons) cout << "double fake ee --> gg     : " << nCnt[32][0] << endl;
+  cout << "gg fail hlt               : " << nCnt[33][0] << endl;
+  cout << "eg fail hlt               : " << nCnt[34][0] << endl;
+  cout << "ee fail hlt               : " << nCnt[35][0] << endl;
+  cout << "ff fail hlt               : " << nCnt[36][0] << endl;
+  cout << "gf fail hlt               : " << nCnt[37][0] << endl;
 
   puFile->Close();
   btagEfficiency->Close();
