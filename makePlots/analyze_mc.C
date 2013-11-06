@@ -78,7 +78,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   TTree * ttgjetsTree = (TTree*)fTTGJets->Get("gg_"+channels[channel]+"_EvtTree_ttgjets");
 
   TFile * fTTMBD = new TFile("inputs/signal_contamination_TTJets.root");
-  TFile * ttMBDTree = (TTree*)fTTMBD->Get("gg_"+channels[channel]+"_EvtTree_TTJets");
+  TTree * ttMBDTree = (TTree*)fTTMBD->Get("gg_"+channels[channel]+"_EvtTree_TTJets");
 
   TFile * fQCD30to40 = new TFile("inputs/signal_contamination_qcd30to40.root", "READ");
   TTree * qcd30to40Tree = (TTree*)fQCD30to40->Get("gg_"+channels[channel]+"_EvtTree_qcd30to40");
