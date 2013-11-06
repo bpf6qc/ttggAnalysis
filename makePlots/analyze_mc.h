@@ -351,9 +351,11 @@ class PlotMaker : public TObject {
 		TTree * qcd30to40, TTree * qcd40,
 		TTree * gjet20to40, TTree * gjet40,
 		TTree * diphotonjets,
+		TTree * diphoBox10to25, TTree * diphoBox25to250, TTree * diphoBox250toInf,
 		TTree * ttHadronic, TTree * ttSemiLep,
 		TTree * ttgjets,
-		TTree * sig_a, TTree * sig_b);
+		TTree * ttbar,
+		TTree * sig_a, TTree * sig_b)
 
   void SetUseTTbar(bool v) { useTTbar = v; }
   void SetDisplayKStest(bool v) { displayKStest = v; }
@@ -507,7 +509,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TH1D * diphoBox10to25 = SignalHistoFromTree(intLumi_int * 424.8 * 1.019 * 1.019 / 500400., isAFloat, variable, diphotonBox10to25Tree, variable+"_diphoBox10to25_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
   TH1D * diphoBox25to250 = SignalHistoFromTree(intLumi_int * 15.54 * 1.019 * 1.019 / 832275., isAFloat, variable, diphotonBox25to250Tree, variable+"_diphoBox25to250_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
   TH1D * diphoBox250toInf = SignalHistoFromTree(intLumi_int * 1.18e-3 * 1.019 * 1.019 / 966976., isAFloat, variable, diphotonBox250toInfTree, variable+"_diphoBox250toInf_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
-  TH1D * diphoBox = (TH1D*)diphoBox250toInf("diphoBox");
+  TH1D * diphoBox = (TH1D*)diphoBox250toInf->Clone("diphoBox");
   diphoBox->Add(diphoBox25to250);
   diphoBox->Add(diphoBox10to25);
   
@@ -783,7 +785,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
    TH1D * diphoBox10to25 = SignalHistoFromTree(intLumi_int * 424.8 * 1.019 * 1.019 / 500400., isAFloat, variable, diphotonBox10to25Tree, variable+"_diphoBox10to25_"+req, variable, nBinsX, customBins, metCut);
   TH1D * diphoBox25to250 = SignalHistoFromTree(intLumi_int * 15.54 * 1.019 * 1.019 / 832275., isAFloat, variable, diphotonBox25to250Tree, variable+"_diphoBox25to250_"+req, variable, nBinsX, customBins, metCut);
   TH1D * diphoBox250toInf = SignalHistoFromTree(intLumi_int * 1.18e-3 * 1.019 * 1.019 / 966976., isAFloat, variable, diphotonBox250toInfTree, variable+"_diphoBox250toInf_"+req, variable, nBinsX, customBins, metCut);
-  TH1D * diphoBox = (TH1D*)diphoBox250toInf("diphoBox");
+  TH1D * diphoBox = (TH1D*)diphoBox250toInf->Clone("diphoBox");
   diphoBox->Add(diphoBox25to250);
   diphoBox->Add(diphoBox10to25);
   diphoBox = (TH1D*)DivideByBinWidth(diphoBox);

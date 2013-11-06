@@ -92,6 +92,15 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   TFile * fDiPhotonJets = new TFile("inputs/signal_contamination_DiPhotonJets.root", "READ");
   TTree * diphotonjetsTree = (TTree*)fDiPhotonJets->Get("gg_"+channels[channel]+"_EvtTree_DiPhotonJets");
 
+  TFile * fDiphoBox10to25 = new TFile("inputs/signal_contamination_DiPhotonBox10To25.root");
+  TTree * diphoBox10to25Tree = (TTree*)fDiphoBox10to25->Get("gg_"+channels[channel]+"_EvtTree_DiPhotonBox10To25");
+
+  TFile * fDiphoBox25to250 = new TFile("inputs/signal_contamination_DiPhotonBox25to250.root");
+  TTree * diphoBox25to250Tree = (TTree*)fDiphoBox25to250->Get("gg_"+channels[channel]+"_EvtTree_DiPhotonBox25to250");
+
+  TFile * fDiphoBox250toInf = new TFile("inputs/signal_contamination_DiPhotonBox250toInf.root");
+  TTree * diphoBox250toInfTree = (TTree*)fDiphoBox250toInf->Get("gg_"+channels[channel]+"_EvtTree_DiPhotonBox250toInf");
+
   TFile * fTTHadronic = new TFile("inputs/signal_contamination_ttJetsHadronic.root", "READ");
   TTree * ttHadronicTree = (TTree*)fTTHadronic->Get("gg_"+channels[channel]+"_EvtTree_ttJetsHadronic");
   
@@ -144,6 +153,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		   qcd30to40Tree, qcd40Tree,
 		   gjet20to40Tree, gjet40Tree,
 		   diphotonjetsTree,
+		   diphoBox10to25Tree, diphoBox25to250Tree, diphoBox250toInfTree,
 		   ttHadronicTree, ttSemiLepTree,
 		   ttgjetsTree,
 		   sigaTree, sigbTree);
