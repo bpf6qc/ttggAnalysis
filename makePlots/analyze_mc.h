@@ -355,7 +355,7 @@ class PlotMaker : public TObject {
 		TTree * ttHadronic, TTree * ttSemiLep,
 		TTree * ttgjets,
 		TTree * ttbar,
-		TTree * sig_a, TTree * sig_b)
+		TTree * sig_a, TTree * sig_b);
 
   void SetUseTTbar(bool v) { useTTbar = v; }
   void SetDisplayKStest(bool v) { displayKStest = v; }
