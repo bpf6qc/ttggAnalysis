@@ -98,11 +98,11 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   TFile * fDiphoBox10to25 = new TFile("inputs/signal_contamination_DiPhotonBox10To25.root");
   TTree * diphoBox10to25Tree = (TTree*)fDiphoBox10to25->Get("gg_"+channels[channel]+"_EvtTree_DiPhotonBox10To25");
 
-  TFile * fDiphoBox25to250 = new TFile("inputs/signal_contamination_DiPhotonBox25to250.root");
-  TTree * diphoBox25to250Tree = (TTree*)fDiphoBox25to250->Get("gg_"+channels[channel]+"_EvtTree_DiPhotonBox25to250");
+  TFile * fDiphoBox25to250 = new TFile("inputs/signal_contamination_DiPhotonBox25To250.root");
+  TTree * diphoBox25to250Tree = (TTree*)fDiphoBox25to250->Get("gg_"+channels[channel]+"_EvtTree_DiPhotonBox25To250");
 
-  TFile * fDiphoBox250toInf = new TFile("inputs/signal_contamination_DiPhotonBox250toInf.root");
-  TTree * diphoBox250toInfTree = (TTree*)fDiphoBox250toInf->Get("gg_"+channels[channel]+"_EvtTree_DiPhotonBox250toInf");
+  TFile * fDiphoBox250toInf = new TFile("inputs/signal_contamination_DiPhotonBox250ToInf.root");
+  TTree * diphoBox250toInfTree = (TTree*)fDiphoBox250toInf->Get("gg_"+channels[channel]+"_EvtTree_DiPhotonBox250ToInf");
 
   TFile * fTTHadronic = new TFile("inputs/signal_contamination_ttJetsHadronic.root", "READ");
   TTree * ttHadronicTree = (TTree*)fTTHadronic->Get("gg_"+channels[channel]+"_EvtTree_ttJetsHadronic");
