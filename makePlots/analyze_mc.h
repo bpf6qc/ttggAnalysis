@@ -358,6 +358,7 @@ class PlotMaker : public TObject {
 		TTree * sig_a, TTree * sig_b);
 
   void SetUseTTbar(bool v) { useTTbar = v; }
+  void SetUseTTMBD(bool v) { useTTMBD = v; }
   void SetDisplayKStest(bool v) { displayKStest = v; }
 
   void CreatePlot(TString variable, bool isAFloat,
@@ -414,6 +415,7 @@ class PlotMaker : public TObject {
   TString req;
 
   bool useTTbar;
+  bool useTTMBD;
   bool displayKStest;
 
   vector<pair<TString, double> > KSscores;
@@ -431,6 +433,7 @@ PlotMaker::PlotMaker(Int_t lumi, Float_t ewkScale, Float_t ewkScaleErr, TString 
   intLumi = buffer;
 
   useTTbar = true;
+  useTTMBD = true;
   displayKStest = false;
 
   KSscores.clear();
@@ -530,6 +533,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   bkg->Add(ewk);
   bkg->Add(ttg);
   if(useTTbar) bkg->Add(ttbar);
+  if(useTTMBD) bkg->Add(ttMBD);
 
   Double_t kolm = gg->KolmogorovTest(bkg);
   TString kolmText = Form("KS test probability = %5.3g", kolm);
@@ -546,20 +550,27 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gjet->Add(ewk);
   gjet->Add(ttg);
   if(useTTbar) gjet->Add(ttbar);
+  if(useTTMBD) gjet->Add(ttMBD);
 
   diphotonjets->Add(diphoBox);
   diphotonjets->Add(ewk);
   diphotonjets->Add(ttg);
   if(useTTbar) diphotonjets->Add(ttbar);
+  if(useTTMBD) diphotonjets->Add(ttMBD);
 
   diphoBox->Add(ewk);
   diphoBox->Add(ttg);
   if(useTTbar) diphoBox->Add(ttbar);
+  if(useTTMBD) diphoBox->Add(ttMBD);
 
   ewk->Add(ttg);
   if(useTTbar) ewk->Add(ttbar);
+  if(useTTMBD) ewk->Add(ttMBD);
   
   if(useTTbar) ttg->Add(ttbar);
+  if(useTTMBD) ttg->Add(ttMBD);
+
+  if(useTTMBD) ttbar->Add(ttMBD);
 
   TH1D * errors = (TH1D*)bkg->Clone("errors");
 
@@ -582,6 +593,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   leg->AddEntry(ewk, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
   if(useTTbar) leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
+  if(useTTMBD) leg->AddEntry(ttMBD, "t#bar{t} MBD", "F");
   leg->SetFillColor(0);
   leg->SetTextSize(0.028);
 
@@ -630,6 +642,10 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   ttbar->SetMarkerSize(0);
   ttbar->SetLineColor(1);
 
+  ttMBD->SetFillColor(kBlue+3);
+  ttMBD->SetMarkerSize(0);
+  ttMBD->SetLineColor(1);
+
   TCanvas * can = new TCanvas("can", "Plot", 10, 10, 2000, 2000);
 
   TPad * padhi = new TPad("padhi", "padhi", 0, 0.3, 1, 1);
@@ -661,6 +677,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   ewk->Draw("same hist");
   ttg->Draw("same hist");
   if(useTTbar) ttbar->Draw("same hist");
+  if(useTTMBD) ttMBD->Draw("same hist");
   errors->Draw("same e2");
   gg->Draw("same e1");
   bkg->Draw("same axis");
@@ -810,6 +827,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   bkg->Add(ewk);
   bkg->Add(ttg);
   if(useTTbar) bkg->Add(ttbar);
+  if(useTTMBD) bkg->Add(ttMBD);
 
   Double_t kolm = gg->KolmogorovTest(bkg);
   TString kolmText = Form("KS test probability = %5.3g", kolm);
@@ -826,20 +844,27 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gjet->Add(ewk);
   gjet->Add(ttg);
   if(useTTbar) gjet->Add(ttbar);
+  if(useTTMBD) gjet->Add(ttMBD);
 
   diphotonjets->Add(diphoBox);
   diphotonjets->Add(ewk);
   diphotonjets->Add(ttg);
   if(useTTbar) diphotonjets->Add(ttbar);
+  if(useTTMBD) diphotonjets->Add(ttMBD);
 
   diphoBox->Add(ewk);
   diphoBox->Add(ttg);
   if(useTTbar) diphoBox->Add(ttbar);
+  if(useTTMBD) diphoBox->Add(ttMBD);
 
   ewk->Add(ttg);
   if(useTTbar) ewk->Add(ttbar);
+  if(useTTMBD) ewk->Add(ttMBD);
   
   if(useTTbar) ttg->Add(ttbar);
+  if(useTTMBD) ttg->Add(ttMBD);
+
+  if(useTTMBD) ttbar->Add(ttMBD);
 
   TH1D * errors = (TH1D*)bkg->Clone("errors");
 
@@ -864,6 +889,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   leg->AddEntry(ewk, "Electroweak", "F");
   leg->AddEntry(ttg, "t#bar{t}#gamma + jets", "F");
   if(useTTbar) leg->AddEntry(ttbar, "t#bar{t} + jets", "F");
+  if(useTTMBD) leg->AddEntry(ttMBD, "t#bar{t} MBD", "F");
   leg->SetFillColor(0);
   leg->SetTextSize(0.028);
 
@@ -912,6 +938,10 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   ttbar->SetMarkerSize(0);
   ttbar->SetLineColor(1);
 
+  ttMBD->SetFillColor(kBlue+3);
+  ttMBD->SetMarkerSize(0);
+  ttMBD->SetLineColor(1);
+
   TCanvas * can = new TCanvas("can", "Plot", 10, 10, 2000, 2000);
 
   TPad * padhi = new TPad("padhi", "padhi", 0, 0.3, 1, 1);
@@ -943,6 +973,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   ewk->Draw("same hist");
   ttg->Draw("same hist");
   if(useTTbar) ttbar->Draw("same hist");
+  if(useTTMBD) ttMBD->Draw("same hist");
   errors->Draw("same e2");
   gg->Draw("same e1");
   bkg->Draw("same axis");
