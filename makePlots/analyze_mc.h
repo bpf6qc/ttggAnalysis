@@ -543,7 +543,14 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   out->cd();
   gg->Write();
-  bkg->Write();
+  qcd->Write();
+  gjet->Write();
+  diphotonjets->Write();
+  diphoBox->Write();
+  ewk->Write();
+  ttg->Write();
+  ttbar->Write();
+  ttMBD->Write();
 
   gjet->Add(diphotonjets);
   gjet->Add(diphoBox);
