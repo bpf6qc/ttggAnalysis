@@ -803,28 +803,32 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
     ewk->SetBinError(i+1, new_err);
   }
 
-  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone("ff_noNorm_"+variable+"_"+req);
-  qcd_ff->Scale(ffScale);
-
-  for(int i = 0; i < qcd_ff->GetNbinsX(); i++) {
-    Float_t normerr = ffScaleErr*(ff_noNorm->GetBinContent(i+1));
-    Float_t staterr = qcd_ff->GetBinError(i+1);
-                                                
-    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
-  
-    qcd_ff->SetBinError(i+1, new_err);
+  if(ffWorks) {
+    TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone("ff_noNorm_"+variable+"_"+req);
+    qcd_ff->Scale(ffScale);
+    
+    for(int i = 0; i < qcd_ff->GetNbinsX(); i++) {
+      Float_t normerr = ffScaleErr*(ff_noNorm->GetBinContent(i+1));
+      Float_t staterr = qcd_ff->GetBinError(i+1);
+      
+      Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+      
+      qcd_ff->SetBinError(i+1, new_err);
+    }
   }
 
-  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone("gf_noNorm_"+variable+"_"+req);
-  qcd_gf->Scale(gfScale);
-
-  for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
-    Float_t normerr = gfScaleErr*(gf_noNorm->GetBinContent(i+1));
-    Float_t staterr = qcd_gf->GetBinError(i+1);
-                                                
-    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
-  
-    qcd_gf->SetBinError(i+1, new_err);
+  if(gfWorks) {
+    TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone("gf_noNorm_"+variable+"_"+req);
+    qcd_gf->Scale(gfScale);
+    
+    for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
+      Float_t normerr = gfScaleErr*(gf_noNorm->GetBinContent(i+1));
+      Float_t staterr = qcd_gf->GetBinError(i+1);
+      
+      Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+      
+      qcd_gf->SetBinError(i+1, new_err);
+    }
   }
 
   out->cd();
@@ -1042,29 +1046,33 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   }
   ewk = (TH1D*)DivideByBinWidth(ewk);
 
-  TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone("ff_noNorm_"+variable+"_"+req);
-  qcd_ff->Scale(ffScale);
-
-  for(int i = 0; i < qcd_ff->GetNbinsX(); i++) {
-    Float_t normerr = ffScaleErr*(ff_noNorm->GetBinContent(i+1));
-    Float_t staterr = qcd_ff->GetBinError(i+1);
-                                                
-    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
-  
-    qcd_ff->SetBinError(i+1, new_err);
+  if(ffWorks) {
+    TH1D * ff_noNorm = (TH1D*)qcd_ff->Clone("ff_noNorm_"+variable+"_"+req);
+    qcd_ff->Scale(ffScale);
+    
+    for(int i = 0; i < qcd_ff->GetNbinsX(); i++) {
+      Float_t normerr = ffScaleErr*(ff_noNorm->GetBinContent(i+1));
+      Float_t staterr = qcd_ff->GetBinError(i+1);
+      
+      Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+      
+      qcd_ff->SetBinError(i+1, new_err);
+    }
   }
   qcd_ff = (TH1D*)DivideByBinWidth(qcd_ff);
 
-  TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone("gf_noNorm_"+variable+"_"+req);
-  qcd_gf->Scale(gfScale);
-
-  for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
-    Float_t normerr = gfScaleErr*(gf_noNorm->GetBinContent(i+1));
-    Float_t staterr = qcd_gf->GetBinError(i+1);
-                                                
-    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
-  
-    qcd_gf->SetBinError(i+1, new_err);
+  if(gfWorks) {
+    TH1D * gf_noNorm = (TH1D*)qcd_gf->Clone("gf_noNorm_"+variable+"_"+req);
+    qcd_gf->Scale(gfScale);
+    
+    for(int i = 0; i < qcd_gf->GetNbinsX(); i++) {
+      Float_t normerr = gfScaleErr*(gf_noNorm->GetBinContent(i+1));
+      Float_t staterr = qcd_gf->GetBinError(i+1);
+      
+      Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+      
+      qcd_gf->SetBinError(i+1, new_err);
+    }
   }
   qcd_gf = (TH1D*)DivideByBinWidth(qcd_gf);
 
@@ -1121,7 +1129,8 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TLegend * leg = new TLegend(0.50, 0.65, 0.85, 0.85, NULL, "brNDC");
   leg->AddEntry(gg, "#gamma#gamma Candidate Sample", "LP");
   leg->AddEntry(errors, "Total Background Uncertainty", "F");
-  leg->AddEntry(bkg, "QCD", "F");
+  if((useFF && ffWorks) || (!useFF && gfWorks)) leg->AddEntry(bkg, "QCD", "F");
+  else leg->AddEntry(bkg, "QCD (UN-NORMALIZED)", "F");
   leg->AddEntry(ewk, "Electroweak", "F");
   leg->SetFillColor(0);
   leg->SetTextSize(0.028);
