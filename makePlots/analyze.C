@@ -75,6 +75,20 @@ void mvaTreeMaker(TString input, int channelNumber) {
   TH1D * ratio_gf_1 = GetWeights(diempt_gg_1, diempt_gf->ProjectionX("gf_px1", 2, 2, "e"), gg_total, gf_total);
   TH1D * ratio_gf_2 = GetWeights(diempt_gg_2, diempt_gf->ProjectionX("gf_px2", 3, -1, "e"), gg_total, gf_total);
 
+  if(channel == "muJets" || channel == "eleJets") {
+
+    // Doesn't really matter what histo goes in this function, just returns 1 +- 0
+
+    ratio_ff_0 = GetFlatWeights(diempt_gg_0);
+    ratio_ff_1 = GetFlatWeights(diempt_gg_0);
+    ratio_ff_2 = GetFlatWeights(diempt_gg_0);
+
+    ratio_gf_0 = GetFlatWeights(diempt_gg_0);
+    ratio_gf_1 = GetFlatWeights(diempt_gg_0);
+    ratio_gf_2 = GetFlatWeights(diempt_gg_0);
+  }
+    
+
   TH1D * trialWeights_ff;
   GetTrialWeights(ggTree, ffTree, channel, trialWeights_ff);
 
