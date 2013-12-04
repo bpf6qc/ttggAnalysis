@@ -443,7 +443,7 @@ void SusyEventAnalyzer::findPhotons_prioritizeCount(susy::Event& ev, vector<susy
 	  float dR = sqrt(dEta*dEta + dPhi*dPhi);
 	  
 	  if(dR > 0.6 && (!doDPhiCut || fabs(dPhi) > 0.05)) {
-	    event_type = 1;
+	    event_type = cGG;
 	    candidates.push_back(g_photons[i]);
 	    candidates.push_back(g_photons[j]);
 	    
@@ -469,8 +469,8 @@ void SusyEventAnalyzer::findPhotons_prioritizeCount(susy::Event& ev, vector<susy
 	
 	if(dR > 0.6 && (!doDPhiCut || fabs(dPhi) > 0.05)) {
 	  
-	  if(ef_photons[j]->nPixelSeeds == 0) event_type = 5; //gf
-	  else event_type = 2; //ge
+	  if(ef_photons[j]->nPixelSeeds == 0) event_type = cGF;
+	  else event_type = cEG;
 	  
 	  if(g_photons[i]->momentum.Et() >= ef_photons[j]->momentum.Et()) event_type *= -1;
 	  candidates.push_back(g_photons[i]);
@@ -499,13 +499,25 @@ void SusyEventAnalyzer::findPhotons_prioritizeCount(susy::Event& ev, vector<susy
 	  if(dR > 0.6 && (!doDPhiCut || fabs(dPhi) > 0.05)) {
 	    
 	    if(!(ef_photons[i]->nPixelSeeds == 0) && !(ef_photons[j]->nPixelSeeds == 0)) {
-	      event_type = 3;
+	      event_type = cEE;
 	      candidates.push_back(ef_photons[i]);
 	      candidates.push_back(ef_photons[j]);
 	    }
 	    
 	    else if(ef_photons[i]->nPixelSeeds == 0 && ef_photons[j]->nPixelSeeds == 0) {
-	      event_type = 4;
+	      event_type = cFF;
+	      candidates.push_back(ef_photons[i]);
+	      candidates.push_back(ef_photons[j]);
+	    }
+
+	    else if(!(ef_photons[i]->nPixelSeeds == 0) && ef_photons[j]->nPixelSeeds == 0) {
+	      event_type = cEF; // ef
+	      candidates.push_back(ef_photons[i]);
+	      candidates.push_back(ef_photons[j]);
+	    }
+
+	    else if(ef_photons[i]->nPixelSeeds == 0 && !(ef_photons[j]->nPixelSeeds == 0)) {
+	      event_type = -1 * cEF; // fe
 	      candidates.push_back(ef_photons[i]);
 	      candidates.push_back(ef_photons[j]);
 	    }
@@ -565,35 +577,47 @@ void SusyEventAnalyzer::findPhotons_prioritizeEt(susy::Event& ev, vector<susy::P
 	      
 	    if(is_eg(*em_objects[i], event.rho25) && is_eg(*em_objects[j], event.rho25)) {
 	      if(em_objects[i]->nPixelSeeds == 0 &&
-		 em_objects[j]->nPixelSeeds == 0) event_type = 1;
+		 em_objects[j]->nPixelSeeds == 0) event_type = cGG;
 		
 	      if(em_objects[i]->nPixelSeeds == 0 &&
-		 !(em_objects[j]->nPixelSeeds == 0)) event_type = 2;
+		 !(em_objects[j]->nPixelSeeds == 0)) event_type = cEG;
 		
 	      if(!(em_objects[i]->nPixelSeeds == 0) &&
-		 em_objects[j]->nPixelSeeds == 0) event_type = -2;
+		 em_objects[j]->nPixelSeeds == 0) event_type = -1 * cEG;
 		
 	      if(!(em_objects[i]->nPixelSeeds == 0) &&
-		 !(em_objects[j]->nPixelSeeds == 0)) event_type = 3;
+		 !(em_objects[j]->nPixelSeeds == 0)) event_type = cEE;
 		
 	      candidates.push_back(em_objects[i]);
 	      candidates.push_back(em_objects[j]);
 	    }
 	      
 	    if(is_f(*em_objects[i], event.rho25) && is_f(*em_objects[j], event.rho25)) {
-	      event_type = 4;
+	      event_type = cFF;
 	      candidates.push_back(em_objects[i]);
 	      candidates.push_back(em_objects[j]);
 	    }
 	      
 	    if(is_eg(*em_objects[i], event.rho25) && em_objects[i]->nPixelSeeds == 0 && is_f(*em_objects[j], event.rho25)) {
-	      event_type = 5;
+	      event_type = cGF;
 	      candidates.push_back(em_objects[i]);
 	      candidates.push_back(em_objects[j]);
 	    }
 	      
 	    if(is_f(*em_objects[i], event.rho25) && is_eg(*em_objects[j], event.rho25) && em_objects[j]->nPixelSeeds == 0) {
-	      event_type = -5;
+	      event_type = -1 * cGF;
+	      candidates.push_back(em_objects[i]);
+	      candidates.push_back(em_objects[j]);
+	    }
+
+	    if(is_eg(*em_objects[i], event.rho25) && !(em_objects[i]->nPixelSeeds == 0) && is_f(*em_objects[j], event.rho25)) {
+	      event_type = cEF;
+	      candidates.push_back(em_objects[i]);
+	      candidates.push_back(em_objects[j]);
+	    }
+
+	    if(is_eg(*em_objects[j], event.rho25) && !(em_objects[j]->nPixelSeeds == 0) && is_f(*em_objects[i], event.rho25)) {
+	      event_type = -1 * cEF;
 	      candidates.push_back(em_objects[i]);
 	      candidates.push_back(em_objects[j]);
 	    }
@@ -641,7 +665,7 @@ void SusyEventAnalyzer::findPhotons_simple(susy::Event& ev, vector<susy::Photon*
 	  float dR = sqrt(dEta*dEta + dPhi*dPhi);
 	    
 	  if(dR > 0.6 && (!doDPhiCut || fabs(dPhi) > 0.05)) {
-	    event_type = 1;
+	    event_type = cGG;
 	    candidates.push_back(photons[i]);
 	    candidates.push_back(photons[j]);
 	  }

@@ -1,6 +1,7 @@
 #include "TString.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TTree.h"
 
 #include <vector>
 
@@ -8,10 +9,10 @@
 
 using namespace std;
 
-enum eventTypes {cNothing, cGG, cEG, cEE, cFF, cGF};
+enum eventTypes {cNothing, cGG, cEG, cEE, cFF, cGF, cEF};
 
-const int nCategories = 4;
-TString categories[nCategories] = {"gg", "eg", "ff", "gf"};
+const int nCategories = 6;
+TString categories[nCategories] = {"gg", "eg", "ff", "gf", "ee", "ef"};
 const int nChannels = 8;
 
 TString channels[nChannels] = {"nojet", "j", "b", "jj", "bj", "muJets", "eleJets", "hadronic"};
@@ -99,3 +100,62 @@ TString FormatName(TString scan) {
 
   return output_code_t;
 }
+
+const int nBranches = 54;
+TString branchNames[nFloatBranches] = {
+  "pfMET",
+  "pfMET_t1",
+  "pfMET_t1p2",
+  "pfMET_t01",
+  "pfMET_t01p2",
+  "pfNoPUMET",
+  "pfMVAMET",
+  "diEMpT",
+  "diJetPt",
+  "Njets",
+  "Nbtags",
+  "Nelectrons",
+  "Nmuons",
+  "invmass",
+  "HT",
+  "HT_jets",
+  "hadronic_pt",
+  "minDPhi_gMET",
+  "minDPhi_jMET",
+  "minDR_leadPhoton_jets",
+  "minDR_trailPhoton_jets",
+  "leadPhotonEt",
+  "trailPhotonEt",
+  "leadPhotonEta",
+  "leadMatchedJetPt",
+  "trailMatchedJetPt",
+  "trailPhotonEta",
+  "leadPhotonPhi",
+  "trailPhotonPhi",
+  "leadptOverInvmass",
+  "trailptOverInvmass",
+  "leadChargedHadronIso",
+  "trailChargedHadronIso",
+  "leadSigmaIetaIeta",
+  "trailSigmaIetaIeta",
+  "jet1_pt",
+  "jet2_pt",
+  "jet3_pt",
+  "jet4_pt",
+  "max_csv",
+  "btag1_pt",
+  "btag2_pt",
+  "submax_csv",
+  "min_csv",
+  "nPV",
+  "photon_dR",
+  "photon_dPhi",
+  "runNumber",
+  "eventNumber",
+  "luminosityBlockNumber",
+  "jentry",
+  "dimuon_invmass",
+  "diphodimu_invmass",
+  "metFilterBit"};
+
+  
