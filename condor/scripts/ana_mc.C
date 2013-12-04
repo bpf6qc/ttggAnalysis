@@ -44,6 +44,7 @@ void ana_mc(TString scan = "DATASETNAME", TString discriminant = "CSVM", bool is
   std::vector<int> f_types;
   f_types.push_back(4);
   f_types.push_back(5);
+  f_types.push_back(6);
   sea->AddHlt(f_names, f_types);
 
   sea->SetUseTrigger(true);
