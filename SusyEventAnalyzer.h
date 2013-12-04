@@ -18,6 +18,7 @@
 #include "Jet.h"
 #include "ScaleFactorInfo.h"
 #include "BtagInfo.h"
+#include "Metadata.h"
 
 using namespace std;
 

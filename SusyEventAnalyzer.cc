@@ -17,7 +17,6 @@
 #include "SusyEventAnalyzer.h"
 #include "BtagWeight.h"
 #include "EventQuality.h"
-#include "Metadata.h"
 
 using namespace std;
 
@@ -89,8 +88,6 @@ void SusyEventAnalyzer::PileupWeights(TString puFile) {
 }
 
 void SusyEventAnalyzer::CalculateBtagEfficiency() {
-
-  const int nChannels = 1;
 
   const int NCNT = 50;
   int nCnt[NCNT][nChannels];
@@ -981,7 +978,7 @@ void SusyEventAnalyzer::Data() {
 
     ////////////////////
 
-      for(int chan = 0; chan < nChannels; chan++) {
+      for(unsigned int chan = 0; chan < nChannels; chan++) {
 
 	if(pfJets.size() < nJetReq[chan]) continue;
 	if(btags.size() < nBtagReq[chan]) continue;
@@ -1088,25 +1085,25 @@ void SusyEventAnalyzer::Data() {
 
 	else if(event_type == cEE) {
 
-	  h_diempt[4][chan]->Fill(candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt(), pfJets.size());
+	  h_diempt[4][chan]->Fill((candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt(), pfJets.size());
 	  h_dijetpt[4][chan]->Fill(diJetPt, pfJets.size());
-
+	  
 	  eeTrees[chan]->Fill();
-
+	  
 	  nCnt[6][chan]++;
+	  
+	}
 
-      }
-
-      else if(abs(event_type) == cEF) {
-
-	  h_diempt[5][chan]->Fill(candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt(), pfJets.size());
+	else if(abs(event_type) == cEF) {
+	  
+	  h_diempt[5][chan]->Fill((candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt(), pfJets.size());
 	  h_dijetpt[5][chan]->Fill(diJetPt, pfJets.size());
-
+	  
 	  efTrees[chan]->Fill();
-
+	  
 	  nCnt[7][chan]++;
-
-      }
+	  
+	}
 
       } // loop over jet/btag req channels
 
