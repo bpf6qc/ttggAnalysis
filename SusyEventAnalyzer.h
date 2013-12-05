@@ -720,19 +720,19 @@ void SusyEventAnalyzer::findPhotons_fakesWithSeeds(susy::Event& ev, vector<susy:
 	      candidates.push_back(photons[j]);
 	    }
 
-	    else if(is_eg(*photons[i], event.rho25) && is_f(*photons[j], event.rho25)) {
+	    else if(is_eg(*photons[i], event.rho25) && !is_eg(*photons[j], event.rho25)) {
 	      event_type = cEF;
 	      candidates.push_back(photons[i]);
 	      candidates.push_back(photons[j]);
 	    }
 
-	    else if(is_f(*photons[i], event.rho25) && is_eg(*photons[j], event.rho25)) {
+	    else if(!is_eg(*photons[i], event.rho25) && is_eg(*photons[j], event.rho25)) {
 	      event_type = -1 * cEF;
 	      candidates.push_back(photons[i]);
 	      candidates.push_back(photons[j]);
 	    }
 
-	    else if(is_f(*photons[i], event.rho25) && is_f(*photons[j], event.rho25)) {
+	    else if(!is_eg(*photons[i], event.rho25) && !is_eg(*photons[j], event.rho25)) {
 	      event_type = cFF;
 	      candidates.push_back(photons[i]);
 	      candidates.push_back(photons[j]);

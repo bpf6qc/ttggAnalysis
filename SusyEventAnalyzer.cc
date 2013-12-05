@@ -842,6 +842,7 @@ void SusyEventAnalyzer::Data() {
     findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
     //findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
     //findPhotons_simple(event, candidate_pair, event_type, 0, useDPhiCut); // 0 (L), 1 (M), 2 (T)
+    //findPhotons_fakesWithSeeds(event, candidate_pair, event_type, useDPhiCut);
 
     if(event_type == 0) {
       nCnt[28][0]++;
