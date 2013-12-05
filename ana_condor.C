@@ -6,7 +6,7 @@ void ana_condor(TString discriminant = "CSVM", bool isMC = false) {
   gROOT->LoadMacro("SusyEventAnalyzer.cc++");
 
   TChain chain("susyTree");
-  chain.Add("/eos/uscms/store/user/bfrancis/skims/ReReco/*.root");
+  chain.Add("/eos/uscms/store/user/lpcpjm/SusyNtuples/cms538v1/Run2012A-22Jan2013-v1/Photon/susyEvents_100_1_we7.root");
 
   chain.SetBranchStatus("*", 1);
 
