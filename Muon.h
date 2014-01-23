@@ -29,9 +29,9 @@ bool isTightMuon(susy::Muon mu, vector<susy::Track> tracks, double d0, double dz
     fabs(dz) < 0.5 &&
     tracks[mu.trackIndex].numberOfValidPixelHits > 0 && 
     (mu.nPixelLayersWithMeasurement + mu.nStripLayersWithMeasurement) > 5 && 
-    mu.momentum.Pt() > 30. && // STUDY THIS ONE (ttH(bb) for now)
-    fabs(mu.momentum.Eta()) < 2.1 && // STUDY THIS ONE (ttH(bb) for now)
-    mu_iso / mu.momentum.Pt() < 0.12;
+    mu.momentum.Pt() > 30. && // STUDY THIS ONE (ttH(bb) for now) -- ttH(gg) uses 20
+    fabs(mu.momentum.Eta()) < 2.1 && // STUDY THIS ONE (ttH(bb) for now) -- ttH(gg) uses 2.4
+    mu_iso / mu.momentum.Pt() < 0.12; // STUDY THIS ONE (ttH(bb) for now) -- ttH(gg) uses 0.2
   
   return passes;
   

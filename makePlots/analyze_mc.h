@@ -935,7 +935,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   gjet->SetLineColor(1);
 
   diphotonjets->SetFillColor(kYellow);
-  diphotonjets->SetFillStyle(0);
+  diphotonjets->SetMarkerSize(0);
   diphotonjets->SetLineColor(1);
 
   diphoBox->SetFillColor(kViolet);

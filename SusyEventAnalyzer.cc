@@ -299,6 +299,8 @@ void SusyEventAnalyzer::Data() {
   /////////////////////////////////
 
   float pfMET_ = 0.;
+  float pfMET_x_ = 0.;
+  float pfMET_y_ = 0.;
   float pfMET_t1_ = 0.;
   float pfMET_t1p2_ = 0.;
   float pfMET_t01_ = 0.;
@@ -373,6 +375,8 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("ff_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
+    tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -438,6 +442,8 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("gf_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
+    tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -503,6 +509,8 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("gg_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
+    tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -568,6 +576,8 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("eg_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
+    tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -633,6 +643,8 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("ee_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
+    tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -698,6 +710,8 @@ void SusyEventAnalyzer::Data() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("ef_"+channels[i]+"_EvtTree", "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
+    tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -925,6 +939,8 @@ void SusyEventAnalyzer::Data() {
     btag2_pt_ = (btags_corrP4.size() >= 2) ? btags_corrP4[1].Pt() : -1.;
     
     pfMET_       = pfMet->met();
+    pfMET_x_     = pfMet->metX();
+    pfMET_y_     = pfMet->metY();
     pfMET_t1_    = pfMetType1->met();
     pfMET_t1p2_  = pfMetType1p2->met();
     pfMET_t01_   = pfMetType01->met();
@@ -1164,6 +1180,8 @@ void SusyEventAnalyzer::Acceptance() {
   TH2F * h_DR_jet_gg = new TH2F("DR_jet_gg", "#DeltaR between jets and lead/trailing #gamma#gamma candidates;#DeltaR_{lead #gamma, jet};#DeltaR_{trail #gamma, jet}", 50, 0, 5, 50, 0, 5);
 
   float pfMET_ = 0.;
+  float pfMET_x_ = 0.;
+  float pfMET_y_ = 0.;
   float pfMET_t1_ = 0.;
   float pfMET_t1p2_ = 0.;
   float pfMET_t01_ = 0.;
@@ -1240,6 +1258,8 @@ void SusyEventAnalyzer::Acceptance() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("gg_"+channels[i]+"_EvtTree"+output_code_t, "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
+    tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -1307,6 +1327,8 @@ void SusyEventAnalyzer::Acceptance() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("ff_"+channels[i]+"_EvtTree"+output_code_t, "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
+    tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -1374,6 +1396,8 @@ void SusyEventAnalyzer::Acceptance() {
   for(int i = 0; i < nChannels; i++) {
     TTree * tree = new TTree("gf_"+channels[i]+"_EvtTree"+output_code_t, "An event tree for final analysis");
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
+    tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -1641,6 +1665,8 @@ void SusyEventAnalyzer::Acceptance() {
     pileupWeightErr_ = eventWeightErr;
         
     pfMET_       = pfMet->met();
+    pfMET_x_     = pfMet->metX();
+    pfMET_y_     = pfMet->metY();
     pfMET_t1_    = pfMetType1->met();
     pfMET_t1p2_  = pfMetType1p2->met();
     pfMET_t01_   = pfMetType01->met();
