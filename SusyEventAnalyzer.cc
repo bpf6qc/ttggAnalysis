@@ -301,6 +301,7 @@ void SusyEventAnalyzer::Data() {
   float pfMET_ = 0.;
   float pfMET_x_ = 0.;
   float pfMET_y_ = 0.;
+  float pfMET_sysShift_ = 0.;
   float pfMET_t1_ = 0.;
   float pfMET_t1p2_ = 0.;
   float pfMET_t01_ = 0.;
@@ -325,6 +326,8 @@ void SusyEventAnalyzer::Data() {
   float trail_Eta_ = 0;
   float lead_Phi_ = 0;
   float trail_Phi_ = 0;
+
+  float w_mT_ = 0.;
 
   float lead_matched_jetpt_ = 0;
   float trail_matched_jetpt_ = 0;
@@ -377,6 +380,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -400,6 +404,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("leadPhotonEt", &lead_Et_, "lead_Et_/F");
     tree->Branch("trailPhotonEt", &trail_Et_, "trail_Et_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
+    tree->Branch("w_mT", &w_mT_, "w_mT_/F");
     tree->Branch("leadMatchedJetPt", &lead_matched_jetpt_, "lead_matched_jetpt_/F");
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
@@ -444,6 +449,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -469,6 +475,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("leadMatchedJetPt", &lead_matched_jetpt_, "lead_matched_jetpt_/F");
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
+    tree->Branch("w_mT", &w_mT_, "w_mT_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -511,6 +518,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -536,6 +544,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("leadMatchedJetPt", &lead_matched_jetpt_, "lead_matched_jetpt_/F");
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
+    tree->Branch("w_mT", &w_mT_, "w_mT_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -578,6 +587,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -603,6 +613,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("leadMatchedJetPt", &lead_matched_jetpt_, "lead_matched_jetpt_/F");
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
+    tree->Branch("w_mT", &w_mT_, "w_mT_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -645,6 +656,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -670,6 +682,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("leadMatchedJetPt", &lead_matched_jetpt_, "lead_matched_jetpt_/F");
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
+    tree->Branch("w_mT", &w_mT_, "w_mT_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -712,6 +725,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -737,6 +751,7 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("leadMatchedJetPt", &lead_matched_jetpt_, "lead_matched_jetpt_/F");
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
+    tree->Branch("w_mT", &w_mT_, "w_mT_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -941,12 +956,35 @@ void SusyEventAnalyzer::Data() {
     pfMET_       = pfMet->met();
     pfMET_x_     = pfMet->metX();
     pfMET_y_     = pfMet->metY();
+
+    TVector2 sysShiftCorr(4.83642e-02 + 2.48870e-01*nPVertex, -1.50135e-01 - 8.27917e-02*nPVertex);
+    pfMET_sysShift_ = (pfMet->mEt - sysShiftCorr).Mod();
+
     pfMET_t1_    = pfMetType1->met();
     pfMET_t1p2_  = pfMetType1p2->met();
     pfMET_t01_   = pfMetType01->met();
     pfMET_t01p2_ = pfMetType01p2->met();
     pfNoPUMET_   = pfNoPileUpMet->met();
     pfMVAMET_    = pfMVAMet->met();
+
+    // Transverse W mass
+    if(isoEles.size() == 1 && isoMuons.size() == 0) {
+      float metphi = (pfMet->mEt - sysShiftCorr).Phi();
+      float leptonphi = isoEles[0]->momentum.Phi();
+
+      w_mT_ = 1. - TMath::Cos(TVector2::Phi_mpi_pi(leptonphi - metphi));
+      w_mT_ *= 2. * isoEles[0]->momentum.Pt() * pfMET_sysShift_;
+      w_mT_ = sqrt(w_mT_);
+    }
+    else if(isoMuons.size() == 0 && isoMuons.size() == 1) {
+      float metphi = (pfMet->mEt - sysShiftCorr).Phi();
+      float leptonphi = isoMuons[0]->momentum.Phi();
+
+      w_mT_ = 1. - TMath::Cos(TVector2::Phi_mpi_pi(leptonphi - metphi));
+      w_mT_ *= 2. * isoMuons[0]->momentum.Pt() * pfMET_sysShift_;
+      w_mT_ = sqrt(w_mT_);
+    }
+    else w_mT_ = -1.;
 
     // Calculate dPhi_min(g, MET)
     float dPhi_gMET_lead = TVector2::Phi_mpi_pi(candidate_pair[0]->caloPosition.Phi() - pfMet->mEt.Phi());
@@ -1182,6 +1220,7 @@ void SusyEventAnalyzer::Acceptance() {
   float pfMET_ = 0.;
   float pfMET_x_ = 0.;
   float pfMET_y_ = 0.;
+  float pfMET_sysShift_ = 0.;
   float pfMET_t1_ = 0.;
   float pfMET_t1p2_ = 0.;
   float pfMET_t01_ = 0.;
@@ -1207,6 +1246,8 @@ void SusyEventAnalyzer::Acceptance() {
   float trail_Eta_ = 0;
   float lead_Phi_ = 0;
   float trail_Phi_ = 0;
+
+  float w_mT_ = 0.;
 
   float lead_matched_jetpt_ = 0;
   float trail_matched_jetpt_ = 0;
@@ -1260,6 +1301,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -1286,6 +1328,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("leadMatchedJetPt", &lead_matched_jetpt_, "lead_matched_jetpt_/F");
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
+    tree->Branch("w_mT", &w_mT_, "w_mT_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -1329,6 +1372,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -1355,6 +1399,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("leadMatchedJetPt", &lead_matched_jetpt_, "lead_matched_jetpt_/F");
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
+    tree->Branch("w_mT", &w_mT_, "w_mT_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -1398,6 +1443,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
     tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
@@ -1424,6 +1470,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("leadMatchedJetPt", &lead_matched_jetpt_, "lead_matched_jetpt_/F");
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
+    tree->Branch("w_mT", &w_mT_, "w_mT_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -1667,6 +1714,10 @@ void SusyEventAnalyzer::Acceptance() {
     pfMET_       = pfMet->met();
     pfMET_x_     = pfMet->metX();
     pfMET_y_     = pfMet->metY();
+
+    TVector2 sysShiftCorr(1.62861e-01 - 2.38517e-02*nPVertex, 3.60860e-01 - 1.30335e-01*nPVertex);
+    pfMET_sysShift_ = (pfMet->mEt - sysShiftCorr).Mod();
+
     pfMET_t1_    = pfMetType1->met();
     pfMET_t1p2_  = pfMetType1p2->met();
     pfMET_t01_   = pfMetType01->met();
@@ -1676,6 +1727,25 @@ void SusyEventAnalyzer::Acceptance() {
     genMET_      = genMet->met();
 
     diEMpT_ = (candidate_pair[0]->momentum + candidate_pair[1]->momentum).Pt();
+
+    // Transverse W mass
+    if(isoEles.size() == 1 && isoMuons.size() == 0) {
+      float metphi = (pfMet->mEt - sysShiftCorr).Phi();
+      float leptonphi = isoEles[0]->momentum.Phi();
+
+      w_mT_ = 1. - TMath::Cos(TVector2::Phi_mpi_pi(leptonphi - metphi));
+      w_mT_ *= 2. * isoEles[0]->momentum.Pt() * pfMET_sysShift_;
+      w_mT_ = sqrt(w_mT_);
+    }
+    else if(isoMuons.size() == 0 && isoMuons.size() == 1) {
+      float metphi = (pfMet->mEt - sysShiftCorr).Phi();
+      float leptonphi = isoMuons[0]->momentum.Phi();
+
+      w_mT_ = 1. - TMath::Cos(TVector2::Phi_mpi_pi(leptonphi - metphi));
+      w_mT_ *= 2. * isoMuons[0]->momentum.Pt() * pfMET_sysShift_;
+      w_mT_ = sqrt(w_mT_);
+    }
+    else w_mT_ = -1.;
 
     float diJetPt = 0.;
     bool matchingWorked = GetDiJetPt(event, candidate_pair, diJetPt, lead_matched_jetpt_, trail_matched_jetpt_);
