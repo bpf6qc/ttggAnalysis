@@ -301,7 +301,9 @@ void SusyEventAnalyzer::Data() {
   float pfMET_ = 0.;
   float pfMET_x_ = 0.;
   float pfMET_y_ = 0.;
+  float pfMET_phi_ = 0.;
   float pfMET_sysShift_ = 0.;
+  float pfMET_sysShift_phi_ = 0.;
   float pfMET_t1_ = 0.;
   float pfMET_t1p2_ = 0.;
   float pfMET_t01_ = 0.;
@@ -314,6 +316,8 @@ void SusyEventAnalyzer::Data() {
   int Nbtags_ = 0;
   int Nelectrons_ = 0;
   int Nmuons_ = 0;
+  float isoEle_pt_ = 0.;
+  float isoMuon_pt_ = 0.;
   float invmass_ = 0.;
   float HT_ = 0.;
   float HT_jets_ = 0.;
@@ -380,6 +384,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_phi", &pfMET_phi_, "pfMET_phi_/F");
+    tree->Branch("pfMET_sysShift_phi", &pfMET_sysShift_phi_, "pfMET_sysShift_phi_/F");
     tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
@@ -393,6 +399,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nbtags", &Nbtags_, "Nbtags_/I");
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
+    tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoMuon_pt", &isoMuons_pt_, "isoMuons_pt_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -449,6 +457,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_phi", &pfMET_phi_, "pfMET_phi_/F");
+    tree->Branch("pfMET_sysShift_phi", &pfMET_sysShift_phi_, "pfMET_sysShift_phi_/F");
     tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
@@ -462,6 +472,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nbtags", &Nbtags_, "Nbtags_/I");
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
+    tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoMuon_pt", &isoMuons_pt_, "isoMuons_pt_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -518,6 +530,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_phi", &pfMET_phi_, "pfMET_phi_/F");
+    tree->Branch("pfMET_sysShift_phi", &pfMET_sysShift_phi_, "pfMET_sysShift_phi_/F");
     tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
@@ -531,6 +545,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nbtags", &Nbtags_, "Nbtags_/I");
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
+    tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoMuon_pt", &isoMuons_pt_, "isoMuons_pt_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -587,6 +603,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_phi", &pfMET_phi_, "pfMET_phi_/F");
+    tree->Branch("pfMET_sysShift_phi", &pfMET_sysShift_phi_, "pfMET_sysShift_phi_/F");
     tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
@@ -600,6 +618,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nbtags", &Nbtags_, "Nbtags_/I");
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
+    tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoMuon_pt", &isoMuons_pt_, "isoMuons_pt_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -656,6 +676,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_phi", &pfMET_phi_, "pfMET_phi_/F");
+    tree->Branch("pfMET_sysShift_phi", &pfMET_sysShift_phi_, "pfMET_sysShift_phi_/F");
     tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
@@ -669,6 +691,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nbtags", &Nbtags_, "Nbtags_/I");
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
+    tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoMuon_pt", &isoMuons_pt_, "isoMuons_pt_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -725,6 +749,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_phi", &pfMET_phi_, "pfMET_phi_/F");
+    tree->Branch("pfMET_sysShift_phi", &pfMET_sysShift_phi_, "pfMET_sysShift_phi_/F");
     tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
@@ -738,6 +764,8 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nbtags", &Nbtags_, "Nbtags_/I");
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
+    tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoMuon_pt", &isoMuons_pt_, "isoMuons_pt_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -956,9 +984,11 @@ void SusyEventAnalyzer::Data() {
     pfMET_       = pfMet->met();
     pfMET_x_     = pfMet->metX();
     pfMET_y_     = pfMet->metY();
+    pfMET_phi_   = pfMet->mEt.Phi();
 
     TVector2 sysShiftCorr(4.83642e-02 + 2.48870e-01*nPVertex, -1.50135e-01 - 8.27917e-02*nPVertex);
     pfMET_sysShift_ = (pfMet->mEt - sysShiftCorr).Mod();
+    pfMET_sysShift_phi_ = (pfMet->mEt - sysShiftCorr).Phi();
 
     pfMET_t1_    = pfMetType1->met();
     pfMET_t1p2_  = pfMetType1p2->met();
@@ -976,7 +1006,7 @@ void SusyEventAnalyzer::Data() {
       w_mT_ *= 2. * isoEles[0]->momentum.Pt() * pfMET_sysShift_;
       w_mT_ = sqrt(w_mT_);
     }
-    else if(isoMuons.size() == 0 && isoMuons.size() == 1) {
+    else if(isoEles.size() == 0 && isoMuons.size() == 1) {
       float metphi = (pfMet->mEt - sysShiftCorr).Phi();
       float leptonphi = isoMuons[0]->momentum.Phi();
 
@@ -985,6 +1015,9 @@ void SusyEventAnalyzer::Data() {
       w_mT_ = sqrt(w_mT_);
     }
     else w_mT_ = -1.;
+
+    isoEle_pt_ = (isoEles.size() > 0) isoEles[0]->momentum.Pt() : -1.;
+    isoMuon_pt_ = (isoMuons.size() > 0) isoMuons[0]->momentum.Pt() : -1.;
 
     // Calculate dPhi_min(g, MET)
     float dPhi_gMET_lead = TVector2::Phi_mpi_pi(candidate_pair[0]->caloPosition.Phi() - pfMet->mEt.Phi());
@@ -1220,7 +1253,9 @@ void SusyEventAnalyzer::Acceptance() {
   float pfMET_ = 0.;
   float pfMET_x_ = 0.;
   float pfMET_y_ = 0.;
+  float pfMET_phi_ = 0.;
   float pfMET_sysShift_ = 0.;
+  float pfMET_sysShift_phi_ = 0.;
   float pfMET_t1_ = 0.;
   float pfMET_t1p2_ = 0.;
   float pfMET_t01_ = 0.;
@@ -1234,6 +1269,8 @@ void SusyEventAnalyzer::Acceptance() {
   int Nbtags_ = 0;
   int Nelectrons_ = 0;
   int Nmuons_ = 0;
+  float isoEle_pt_ = 0.;
+  float isoMuon_pt_ = 0.;
   float invmass_ = 0.;
   float HT_ = 0.;
   float HT_jets_ = 0.;
@@ -1301,6 +1338,8 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_phi", &pfMET_phi_, "pfMET_phi_/F");
+    tree->Branch("pfMET_sysShift_phi", &pfMET_sysShift_phi_, "pfMET_sysShift_phi_/F");
     tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
@@ -1315,6 +1354,8 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("Nbtags", &Nbtags_, "Nbtags_/I");
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
+    tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoMuon_pt", &isoMuons_pt_, "isoMuons_pt_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -1372,6 +1413,8 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_phi", &pfMET_phi_, "pfMET_phi_/F");
+    tree->Branch("pfMET_sysShift_phi", &pfMET_sysShift_phi_, "pfMET_sysShift_phi_/F");
     tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
@@ -1386,6 +1429,8 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("Nbtags", &Nbtags_, "Nbtags_/I");
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
+    tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoMuon_pt", &isoMuons_pt_, "isoMuons_pt_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -1443,6 +1488,8 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("pfMET", &pfMET_, "pfMET_/F");
     tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
     tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_phi", &pfMET_phi_, "pfMET_phi_/F");
+    tree->Branch("pfMET_sysShift_phi", &pfMET_sysShift_phi_, "pfMET_sysShift_phi_/F");
     tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
     tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
     tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
@@ -1457,6 +1504,8 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("Nbtags", &Nbtags_, "Nbtags_/I");
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
+    tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoMuon_pt", &isoMuons_pt_, "isoMuons_pt_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -1714,9 +1763,11 @@ void SusyEventAnalyzer::Acceptance() {
     pfMET_       = pfMet->met();
     pfMET_x_     = pfMet->metX();
     pfMET_y_     = pfMet->metY();
+    pfMET_phi_   = pfMet->mEt.Phi();
 
     TVector2 sysShiftCorr(1.62861e-01 - 2.38517e-02*nPVertex, 3.60860e-01 - 1.30335e-01*nPVertex);
     pfMET_sysShift_ = (pfMet->mEt - sysShiftCorr).Mod();
+    pfMET_sysShift_phi_ = (pfMet->mEt - sysShiftCorr).Phi();
 
     pfMET_t1_    = pfMetType1->met();
     pfMET_t1p2_  = pfMetType1p2->met();
@@ -1737,7 +1788,7 @@ void SusyEventAnalyzer::Acceptance() {
       w_mT_ *= 2. * isoEles[0]->momentum.Pt() * pfMET_sysShift_;
       w_mT_ = sqrt(w_mT_);
     }
-    else if(isoMuons.size() == 0 && isoMuons.size() == 1) {
+    else if(isoEles.size() == 0 && isoMuons.size() == 1) {
       float metphi = (pfMet->mEt - sysShiftCorr).Phi();
       float leptonphi = isoMuons[0]->momentum.Phi();
 
@@ -1746,6 +1797,9 @@ void SusyEventAnalyzer::Acceptance() {
       w_mT_ = sqrt(w_mT_);
     }
     else w_mT_ = -1.;
+
+    isoEle_pt_ = (isoEles.size() > 0) isoEles[0]->momentum.Pt() : -1.;
+    isoMuon_pt_ = (isoMuons.size() > 0) isoMuons[0]->momentum.Pt() : -1.;
 
     float diJetPt = 0.;
     bool matchingWorked = GetDiJetPt(event, candidate_pair, diJetPt, lead_matched_jetpt_, trail_matched_jetpt_);
