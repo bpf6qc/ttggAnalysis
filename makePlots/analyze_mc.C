@@ -110,6 +110,9 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
   TFile * fTTSemiLep = new TFile("inputs/signal_contamination_ttJetsSemiLep.root", "READ");
   TTree * ttSemiLepTree = (TTree*)fTTSemiLep->Get("gg_"+channels[channel]+"_EvtTree_ttJetsSemiLep");
 
+  TFile * fTTFullLep = new TFile("inputs/signal_contamination_ttJetsFullLep.root", "READ");
+  TTree * ttFullLepTree = (TTree*)fTTFullLep->Get("gg_"+channels[channel]+"_EvtTree_ttJetsFullLep");
+
   TFile * fSigA = new TFile("../acceptance/signal_contamination_mst_460_m1_175.root", "READ");
   TTree * sigaTree = (TTree*)fSigA->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175");
 
@@ -157,7 +160,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
 		   gjet20to40Tree, gjet40Tree,
 		   diphotonjetsTree,
 		   diphoBox10to25Tree, diphoBox25to250Tree, diphoBox250toInfTree,
-		   ttHadronicTree, ttSemiLepTree,
+		   ttHadronicTree, ttSemiLepTree, ttFullLepTree,
 		   ttgjetsTree,
 		   ttMBDTree,
 		   sigaTree, sigbTree);

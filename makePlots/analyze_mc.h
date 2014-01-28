@@ -341,6 +341,7 @@ class PlotMaker : public TObject {
     delete diphotonjetsTree;
     delete ttHadronicTree;
     delete ttSemiLepTree;
+    delete ttFullLepTree;
     delete ttgjetsTree;
     delete sigaTree;
     delete sigbTree;
@@ -352,7 +353,7 @@ class PlotMaker : public TObject {
 		TTree * gjet20to40, TTree * gjet40,
 		TTree * diphotonjets,
 		TTree * diphoBox10to25, TTree * diphoBox25to250, TTree * diphoBox250toInf,
-		TTree * ttHadronic, TTree * ttSemiLep,
+		TTree * ttHadronic, TTree * ttSemiLep, TTree * ttFullLepTree,
 		TTree * ttgjets,
 		TTree * ttbar,
 		TTree * sig_a, TTree * sig_b);
@@ -401,6 +402,7 @@ class PlotMaker : public TObject {
 
   TTree * ttHadronicTree;
   TTree * ttSemiLepTree;
+  TTree * ttFullLepTree;
 
   TTree * ttgjetsTree;
 
@@ -444,7 +446,7 @@ void PlotMaker::SetTrees(TTree * gg, TTree * eg,
 			 TTree * gjet20to40, TTree * gjet40,
 			 TTree * diphotonjets,
 			 TTree * diphoBox10to25, TTree * diphoBox25to250, TTree * diphoBox250toInf,
-			 TTree * ttHadronic, TTree * ttSemiLep,
+			 TTree * ttHadronic, TTree * ttSemiLep, TTree * ttFullLep,
 			 TTree * ttgjets,
 			 TTree * ttbar,
 			 TTree * sig_a, TTree * sig_b) {
@@ -466,6 +468,7 @@ void PlotMaker::SetTrees(TTree * gg, TTree * eg,
   
   ttHadronicTree = ttHadronic;
   ttSemiLepTree = ttSemiLep;
+  ttFullLepTree = ttFullLep;
 
   ttgjetsTree = ttgjets;
 
@@ -518,8 +521,10 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   
   TH1D * ttHadronic = SignalHistoFromTree(intLumi_int * 53.4 * 1.019 * 1.019 / 10537444., isAFloat, variable, ttHadronicTree, variable+"_ttHadronic_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
   TH1D * ttSemiLep = SignalHistoFromTree(intLumi_int * 53.2 * 1.019 * 1.019 / 25424818., isAFloat, variable, ttSemiLepTree, variable+"_ttSemiLep_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+  TH1D * ttFullLep = SignalHistoFromTree(intLumi_int * 13.43 * 1.019 * 1.019 / 12119013., isAFloat, variable, ttFullLepTree, variable+"_ttFullLep_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
   TH1D * ttbar = (TH1D*)ttHadronic->Clone(variable+"_ttbar_"+req);
   ttbar->Add(ttSemiLep);
+  ttbar->Add(ttFullLep);
 
   TH1D * ttg = SignalHistoFromTree(intLumi_int * 1.019 * 1.019 * 14.0 / 1719954., isAFloat, variable, ttgjetsTree, variable+"_ttgjets_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
 
