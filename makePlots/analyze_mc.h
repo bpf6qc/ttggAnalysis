@@ -419,16 +419,18 @@ class PlotMaker : public TObject {
   bool useTTbar;
   bool useTTMBD;
   bool displayKStest;
+  bool blinded;
 
   vector<pair<TString, double> > KSscores;
   
 };
 
-PlotMaker::PlotMaker(Int_t lumi, Float_t ewkScale, Float_t ewkScaleErr, TString requirement) :
+PlotMaker::PlotMaker(Int_t lumi, Float_t ewkScale, Float_t ewkScaleErr, TString requirement, bool blind) :
   intLumi_int(lumi),
   egScale(ewkScale),
   egScaleErr(ewkScaleErr),
-  req(requirement)
+  req(requirement),
+  blinded(blind)
 {
   char buffer[50];
   sprintf(buffer, "%.3f", (float)intLumi_int / 1000.);
@@ -489,6 +491,12 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 			   TFile*& out, double metCut) {
 
   TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+
+  if(blinded) for(int i = 0; i < gg->GetNbinsX(); i++) {
+      gg->SetBinContent(i+1, 1.e-14);
+      gg->SetBinError(i+1, 1.e-14);
+    }
+
   TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
 
   TH1D * ewk_noNorm = (TH1D*)ewk->Clone();
@@ -785,6 +793,12 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   TH1D * gg = HistoFromTree(isAFloat, variable, ggTree, variable+"_gg_"+req, variable, nBinsX, customBins, metCut);
   gg = (TH1D*)DivideByBinWidth(gg);
+  
+  if(blinded) for(int i = 0; i < gg->GetNbinsX(); i++) {
+      gg->SetBinContent(i+1, 1.e-14);
+      gg->SetBinError(i+1, 1.e-14);
+    }
+
   TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, customBins, metCut);
   
   TH1D * ewk_noNorm = (TH1D*)ewk->Clone();

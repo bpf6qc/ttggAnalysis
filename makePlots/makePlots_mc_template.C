@@ -14,9 +14,10 @@ void makePlots() {
   bool useTTbar = false;
   bool useTTMBD = false;
   bool displayKStest = true;
+  bool blinded = true;
 
   for(int i = 0; i < 8; i++) {
-    analyze(input, addMC, i, intLumi, metCut, useTTbar, useTTMBD, displayKStest);
+    analyze(input, addMC, i, intLumi, metCut, useTTbar, useTTMBD, displayKStest, blinded);
   }  
 
   ts.Stop();

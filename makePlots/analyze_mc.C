@@ -35,7 +35,7 @@ const TString ffColor = "kOrange+10";
 const TString eeColor = "kBlue";
 const TString egColor = "kGreen";
 
-void analyze(TString input, bool addMC, int channel, int intLumi_int, double metCut, bool useTTbar, bool useTTMBD, bool displayKStest) {
+void analyze(TString input, bool addMC, int channel, int intLumi_int, double metCut, bool useTTbar, bool useTTMBD, bool displayKStest, bool blinded) {
 
   gROOT->Reset();
   gROOT->SetBatch(true);
@@ -154,7 +154,7 @@ void analyze(TString input, bool addMC, int channel, int intLumi_int, double met
     can->SetLogz(false);
   }
 
-  PlotMaker * pMaker = new PlotMaker(intLumi_int, egScale, egScaleErr, channels[channel]);
+  PlotMaker * pMaker = new PlotMaker(intLumi_int, egScale, egScaleErr, channels[channel], blinded);
   pMaker->SetTrees(ggTree, egTree,
 		   qcd30to40Tree, qcd40Tree,
 		   gjet20to40Tree, gjet40Tree,
