@@ -327,7 +327,8 @@ class PlotMaker : public TObject {
  public:
   PlotMaker(Int_t lumi,
 	    Float_t ewkScale, Float_t ewkScaleErr,
-	    TString requirement);
+	    TString requirement,
+	    bool blind);
   virtual ~PlotMaker() { 
 
     KSscores.clear();
