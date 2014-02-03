@@ -317,7 +317,11 @@ void SusyEventAnalyzer::Data() {
   int Nelectrons_ = 0;
   int Nmuons_ = 0;
   float isoEle_pt_ = 0.;
+  float isoEle_phi_ = 0.;
+  float isoEle_eta_ = 0.;
   float isoMuon_pt_ = 0.;
+  float isoMuon_phi_ = 0.;
+  float isoMuon_eta_ = 0.;
   float invmass_ = 0.;
   float HT_ = 0.;
   float HT_jets_ = 0.;
@@ -400,7 +404,11 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
     tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoEle_phi", &isoEle_phi_, "isoEle_phi_/F");
+    tree->Branch("isoEle_eta", &isoEle_eta_, "isoEle_eta_/F");
     tree->Branch("isoMuon_pt", &isoMuon_pt_, "isoMuon_pt_/F");
+    tree->Branch("isoMuon_phi", &isoMuon_phi_, "isoMuon_phi_/F");
+    tree->Branch("isoMuon_eta", &isoMuon_eta_, "isoMuon_eta_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -473,7 +481,11 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
     tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoEle_phi", &isoEle_phi_, "isoEle_phi_/F");
+    tree->Branch("isoEle_eta", &isoEle_eta_, "isoEle_eta_/F");
     tree->Branch("isoMuon_pt", &isoMuon_pt_, "isoMuon_pt_/F");
+    tree->Branch("isoMuon_phi", &isoMuon_phi_, "isoMuon_phi_/F");
+    tree->Branch("isoMuon_eta", &isoMuon_eta_, "isoMuon_eta_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -546,7 +558,11 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
     tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoEle_phi", &isoEle_phi_, "isoEle_phi_/F");
+    tree->Branch("isoEle_eta", &isoEle_eta_, "isoEle_eta_/F");
     tree->Branch("isoMuon_pt", &isoMuon_pt_, "isoMuon_pt_/F");
+    tree->Branch("isoMuon_phi", &isoMuon_phi_, "isoMuon_phi_/F");
+    tree->Branch("isoMuon_eta", &isoMuon_eta_, "isoMuon_eta_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -619,7 +635,11 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
     tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoEle_phi", &isoEle_phi_, "isoEle_phi_/F");
+    tree->Branch("isoEle_eta", &isoEle_eta_, "isoEle_eta_/F");
     tree->Branch("isoMuon_pt", &isoMuon_pt_, "isoMuon_pt_/F");
+    tree->Branch("isoMuon_phi", &isoMuon_phi_, "isoMuon_phi_/F");
+    tree->Branch("isoMuon_eta", &isoMuon_eta_, "isoMuon_eta_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -692,7 +712,11 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
     tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoEle_phi", &isoEle_phi_, "isoEle_phi_/F");
+    tree->Branch("isoEle_eta", &isoEle_eta_, "isoEle_eta_/F");
     tree->Branch("isoMuon_pt", &isoMuon_pt_, "isoMuon_pt_/F");
+    tree->Branch("isoMuon_phi", &isoMuon_phi_, "isoMuon_phi_/F");
+    tree->Branch("isoMuon_eta", &isoMuon_eta_, "isoMuon_eta_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -765,7 +789,11 @@ void SusyEventAnalyzer::Data() {
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
     tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoEle_phi", &isoEle_phi_, "isoEle_phi_/F");
+    tree->Branch("isoEle_eta", &isoEle_eta_, "isoEle_eta_/F");
     tree->Branch("isoMuon_pt", &isoMuon_pt_, "isoMuon_pt_/F");
+    tree->Branch("isoMuon_phi", &isoMuon_phi_, "isoMuon_phi_/F");
+    tree->Branch("isoMuon_eta", &isoMuon_eta_, "isoMuon_eta_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -1017,7 +1045,12 @@ void SusyEventAnalyzer::Data() {
     else w_mT_ = -1.;
 
     isoEle_pt_ = (isoEles.size() > 0) ? isoEles[0]->momentum.Pt() : -1.;
+    isoEle_phi_ = (isoEles.size() > 0) ? isoEles[0]->momentum.Phi() : -10.;
+    isoEle_eta_ = (isoEles.size() > 0) ? isoEles[0]->momentum.Eta() : -10.;
+
     isoMuon_pt_ = (isoMuons.size() > 0) ? isoMuons[0]->momentum.Pt() : -1.;
+    isoMuon_phi_ = (isoMuons.size() > 0) ? isoMuons[0]->momentum.Phi() : -10.;
+    isoMuon_eta_ = (isoMuons.size() > 0) ? isoMuons[0]->momentum.Eta() : -10.;
 
     // Calculate dPhi_min(g, MET)
     float dPhi_gMET_lead = TVector2::Phi_mpi_pi(candidate_pair[0]->caloPosition.Phi() - pfMet->mEt.Phi());
@@ -1270,7 +1303,11 @@ void SusyEventAnalyzer::Acceptance() {
   int Nelectrons_ = 0;
   int Nmuons_ = 0;
   float isoEle_pt_ = 0.;
+  float isoEle_phi_ = 0.;
+  float isoEle_eta_ = 0.;
   float isoMuon_pt_ = 0.;
+  float isoMuon_phi_ = 0.;
+  float isoMuon_eta_ = 0.;
   float invmass_ = 0.;
   float HT_ = 0.;
   float HT_jets_ = 0.;
@@ -1355,7 +1392,11 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
     tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoEle_phi", &isoEle_phi_, "isoEle_phi_/F");
+    tree->Branch("isoEle_eta", &isoEle_eta_, "isoEle_eta_/F");
     tree->Branch("isoMuon_pt", &isoMuon_pt_, "isoMuon_pt_/F");
+    tree->Branch("isoMuon_phi", &isoMuon_phi_, "isoMuon_phi_/F");
+    tree->Branch("isoMuon_eta", &isoMuon_eta_, "isoMuon_eta_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -1430,7 +1471,11 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
     tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoEle_phi", &isoEle_phi_, "isoEle_phi_/F");
+    tree->Branch("isoEle_eta", &isoEle_eta_, "isoEle_eta_/F");
     tree->Branch("isoMuon_pt", &isoMuon_pt_, "isoMuon_pt_/F");
+    tree->Branch("isoMuon_phi", &isoMuon_phi_, "isoMuon_phi_/F");
+    tree->Branch("isoMuon_eta", &isoMuon_eta_, "isoMuon_eta_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -1505,7 +1550,11 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
     tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
     tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoEle_phi", &isoEle_phi_, "isoEle_phi_/F");
+    tree->Branch("isoEle_eta", &isoEle_eta_, "isoEle_eta_/F");
     tree->Branch("isoMuon_pt", &isoMuon_pt_, "isoMuon_pt_/F");
+    tree->Branch("isoMuon_phi", &isoMuon_phi_, "isoMuon_phi_/F");
+    tree->Branch("isoMuon_eta", &isoMuon_eta_, "isoMuon_eta_/F");
     tree->Branch("invmass", &invmass_, "invmass_/F");
     tree->Branch("HT", &HT_, "HT_/F");
     tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
@@ -1799,7 +1848,12 @@ void SusyEventAnalyzer::Acceptance() {
     else w_mT_ = -1.;
 
     isoEle_pt_ = (isoEles.size() > 0) ? isoEles[0]->momentum.Pt() : -1.;
+    isoEle_phi_ = (isoEles.size() > 0) ? isoEles[0]->momentum.Phi() : -10.;
+    isoEle_eta_ = (isoEles.size() > 0) ? isoEles[0]->momentum.Eta() : -10.;
+
     isoMuon_pt_ = (isoMuons.size() > 0) ? isoMuons[0]->momentum.Pt() : -1.;
+    isoMuon_phi_ = (isoMuons.size() > 0) ? isoMuons[0]->momentum.Phi() : -10.;
+    isoMuon_eta_ = (isoMuons.size() > 0) ? isoMuons[0]->momentum.Eta() : -10.;
 
     float diJetPt = 0.;
     bool matchingWorked = GetDiJetPt(event, candidate_pair, diJetPt, lead_matched_jetpt_, trail_matched_jetpt_);

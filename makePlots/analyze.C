@@ -136,6 +136,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   floatNames.push_back("minDPhi_gMET");
   floatNames.push_back("minDPhi_jMET");
   floatNames.push_back("submax_csv");
+  floatNames.push_back("w_mT");
   
 
   vector<TString> intNames;
