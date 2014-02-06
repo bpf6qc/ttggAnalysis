@@ -1322,6 +1322,7 @@ void SusyEventAnalyzer::Acceptance() {
   float trail_Phi_ = 0;
 
   float w_mT_ = 0.;
+  float w_mT_genNeutrino_ = 0.;
 
   float lead_matched_jetpt_ = 0;
   float trail_matched_jetpt_ = 0;
@@ -1411,6 +1412,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
     tree->Branch("w_mT", &w_mT_, "w_mT_/F");
+    tree->Branch("w_mT_genNeutrino", &w_mT_genNeutrino_, "w_mT_genNeutrino_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -1490,6 +1492,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
     tree->Branch("w_mT", &w_mT_, "w_mT_/F");
+    tree->Branch("w_mT_genNeutrino", &w_mT_genNeutrino_, "w_mT_genNeutrino_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -1569,6 +1572,7 @@ void SusyEventAnalyzer::Acceptance() {
     tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
     tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
     tree->Branch("w_mT", &w_mT_, "w_mT_/F");
+    tree->Branch("w_mT_genNeutrino", &w_mT_genNeutrino_, "w_mT_genNeutrino_/F");
     tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
     tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
     tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
@@ -1832,6 +1836,22 @@ void SusyEventAnalyzer::Acceptance() {
     if(isoEles.size() == 1 && isoMuons.size() == 0) {
       float metphi = (pfMet->mEt - sysShiftCorr).Phi();
       float leptonphi = isoEles[0]->momentum.Phi();
+      float genNu_phi, genNu_pt;
+
+      for(vector<susy::Particle>::iterator genit = event.genParticles.begin(); genit != event.genParticles.end(); genit++) {
+
+	  if(genit->status != 1) continue;
+	  if(abs(genit->pdgId) != 12) continue;
+	  if(abs(event.genParticles[genit->motherIndex].pdgId) != 24) continue;
+	  
+	  genNu_phi = genit->momentum.Phi();
+	  genNu_pt = genit->momentum.Pt();
+
+	}
+
+      w_mT_genNeutrino_ = 1. - TMath::Cos(TVector2::Phi_mpi_pi(leptonphi - genNu_phi));
+      w_mT_genNeutrino_ *= 2. * genNu_pt * pfMET_sysShift_;
+      w_mT_genNeutrino_ = sqrt(w_mT_genNeutrino_);
 
       w_mT_ = 1. - TMath::Cos(TVector2::Phi_mpi_pi(leptonphi - metphi));
       w_mT_ *= 2. * isoEles[0]->momentum.Pt() * pfMET_sysShift_;
@@ -1840,12 +1860,31 @@ void SusyEventAnalyzer::Acceptance() {
     else if(isoEles.size() == 0 && isoMuons.size() == 1) {
       float metphi = (pfMet->mEt - sysShiftCorr).Phi();
       float leptonphi = isoMuons[0]->momentum.Phi();
+      float genNu_phi, genNu_pt;
+
+      for(vector<susy::Particle>::iterator genit = event.genParticles.begin(); genit != event.genParticles.end(); genit++) {
+
+	  if(genit->status != 1) continue;
+	  if(abs(genit->pdgId) != 14) continue;
+	  if(abs(event.genParticles[genit->motherIndex].pdgId) != 24) continue;
+	  
+	  genNu_phi = genit->momentum.Phi();
+	  genNu_pt = genit->momentum.Pt();
+
+	}
+
+      w_mT_genNeutrino_ = 1. - TMath::Cos(TVector2::Phi_mpi_pi(leptonphi - genNu_phi));
+      w_mT_genNeutrino_ *= 2. * genNu_pt * pfMET_sysShift_;
+      w_mT_genNeutrino_ = sqrt(w_mT_genNeutrino_);
 
       w_mT_ = 1. - TMath::Cos(TVector2::Phi_mpi_pi(leptonphi - metphi));
       w_mT_ *= 2. * isoMuons[0]->momentum.Pt() * pfMET_sysShift_;
       w_mT_ = sqrt(w_mT_);
     }
-    else w_mT_ = -1.;
+    else {
+      w_mT_ = -1.;
+      w_mT_genNeutrino_ = -1.;
+    }
 
     isoEle_pt_ = (isoEles.size() > 0) ? isoEles[0]->momentum.Pt() : -1.;
     isoEle_phi_ = (isoEles.size() > 0) ? isoEles[0]->momentum.Phi() : -10.;
