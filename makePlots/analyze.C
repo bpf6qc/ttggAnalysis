@@ -90,7 +90,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
 		diempt_gg_0, diempt_gg_1, diempt_gg_2,
 		ratio_ee_onMass_0, ratio_ee_onMass_1, ratio_ee_onMass_2,
 		ratio_ee_loMass_0, ratio_ee_loMass_1, ratio_ee_loMass_2,
-		ratio_ee_hiMass_0, ratio_ee_hiMass_1, ratio_ee_hiMass_2)
+		ratio_ee_hiMass_0, ratio_ee_hiMass_1, ratio_ee_hiMass_2);
 
   if(channel == "muJets" || channel == "eleJets") {
 
@@ -283,7 +283,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
 		     diemptWeight, diemptWeightErr);
     }
 
-    else if(invmass_ > 101 && invmass < 111) {
+    else if(invmass_ > 101 && invmass_ < 111) {
       evaluateWeight(intVariablesEE[0], floatVariablesEE[0],
 		     ratio_ee_hiMass_0, ratio_ee_hiMass_1, ratio_ee_hiMass_2,
 		     diemptWeight, diemptWeightErr);
