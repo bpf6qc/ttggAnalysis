@@ -87,10 +87,10 @@ void mvaTreeMaker(TString input, int channelNumber) {
   TH1D * ratio_ee_hiMass_2;
 
   GetWeights_ee(eeTree, 
-		TH1D* gg_0, TH1D* gg_1, TH1D* gg_2,
-		ratio_onMass_0, ratio_onMass_1, ratio_onMass_2,
-		ratio_loMass_0, ratio_loMass_1, ratio_loMass_2,
-		ratio_hiMass_0, ratio_hiMass_1, ratio_hiMass_2)
+		diempt_gg_0, diempt_gg_1, diempt_gg_2,
+		ratio_ee_onMass_0, ratio_ee_onMass_1, ratio_ee_onMass_2,
+		ratio_ee_loMass_0, ratio_ee_loMass_1, ratio_ee_loMass_2,
+		ratio_ee_hiMass_0, ratio_ee_hiMass_1, ratio_ee_hiMass_2)
 
   if(channel == "muJets" || channel == "eleJets") {
 
