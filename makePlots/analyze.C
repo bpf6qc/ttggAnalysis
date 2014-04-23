@@ -271,7 +271,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
     float invmass_ = floatVariablesEE[3];
 
-    if(invmass_ > 71 && invmass > 81) {
+    if(invmass_ > 71 && invmass_ > 81) {
       evaluateWeight(intVariablesEE[0], floatVariablesEE[0],
 		     ratio_ee_loMass_0, ratio_ee_loMass_1, ratio_ee_loMass_2,
 		     diemptWeight, diemptWeightErr);
