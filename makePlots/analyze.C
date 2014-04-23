@@ -51,6 +51,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   TTree * ffTree = (TTree*)in->Get("ff_"+channel+"_EvtTree");
   TTree * gfTree = (TTree*)in->Get("gf_"+channel+"_EvtTree");
   TTree * egTree = (TTree*)in->Get("eg_"+channel+"_EvtTree");
+  TTree * eeTree = (TTree*)in->Get("ee_"+channel+"_EvtTree");
   TTree * ggTree = (TTree*)in->Get("gg_"+channel+"_EvtTree");
 
   TString emOrJet = "jet";
@@ -74,6 +75,22 @@ void mvaTreeMaker(TString input, int channelNumber) {
   TH1D * ratio_gf_0 = GetWeights(diempt_gg_0, diempt_gf->ProjectionX("gf_px0", 1, 1, "e"), gg_total, gf_total);
   TH1D * ratio_gf_1 = GetWeights(diempt_gg_1, diempt_gf->ProjectionX("gf_px1", 2, 2, "e"), gg_total, gf_total);
   TH1D * ratio_gf_2 = GetWeights(diempt_gg_2, diempt_gf->ProjectionX("gf_px2", 3, -1, "e"), gg_total, gf_total);
+
+  TH1D * ratio_ee_onMass_0;
+  TH1D * ratio_ee_onMass_1;
+  TH1D * ratio_ee_onMass_2;
+  TH1D * ratio_ee_loMass_0;
+  TH1D * ratio_ee_loMass_1;
+  TH1D * ratio_ee_loMass_2;
+  TH1D * ratio_ee_hiMass_0;
+  TH1D * ratio_ee_hiMass_1;
+  TH1D * ratio_ee_hiMass_2;
+
+  GetWeights_ee(eeTree, 
+		TH1D* gg_0, TH1D* gg_1, TH1D* gg_2,
+		ratio_onMass_0, ratio_onMass_1, ratio_onMass_2,
+		ratio_loMass_0, ratio_loMass_1, ratio_loMass_2,
+		ratio_hiMass_0, ratio_hiMass_1, ratio_hiMass_2)
 
   if(channel == "muJets" || channel == "eleJets") {
 
@@ -101,6 +118,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   TTree * ffNewTree = new TTree("ff_"+channel+"_EvtTree", "An event tree for MVA analysis");
   TTree * gfNewTree = new TTree("gf_"+channel+"_EvtTree", "An event tree for MVA analysis");
   TTree * egNewTree = new TTree("eg_"+channel+"_EvtTree", "An event tree for MVA analysis");
+  TTree * eeNewTree = new TTree("ee_"+channel+"_EvtTree", "An event tree for MVA analysis");
   TTree * ggNewTree = new TTree("gg_"+channel+"_EvtTree", "An event tree for MVA analysis");
 
   // Define here which variables you want to keep.
@@ -138,23 +156,24 @@ void mvaTreeMaker(TString input, int channelNumber) {
   floatNames.push_back("submax_csv");
   floatNames.push_back("w_mT");
   
-
   vector<TString> intNames;
   intNames.push_back("Njets");
   intNames.push_back("Nbtags");
   intNames.push_back("Nelectrons");
   intNames.push_back("Nmuons");
 
-  vector<Float_t> floatVariablesFF, floatVariablesGF, floatVariablesEG, floatVariablesGG;
+  vector<Float_t> floatVariablesFF, floatVariablesGF, floatVariablesEG, floatVariablesEE, floatVariablesGG;
   floatVariablesFF.resize(floatNames.size());
   floatVariablesGF.resize(floatNames.size());
   floatVariablesEG.resize(floatNames.size());
+  floatVariablesEE.resize(floatNames.size());
   floatVariablesGG.resize(floatNames.size());
 
-  vector<Int_t> intVariablesFF, intVariablesGF, intVariablesEG, intVariablesGG;
+  vector<Int_t> intVariablesFF, intVariablesGF, intVariablesEG, intVariablesEE, intVariablesGG;
   intVariablesFF.resize(intNames.size());
   intVariablesGF.resize(intNames.size());
   intVariablesEG.resize(intNames.size());
+  intVariablesEE.resize(intNames.size());
   intVariablesGG.resize(intNames.size());
 
   for(unsigned int i = 0; i < floatNames.size(); i++) {
@@ -166,6 +185,9 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
     egTree->SetBranchAddress(floatNames[i], &(floatVariablesEG[i]));
     egNewTree->Branch(floatNames[i], &(floatVariablesEG[i]), floatNames[i]+"/F");
+
+    eeTree->SetBranchAddress(floatNames[i], &(floatVariablesEE[i]));
+    eeNewTree->Branch(floatNames[i], &(floatVariablesEE[i]), floatNames[i]+"/F");
 
     ggTree->SetBranchAddress(floatNames[i], &(floatVariablesGG[i]));
     ggNewTree->Branch(floatNames[i], &(floatVariablesGG[i]), floatNames[i]+"/F");
@@ -180,6 +202,9 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
     egTree->SetBranchAddress(intNames[i], &(intVariablesEG[i]));
     egNewTree->Branch(intNames[i], &(intVariablesEG[i]), intNames[i]+"/I");
+
+    eeTree->SetBranchAddress(intNames[i], &(intVariablesEE[i]));
+    eeNewTree->Branch(intNames[i], &(intVariablesEE[i]), intNames[i]+"/I");
     
     ggTree->SetBranchAddress(intNames[i], &(intVariablesGG[i]));
     ggNewTree->Branch(intNames[i], &(intVariablesGG[i]), intNames[i]+"/I");
@@ -237,6 +262,45 @@ void mvaTreeMaker(TString input, int channelNumber) {
 
   egTree->ResetBranchAddresses();
   egNewTree->ResetBranchAddresses();
+
+  eeNewTree->Branch("weight", &diemptWeight);
+  eeNewTree->Branch("weightError", &diemptWeightErr);
+
+  for(int j = 0; j < eeTree->GetEntries(); j++) {
+    eeTree->GetEntry(j);
+
+    float invmass_ = floatVariablesEE[3];
+
+    if(invmass_ > 71 && invmass > 81) {
+      evaluateWeight(intVariablesEE[0], floatVariablesEE[0],
+		     ratio_ee_loMass_0, ratio_ee_loMass_1, ratio_ee_loMass_2,
+		     diemptWeight, diemptWeightErr);
+    }
+
+    else if(invmass_ > 81 && invmass_ < 101) {
+      evaluateWeight(intVariablesEE[0], floatVariablesEE[0],
+		     ratio_ee_onMass_0, ratio_ee_onMass_1, ratio_ee_onMass_2,
+		     diemptWeight, diemptWeightErr);
+    }
+
+    else if(invmass_ > 101 && invmass < 111) {
+      evaluateWeight(intVariablesEE[0], floatVariablesEE[0],
+		     ratio_ee_hiMass_0, ratio_ee_hiMass_1, ratio_ee_hiMass_2,
+		     diemptWeight, diemptWeightErr);
+    }
+
+    else continue;
+
+    /*
+      evaluateTrialWeight(floatVariablesEE[4],
+                          trialWeights_ee,
+                          diemptWeight_ee, diemptWeightErr_ee);
+    */
+    eeNewTree->Fill();
+  }
+
+  eeTree->ResetBranchAddresses();
+  eeNewTree->ResetBranchAddresses();
 
   ggNewTree->Branch("weight", &diemptWeight);
   ggNewTree->Branch("weightError", &diemptWeightErr);

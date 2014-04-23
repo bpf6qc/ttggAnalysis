@@ -324,6 +324,101 @@ TH1D * GetWeights(TH1D* ggDiEMpT, TH1D* h_diempt, Float_t gg_test, Float_t other
   return ratio2;
 }
 
+void GetWeights_ee(TTree* tree, 
+		   TH1D* gg_0, TH1D* gg_1, TH1D* gg_2,
+		   TH1D*& ratio_onMass_0, TH1D*& ratio_onMass_1, TH1D*& ratio_onMass_2,
+		   TH1D*& ratio_loMass_0, TH1D*& ratio_loMass_1, TH1D*& ratio_loMass_2,
+		   TH1D*& ratio_hiMass_0, TH1D*& ratio_hiMass_1, TH1D*& ratio_hiMass_2) {
+
+  const int ndiemptbins = 31;
+  Double_t diemptbins[ndiemptbins+1] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 200, 300, 400, 600, 1000, 1400};
+
+  TH1D * onMass_0 = new TH1D("ee_onMass_0", "ee_onMass_0", ndiemptbins, diemptbins); onMass_0->Sumw2();
+  TH1D * onMass_1 = new TH1D("ee_onMass_1", "ee_onMass_1", ndiemptbins, diemptbins); onMass_1->Sumw2();
+  TH1D * onMass_2 = new TH1D("ee_onMass_2", "ee_onMass_2", ndiemptbins, diemptbins); onMass_2->Sumw2();
+  
+  TH1D * loMass_0 = new TH1D("ee_loMass_0", "ee_loMass_0", ndiemptbins, diemptbins); loMass_0->Sumw2();
+  TH1D * loMass_1 = new TH1D("ee_loMass_1", "ee_loMass_1", ndiemptbins, diemptbins); loMass_1->Sumw2();
+  TH1D * loMass_2 = new TH1D("ee_loMass_2", "ee_loMass_2", ndiemptbins, diemptbins); loMass_2->Sumw2();
+
+  TH1D * hiMass_0 = new TH1D("ee_hiMass_0", "ee_hiMass_0", ndiemptbins, diemptbins); hiMass_0->Sumw2();
+  TH1D * hiMass_1 = new TH1D("ee_hiMass_1", "ee_hiMass_1", ndiemptbins, diemptbins); hiMass_1->Sumw2();
+  TH1D * hiMass_2 = new TH1D("ee_hiMass_2", "ee_hiMass_2", ndiemptbins, diemptbins); hiMass_2->Sumw2();
+
+  Float_t invmass, dijetpt;
+  Int_t njets;
+
+  tree->SetBranchAddress("invmass", &invmass);
+  tree->SetBranchAddress("diJetPt", &dijetpt);
+  tree->SetBranchAddress("Njets", &njets);
+
+  for(int i = 0; i < tree->GetEntries(); i++) {
+    tree->GetEntry(i);
+
+    if(njets == 0) {
+      if(invmass > 71 && invmass < 81) loMass_0->Fill(dijetpt);
+      if(invmass > 81 && invmass < 101) onMass_0->Fill(dijetpt);
+      if(invmass > 101 && invmass < 111) hiMass_0->Fill(dijetpt);
+    }
+    if(njets == 1) {
+      if(invmass > 71 && invmass < 81) loMass_1->Fill(dijetpt);
+      if(invmass > 81 && invmass < 101) onMass_1->Fill(dijetpt);
+      if(invmass > 101 && invmass < 111) hiMass_1->Fill(dijetpt);
+    }
+    if(njets >= 2) {
+      if(invmass > 71 && invmass < 81) loMass_2->Fill(dijetpt);
+      if(invmass > 81 && invmass < 101) onMass_2->Fill(dijetpt);
+      if(invmass > 101 && invmass < 111) hiMass_2->Fill(dijetpt);
+    }
+  }
+
+  tree->ResetBranchAddresses();
+
+  Float_t n_gg = gg_0->Integral() + gg_1->Integral() + gg_2->Integral();
+  Float_t n_ee = tree->GetEntries();
+
+  ratio_onMass_0 = (TH1D*)gg_0->Rebin(ndiemptbins, "ratio_onMass_0", diemptbins); ratio_onMass_0->Scale(1./n_gg);
+  ratio_onMass_1 = (TH1D*)gg_1->Rebin(ndiemptbins, "ratio_onMass_1", diemptbins); ratio_onMass_1->Scale(1./n_gg);
+  ratio_onMass_2 = (TH1D*)gg_2->Rebin(ndiemptbins, "ratio_onMass_2", diemptbins); ratio_onMass_2->Scale(1./n_gg);
+
+  ratio_loMass_0 = (TH1D*)gg_0->Rebin(ndiemptbins, "ratio_loMass_0", diemptbins); ratio_loMass_0->Scale(1./n_gg);
+  ratio_loMass_1 = (TH1D*)gg_1->Rebin(ndiemptbins, "ratio_loMass_1", diemptbins); ratio_loMass_1->Scale(1./n_gg);
+  ratio_loMass_2 = (TH1D*)gg_2->Rebin(ndiemptbins, "ratio_loMass_2", diemptbins); ratio_loMass_2->Scale(1./n_gg);
+
+  ratio_hiMass_0 = (TH1D*)gg_0->Rebin(ndiemptbins, "ratio_hiMass_0", diemptbins); ratio_loMass_0->Scale(1./n_gg);
+  ratio_hiMass_1 = (TH1D*)gg_1->Rebin(ndiemptbins, "ratio_hiMass_1", diemptbins); ratio_loMass_1->Scale(1./n_gg);
+  ratio_hiMass_2 = (TH1D*)gg_2->Rebin(ndiemptbins, "ratio_hiMass_2", diemptbins); ratio_loMass_2->Scale(1./n_gg);
+
+  onMass_0->Scale(1./n_ee);
+  onMass_1->Scale(1./n_ee);
+  onMass_2->Scale(1./n_ee);
+
+  loMass_0->Scale(1./n_ee);
+  loMass_1->Scale(1./n_ee);
+  loMass_2->Scale(1./n_ee);
+
+  hiMass_0->Scale(1./n_ee);
+  hiMass_1->Scale(1./n_ee);
+  hiMass_2->Scale(1./n_ee);
+
+  // Divide
+
+  ratio_onMass_0->Divide(onMass_0);
+  ratio_onMass_1->Divide(onMass_1);
+  ratio_onMass_2->Divide(onMass_2);
+
+  ratio_loMass_0->Divide(loMass_0);
+  ratio_loMass_1->Divide(loMass_1);
+  ratio_loMass_2->Divide(loMass_2);
+
+  ratio_hiMass_0->Divide(hiMass_0);
+  ratio_hiMass_1->Divide(hiMass_1);
+  ratio_hiMass_2->Divide(hiMass_2);
+
+  return;
+}
+
+
 TH1D * GetFlatWeights(TH1D* h_diempt) {
 
   TH1D * diempt = (TH1D*)h_diempt->Clone();

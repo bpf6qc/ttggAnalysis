@@ -403,7 +403,7 @@ double SusyEventAnalyzer::d0correction(TVector3& beamspot, susy::Track& track) c
 double SusyEventAnalyzer::dZcorrection(TVector3& beamSpot, susy::Track& track) const {
 
   if(&(beamSpot) == 0x0 || &(track) == 0x0) {
-    cout << endl << endl << "Something majorly fucked up in dZcorrection!!!" <<	endl <<	endl;
+    cout << endl << endl << "Something majorly broken in dZcorrection!!!" <<	endl <<	endl;
     return 1.e6;
   }
 
