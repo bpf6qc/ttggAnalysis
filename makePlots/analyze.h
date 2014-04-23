@@ -375,7 +375,9 @@ void GetWeights_ee(TTree* tree,
   tree->ResetBranchAddresses();
 
   Float_t n_gg = gg_0->Integral() + gg_1->Integral() + gg_2->Integral();
-  Float_t n_ee = tree->GetEntries();
+  Float_t n_ee_on = onMass_0->Integral() + onMass_1->Integral() + onMass_2->Integral();
+  Float_t n_ee_lo = loMass_0->Integral() + loMass_1->Integral() + loMass_2->Integral();
+  Float_t n_ee_hi = hiMass_0->Integral() + hiMass_1->Integral() + hiMass_2->Integral();
 
   ratio_onMass_0 = (TH1D*)gg_0->Rebin(ndiemptbins, "ratio_onMass_0", diemptbins); ratio_onMass_0->Scale(1./n_gg);
   ratio_onMass_1 = (TH1D*)gg_1->Rebin(ndiemptbins, "ratio_onMass_1", diemptbins); ratio_onMass_1->Scale(1./n_gg);
@@ -385,21 +387,21 @@ void GetWeights_ee(TTree* tree,
   ratio_loMass_1 = (TH1D*)gg_1->Rebin(ndiemptbins, "ratio_loMass_1", diemptbins); ratio_loMass_1->Scale(1./n_gg);
   ratio_loMass_2 = (TH1D*)gg_2->Rebin(ndiemptbins, "ratio_loMass_2", diemptbins); ratio_loMass_2->Scale(1./n_gg);
 
-  ratio_hiMass_0 = (TH1D*)gg_0->Rebin(ndiemptbins, "ratio_hiMass_0", diemptbins); ratio_loMass_0->Scale(1./n_gg);
-  ratio_hiMass_1 = (TH1D*)gg_1->Rebin(ndiemptbins, "ratio_hiMass_1", diemptbins); ratio_loMass_1->Scale(1./n_gg);
-  ratio_hiMass_2 = (TH1D*)gg_2->Rebin(ndiemptbins, "ratio_hiMass_2", diemptbins); ratio_loMass_2->Scale(1./n_gg);
+  ratio_hiMass_0 = (TH1D*)gg_0->Rebin(ndiemptbins, "ratio_hiMass_0", diemptbins); ratio_hiMass_0->Scale(1./n_gg);
+  ratio_hiMass_1 = (TH1D*)gg_1->Rebin(ndiemptbins, "ratio_hiMass_1", diemptbins); ratio_hiMass_1->Scale(1./n_gg);
+  ratio_hiMass_2 = (TH1D*)gg_2->Rebin(ndiemptbins, "ratio_hiMass_2", diemptbins); ratio_hiMass_2->Scale(1./n_gg);
 
-  onMass_0->Scale(1./n_ee);
-  onMass_1->Scale(1./n_ee);
-  onMass_2->Scale(1./n_ee);
+  onMass_0->Scale(1./n_ee_on);
+  onMass_1->Scale(1./n_ee_on);
+  onMass_2->Scale(1./n_ee_on);
 
-  loMass_0->Scale(1./n_ee);
-  loMass_1->Scale(1./n_ee);
-  loMass_2->Scale(1./n_ee);
+  loMass_0->Scale(1./n_ee_lo);
+  loMass_1->Scale(1./n_ee_lo);
+  loMass_2->Scale(1./n_ee_lo);
 
-  hiMass_0->Scale(1./n_ee);
-  hiMass_1->Scale(1./n_ee);
-  hiMass_2->Scale(1./n_ee);
+  hiMass_0->Scale(1./n_ee_hi);
+  hiMass_1->Scale(1./n_ee_hi);
+  hiMass_2->Scale(1./n_ee_hi);
 
   // Divide
 
