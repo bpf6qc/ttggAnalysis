@@ -141,8 +141,8 @@ void SusyEventAnalyzer::CalculateBtagEfficiency() {
     int nPVertex = GetNumberPV(event);
     if(nPVertex == 0) continue;
 
-    findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
-    //findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
+    //findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
+    findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
     //findPhotons_simple(event, candidate_pair, event_type, 0, useDPhiCut); // 0 (L), 1 (M), 2 (T)
 
     if(event_type != 1) {
@@ -924,8 +924,8 @@ void SusyEventAnalyzer::Data() {
     susy::MET* pfNoPileUpMet = &(event.metMap.find("pfNoPileUpMet")->second);
     susy::MET* pfMVAMet      = &(event.metMap.find("pfMVAMet")->second);
 
-    findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
-    //findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
+    //findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
+    findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
     //findPhotons_simple(event, candidate_pair, event_type, 0, useDPhiCut); // 0 (L), 1 (M), 2 (T)
     //findPhotons_fakesWithSeeds(event, candidate_pair, event_type, useDPhiCut);
 
@@ -1610,6 +1610,86 @@ void SusyEventAnalyzer::Acceptance() {
     gfTrees.push_back(tree);
   }
 
+  vector<TTree*> eeTrees;
+  for(int i = 0; i < nChannels; i++) {
+    TTree * tree = new TTree("ee_"+channels[i]+"_EvtTree"+output_code_t, "An event tree for final analysis");
+    tree->Branch("pfMET", &pfMET_, "pfMET_/F");
+    tree->Branch("pfMET_x", &pfMET_x_, "pfMET_x_/F");
+    tree->Branch("pfMET_y", &pfMET_y_, "pfMET_y_/F");
+    tree->Branch("pfMET_phi", &pfMET_phi_, "pfMET_phi_/F");
+    tree->Branch("pfMET_sysShift_phi", &pfMET_sysShift_phi_, "pfMET_sysShift_phi_/F");
+    tree->Branch("pfMET_sysShift", &pfMET_sysShift_, "pfMET_sysShift_/F");
+    tree->Branch("pfMET_t1", &pfMET_t1_, "pfMET_t1_/F");
+    tree->Branch("pfMET_t1p2", &pfMET_t1p2_, "pfMET_t1p2_/F");
+    tree->Branch("pfMET_t01", &pfMET_t01_, "pfMET_t01_/F");
+    tree->Branch("pfMET_t01p2", &pfMET_t01p2_, "pfMET_t01p2_/F");
+    tree->Branch("pfNoPUMET", &pfNoPUMET_, "pfNoPUMET_/F");
+    tree->Branch("pfMVAMET", &pfMVAMET_, "pfMVAMET_/F");
+    tree->Branch("genMET", &genMET_, "genMET_/F");
+    tree->Branch("diEMpT", &diEMpT_, "diEMpT_/F");
+    tree->Branch("diJetPt", &diJetPt_, "diJetPt_/F");
+    tree->Branch("Njets", &Njets_, "Njets_/I");
+    tree->Branch("Nbtags", &Nbtags_, "Nbtags_/I");
+    tree->Branch("Nelectrons", &Nelectrons_, "Nelectrons_/I");
+    tree->Branch("Nmuons", &Nmuons_, "Nmuons_/I");
+    tree->Branch("isoEle_pt", &isoEle_pt_, "isoEle_pt_/F");
+    tree->Branch("isoEle_phi", &isoEle_phi_, "isoEle_phi_/F");
+    tree->Branch("isoEle_eta", &isoEle_eta_, "isoEle_eta_/F");
+    tree->Branch("isoMuon_pt", &isoMuon_pt_, "isoMuon_pt_/F");
+    tree->Branch("isoMuon_phi", &isoMuon_phi_, "isoMuon_phi_/F");
+    tree->Branch("isoMuon_eta", &isoMuon_eta_, "isoMuon_eta_/F");
+    tree->Branch("invmass", &invmass_, "invmass_/F");
+    tree->Branch("HT", &HT_, "HT_/F");
+    tree->Branch("HT_jets", &HT_jets_, "HT_jets_/F");
+    tree->Branch("hadronic_pt", &hadronic_pt_, "hadronic_pt_/F");
+    tree->Branch("minDPhi_gMET", &minDPhi_gMET_, "minDPhi_gMET_/F");
+    tree->Branch("minDPhi_jMET", &minDPhi_jMET_, "minDPhi_jMET_/F");
+    tree->Branch("minDR_leadPhoton_jets", &minDR_leadPhoton_jets_, "minDR_leadPhoton_jets_/F");
+    tree->Branch("minDR_trailPhoton_jets", &minDR_trailPhoton_jets_, "minDR_trailPhoton_jets_/F");
+    tree->Branch("leadPhotonEt", &lead_Et_, "lead_Et_/F");
+    tree->Branch("trailPhotonEt", &trail_Et_, "trail_Et_/F");
+    tree->Branch("leadMatchedJetPt", &lead_matched_jetpt_, "lead_matched_jetpt_/F");
+    tree->Branch("trailMatchedJetPt", &trail_matched_jetpt_, "trail_matched_jetpt_/F");
+    tree->Branch("leadPhotonEta", &lead_Eta_, "lead_Eta_/F");
+    tree->Branch("w_mT", &w_mT_, "w_mT_/F");
+    tree->Branch("w_mT_genNeutrino", &w_mT_genNeutrino_, "w_mT_genNeutrino_/F");
+    tree->Branch("trailPhotonEta", &trail_Eta_, "trail_Eta_/F");
+    tree->Branch("leadPhotonPhi", &lead_Phi_, "lead_Phi_/F");
+    tree->Branch("trailPhotonPhi", &trail_Phi_, "trail_Phi_/F");
+    tree->Branch("leadptOverInvmass", &leadptOverInvmass_, "leadptOverInvmass_/F");
+    tree->Branch("trailptOverInvmass", &trailptOverInvmass_, "trailptOverInvmass_/F");
+    tree->Branch("leadChargedHadronIso", &lead_chHadIso_, "lead_chHadIso_/F");
+    tree->Branch("trailChargedHadronIso", &trail_chHadIso_, "trail_chHadIso_/F");
+    tree->Branch("leadSigmaIetaIeta", &lead_sIetaIeta_, "lead_sIetaIeta_/F");
+    tree->Branch("trailSigmaIetaIeta", &trail_sIetaIeta_, "trail_sIetaIeta_/F");
+    tree->Branch("jet1_pt", &jet1_pt_, "jet1_pt_/F");
+    tree->Branch("jet2_pt", &jet2_pt_, "jet2_pt_/F");
+    tree->Branch("jet3_pt", &jet3_pt_, "jet3_pt_/F");
+    tree->Branch("jet4_pt", &jet4_pt_, "jet4_pt_/F");
+    tree->Branch("btag1_pt", &btag1_pt_, "btag1_pt_/F");
+    tree->Branch("btag2_pt", &btag2_pt_, "btag2_pt_/F");
+    tree->Branch("max_csv", &max_csv_, "max_csv_/F");
+    tree->Branch("submax_csv", &submax_csv_, "submax_csv_/F");
+    tree->Branch("min_csv", &min_csv_, "min_csv_/F");
+    tree->Branch("nPV", &nPV_, "nPV_/I");
+    tree->Branch("photon_dR", &photon_dR_, "photon_dR_/F");
+    tree->Branch("photon_dPhi", &photon_dPhi_, "photon_dPhi_/F");
+    tree->Branch("pileupWeight", &pileupWeight_, "pileupWeight_/F");
+    tree->Branch("pileupWeightErr", &pileupWeightErr_, "pileupWeightErr_/F");
+    tree->Branch("btagWeight", &btagWeight_, "btagWeight_/F");
+    tree->Branch("btagWeightUp", &btagWeightUp_, "btagWeightUp_/F");
+    tree->Branch("btagWeightDown", &btagWeightDown_, "btagWeightDown_/F");
+    tree->Branch("btagWeightErr", &btagWeightErr_, "btagWeightErr_/F");
+    tree->Branch("metFilterBit", &metFilterBit_, "metFilterBit_/I");
+    tree->Branch("ttbarDecayMode", &ttbarDecayMode_, "ttbarDecayMode_/I");
+    tree->Branch("leadMVAregEnergy", &leadMVAregEnergy_, "leadMVAregEnergy_/F");
+    tree->Branch("leadMVAregErr", &leadMVAregErr_, "leadMVAregErr_/F");
+    tree->Branch("trailMVAregEnergy", &trailMVAregEnergy_, "trailMVAregEnergy_/F");
+    tree->Branch("trailMVAregErr", &trailMVAregErr_, "trailMVAregErr_/F");
+
+    eeTrees.push_back(tree);
+  }
+
   ScaleFactorInfo sf(btagger);
   TFile * btagEfficiency = new TFile("btagEfficiency"+output_code_t+".root", "READ");
   sf.SetTaggingEfficiencies((TH1F*)btagEfficiency->Get("lEff"+output_code_t), (TH1F*)btagEfficiency->Get("cEff"+output_code_t), (TH1F*)btagEfficiency->Get("bEff"+output_code_t));
@@ -1678,8 +1758,8 @@ void SusyEventAnalyzer::Acceptance() {
     susy::MET* pfMVAMet      = &(event.metMap.find("pfMVAMet")->second);
     susy::MET* genMet        = &(event.metMap.find("genMetTrue")->second);
 
-    findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
-    //findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
+    //findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
+    findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
     //findPhotons_simple(event, candidate_pair, event_type, 0, useDPhiCut); // 0 (L), 1 (M), 2 (T)
 
     if(event_type == 0) {
@@ -1941,6 +2021,11 @@ void SusyEventAnalyzer::Acceptance() {
 	  gfTrees[chan]->Fill();
 	}
 
+	else if(abs(event_type) == cEE) {
+	  nCnt[6][chan]++;
+	  eeTrees[chan]->Fill();
+	}
+
       } // for channels
 
     } // if chan event
@@ -1957,6 +2042,7 @@ void SusyEventAnalyzer::Acceptance() {
     cout << "eg+" << channels[i] << " events              : " << nCnt[3][i] << endl;
     cout << "ff+" << channels[i] << " events              : " << nCnt[4][i] << endl;
     cout << "gf+" << channels[i] << " events              : " << nCnt[5][i] << endl;
+    cout << "ee+" << channels[i] << " events              : " << nCnt[6][i] << endl;
   }
   cout << "-----------------------------------------------" << endl;
   cout << endl;
@@ -2111,8 +2197,9 @@ void SusyEventAnalyzer::ttggStudy() {
     int nPVertex = GetNumberPV(event);
     if(nPVertex == 0) continue;
 
-    findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
-    
+    //findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
+    findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
+
     if(event_type == 0) {
       nCnt[28][0]++;
       continue;
@@ -3069,7 +3156,8 @@ void SusyEventAnalyzer::PhotonInfo() {
     int nPVertex = GetNumberPV(event);
     if(nPVertex == 0) continue;
 
-    findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
+    //findPhotons_prioritizeCount(event, candidate_pair, event_type, useDPhiCut);
+    findPhotons_prioritizeEt(event, candidate_pair, event_type, useDPhiCut);
 
     if(event_type == 0) {
       nCnt[28][0]++;
