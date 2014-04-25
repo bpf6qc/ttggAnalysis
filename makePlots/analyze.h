@@ -1544,6 +1544,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
     ratio_ee->SetBinError(i+1, gg->GetBinError(i+1) / bkg_ee->GetBinContent(i+1));
   }
   ratio_ee->SetLineColor(kRed);
+  ratio_ee->SetMarkerColor(kRed);
 
   TH1D * ratio_gf = (TH1D*)gg->Clone("ratio_gf");
   ratio_gf->Reset();
@@ -1553,6 +1554,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
     ratio_gf->SetBinError(i+1, gg->GetBinError(i+1) / bkg_gf->GetBinContent(i+1));
   }
   ratio_gf->SetLineColor(kBlue);
+  ratio_gf->SetMarkerColor(kBlue);
 
   TH1D * ratio_ff = (TH1D*)gg->Clone("ratio_ff");
   ratio_ff->Reset();
@@ -1562,6 +1564,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
     ratio_ff->SetBinError(i+1, gg->GetBinError(i+1) / bkg_ff->GetBinContent(i+1));
   }
   ratio_ff->SetLineColor(kBlue);
+  ratio_ff->SetMarkerColor(kBlue);
 
   ratio_sys->SetFillStyle(1001);
   ratio_sys->SetFillColor(kGray);
