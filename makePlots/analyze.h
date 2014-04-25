@@ -249,6 +249,7 @@ TH1D * HistoFromTree_ee(bool isAFloat, TString variable, TTree * tree, TString n
     Double_t oldError = (isAFloat) ? h->GetBinError(h->FindBin(var)) : h->GetBinError(h->FindBin(var_int));
     
     if((invmass > 71 && invmass < 81) || (invmass > 101 && invmass < 111)) weight *= -1.;
+    if(invmass <= 71 || invmass >= 111) continue;
 
     if(isAFloat) h->Fill(var, weight);
     else h->Fill(var_int, weight);
@@ -293,6 +294,7 @@ TH1D * HistoFromTree_ee(bool isAFloat, TString variable, TTree * tree, TString n
     Double_t oldError = (isAFloat) ? h->GetBinError(h->FindBin(var)) : h->GetBinError(h->FindBin(var_int));
     
     if((invmass > 71 && invmass < 81) || (invmass > 101 && invmass < 111)) weight *= -1.;
+    if(invmass <= 71 || invmass >= 111) continue;    
 
     if(isAFloat) h->Fill(var, weight);
     else h->Fill(var_int, weight);
