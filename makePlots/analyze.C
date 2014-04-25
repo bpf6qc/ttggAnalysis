@@ -347,6 +347,7 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
   TTree * gfTree = (TTree*)in->Get("gf_"+channels[channel]+"_EvtTree");
   TTree * ffTree = (TTree*)in->Get("ff_"+channels[channel]+"_EvtTree");
   TTree * egTree = (TTree*)in->Get("eg_"+channels[channel]+"_EvtTree");
+  TTree * eeTree = (TTree*)in->Get("ee_"+channels[channel]+"_EvtTree");
 
   TFile * fSig460 = new TFile("../acceptance/signal_contamination_mst_460_m1_175.root", "READ");
   TTree * sigaTree = (TTree*)fSig460->Get("gg_"+channels[channel]+"_EvtTree_mst_460_m1_175");
@@ -372,6 +373,9 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 
   Float_t ffScale, ffScaleErr;
   bool ffWorks = calculateScaling(ggTree, egTree, ffTree, egScale, egScaleErr, ffScale, ffScaleErr);
+  
+  Float_t eeScale, eeScaleErr;
+  bool eeWorks = calculateScaling_ee(ggTree, egTree, eeTree, egScale, egScaleErr, eeScale, eeScaleErr);
 
   /*
   formatTable(met_gg,
@@ -429,11 +433,12 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 				     egScale, egScaleErr, 
 				     ffScale, ffScaleErr, ffWorks,
 				     gfScale, gfScaleErr, gfWorks,
+				     eeScale, eeScaleErr, eeWorks,
 				     useDifferenceSystematic, useFF,
 				     channels[channel]);
 
   pMaker->SetTrees(ggTree, egTree,
-		   ffTree, gfTree,
+		   ffTree, gfTree, eeTree,
 		   sigaTree, sigbTree);
 
   pMaker->SetDisplayKStest(displayKStest);

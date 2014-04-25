@@ -221,6 +221,94 @@ TH1D * SignalHistoFromTree(Float_t scale, bool isAFloat, TString variable, TTree
   return h;
 }
 
+TH1D * HistoFromTree_ee(bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t xlo, Double_t xhi, double metCut = -1.) {
+
+  TH1D * h = new TH1D(name, title, nBins, xlo, xhi);
+  h->Sumw2();
+
+  Float_t met, weight, weightError, invmass;
+  tree->SetBranchAddress("pfMET", &met);
+  tree->SetBranchAddress("weight", &weight);
+  tree->SetBranchAddress("weightError", &weightError);
+  tree->SetBranchAddress("invmass", &invmass);
+
+  Float_t var;
+  Int_t var_int;
+  if(variable != "pfMET") {
+    if(isAFloat) tree->SetBranchAddress(variable, &var);
+    else tree->SetBranchAddress(variable, &var_int);
+  }
+
+  for(int i = 0; i < tree->GetEntries(); i++) {
+    tree->GetEntry(i);
+
+    if(metCut > 0. && met >= metCut) continue;
+
+    if(variable == "pfMET") var = met;
+
+    Double_t oldError = (isAFloat) ? h->GetBinError(h->FindBin(var)) : h->GetBinError(h->FindBin(var_int));
+    
+    if((invmass > 71 && invmass < 81) || (invmass > 101 && invmass < 111)) weight *= -1.;
+
+    if(isAFloat) h->Fill(var, weight);
+    else h->Fill(var_int, weight);
+    
+    if(weightError != 0.0) {
+      if(isAFloat) h->SetBinError(h->FindBin(var), sqrt(oldError*oldError + weightError*weightError));
+      else h->SetBinError(h->FindBin(var_int), sqrt(oldError*oldError + weightError*weightError));
+    }
+
+  }
+
+  tree->ResetBranchAddresses();
+
+  return h;
+}
+
+TH1D * HistoFromTree_ee(bool isAFloat, TString variable, TTree * tree, TString name, TString title, Int_t nBins, Double_t* customBins, double metCut = -1.) {
+
+  TH1D * h = new TH1D(name, title, nBins, customBins);
+  h->Sumw2();
+
+  Float_t met, weight, weightError, invmass;
+  tree->SetBranchAddress("pfMET", &met);
+  tree->SetBranchAddress("weight", &weight);
+  tree->SetBranchAddress("weightError", &weightError);
+  tree->SetBranchAddress("invmass", &invmass);
+
+  Float_t var;
+  Int_t var_int;
+  if(variable != "pfMET") {
+    if(isAFloat) tree->SetBranchAddress(variable, &var);
+    else tree->SetBranchAddress(variable, &var_int);
+  }
+
+  for(int i = 0; i < tree->GetEntries(); i++) {
+    tree->GetEntry(i);
+
+    if(metCut > 0. && met >= metCut) continue;
+
+    if(variable == "pfMET") var = met;
+
+    Double_t oldError = (isAFloat) ? h->GetBinError(h->FindBin(var)) : h->GetBinError(h->FindBin(var_int));
+    
+    if((invmass > 71 && invmass < 81) || (invmass > 101 && invmass < 111)) weight *= -1.;
+
+    if(isAFloat) h->Fill(var, weight);
+    else h->Fill(var_int, weight);
+    
+    if(weightError != 0.0) {
+      if(isAFloat) h->SetBinError(h->FindBin(var), sqrt(oldError*oldError + weightError*weightError));
+      else h->SetBinError(h->FindBin(var_int), sqrt(oldError*oldError + weightError*weightError));
+    }
+
+  }
+
+  tree->ResetBranchAddresses();
+
+  return h;
+}
+
 void formatTable(TH1D * h_gg,
 		 TH1D * h_ewk, TH1D * ewk_norm2, Float_t fakeRate, Float_t fakeRate_sys, Float_t egScale,
 		 TH1D * qcd_ff, TH1D * ff_norm2, Float_t ffScale,
@@ -473,6 +561,59 @@ bool calculateScaling(TTree * ggTree, TTree * egTree, TTree * qcdTree,
   TH1D * gg = (TH1D*)HistoFromTree(true, "pfMET", ggTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0., 20.);
   TH1D * eg = (TH1D*)HistoFromTree(true, "pfMET", egTree, "eg_pfMET_forScale", "eg_pfMET_forScale", 4, 0., 20.);
   TH1D * qcd = (TH1D*)HistoFromTree(true, "pfMET", qcdTree, "qcd_pfMET_forScale", "qcd_pfMET_forScale", 4, 0., 20.);
+
+  if(qcd->Integral() == 0.) {
+    scale = 1.;
+    scaleErr = 0.;
+
+    delete gg;
+    delete eg;
+    delete qcd;
+
+    return false;
+  }
+
+  TH1D * eg_noNorm = (TH1D*)eg->Clone("eg_noNorm_forScale");
+  eg->Scale(egScale);
+  for(int i = 0; i < eg->GetNbinsX(); i++) {
+    Float_t normerr = egScaleErr*(eg_noNorm->GetBinContent(i+1));
+    Float_t staterr = eg->GetBinError(i+1);
+    Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+    eg->SetBinError(i+1, new_err);
+  }
+
+  scale = (gg->Integral() - eg->Integral()) / qcd->Integral();
+
+  Float_t qcdScaleErr_num = 0.;
+  for(int i = 0; i < 4; i++)	{
+    qcdScaleErr_num += eg->GetBinError(i+1) * eg->GetBinError(i+1);
+  }
+
+  qcdScaleErr_num = (sqrt(gg->Integral()) - sqrt(qcdScaleErr_num)) / (gg->Integral() - eg->Integral());
+
+  Float_t qcdScaleErr_den = 0.;
+  for(int i = 0; i < 4; i++) {
+    qcdScaleErr_den += qcd->GetBinError(i+1) * qcd->GetBinError(i+1);
+  }
+  qcdScaleErr_den = sqrt(qcdScaleErr_den) / qcd->Integral();
+  
+  scaleErr = sqrt(qcdScaleErr_num*qcdScaleErr_num + qcdScaleErr_den*qcdScaleErr_den) * scale;
+
+  delete gg;
+  delete eg;
+  delete qcd;
+
+  return true;
+
+}
+
+bool calculateScaling_ee(TTree * ggTree, TTree * egTree, TTree * qcdTree,
+			 Float_t egScale, Float_t egScaleErr,
+			 Float_t& scale, Float_t& scaleErr) {
+
+  TH1D * gg = (TH1D*)HistoFromTree(true, "pfMET", ggTree, "gg_pfMET_forScale", "gg_pfMET_forScale", 4, 0., 20.);
+  TH1D * eg = (TH1D*)HistoFromTree(true, "pfMET", egTree, "eg_pfMET_forScale", "eg_pfMET_forScale", 4, 0., 20.);
+  TH1D * qcd = (TH1D*)HistoFromTree_ee(true, "pfMET", qcdTree, "qcd_pfMET_forScale", "qcd_pfMET_forScale", 4, 0., 20.);
 
   if(qcd->Integral() == 0.) {
     scale = 1.;
@@ -785,6 +926,7 @@ class PlotMaker : public TObject {
 	    Float_t ewkScale, Float_t ewkScaleErr,
 	    Float_t qcdScale_ff, Float_t qcdScaleErr_ff, bool ff_works,
 	    Float_t qcdScale_gf, Float_t qcdScaleErr_gf, bool gf_works,
+	    Float_t qcdScale_ee, Float_t qcdScaleErr_ee, bool ee_works,
 	    bool use_qcd_syst, bool use_ff,
 	    TString requirement);
   virtual ~PlotMaker() { 
@@ -795,11 +937,12 @@ class PlotMaker : public TObject {
     delete egTree;
     delete ffTree;
     delete gfTree;
+    delete eeTree;
         
   }
 
   void SetTrees(TTree * gg, TTree * eg,
-		TTree * ff, TTree * gf,
+		TTree * ff, TTree * gf, TTree * ee,
 		TTree * sig_a, TTree * sig_b);
 
   void CreatePlot(TString variable, bool isAFloat,
@@ -831,6 +974,7 @@ class PlotMaker : public TObject {
   TTree * egTree;
   TTree * ffTree;
   TTree * gfTree;
+  TTree * eeTree;
   
   TTree * sigaTree;
   TTree * sigbTree;
@@ -841,8 +985,9 @@ class PlotMaker : public TObject {
   Float_t egScale, egScaleErr;
   Float_t ffScale, ffScaleErr;
   Float_t gfScale, gfScaleErr;
+  Float_t eeScale, eeScaleErr;
 
-  bool ffWorks, gfWorks;
+  bool ffWorks, gfWorks, eeWorks;
   bool useQCDSystematic, useFF;
 
   TString req;
@@ -856,6 +1001,7 @@ PlotMaker::PlotMaker(Int_t lumi,
 		     Float_t ewkScale, Float_t ewkScaleErr,
 		     Float_t qcdScale_ff, Float_t qcdScaleErr_ff, bool ff_works,
 		     Float_t qcdScale_gf, Float_t qcdScaleErr_gf, bool gf_works,
+		     Float_t qcdScale_ee, Float_t qcdScaleErr_ee, bool ee_works,
 		     bool use_qcd_syst, bool use_ff,
 		     TString requirement) :
   intLumi_int(lumi),
@@ -865,8 +1011,11 @@ PlotMaker::PlotMaker(Int_t lumi,
   ffScaleErr(qcdScaleErr_ff),
   gfScale(qcdScale_gf),
   gfScaleErr(qcdScaleErr_gf),
+  eeScale(qcdScale_ee),
+  eeScaleErr(qcdScaleErr_ee),
   ffWorks(ff_works),
   gfWorks(gf_works),
+  eeWorks(ee_works),
   useQCDSystematic(use_qcd_syst),
   useFF(use_ff),
   req(requirement)
@@ -881,13 +1030,14 @@ PlotMaker::PlotMaker(Int_t lumi,
 }
 
 void PlotMaker::SetTrees(TTree * gg, TTree * eg,
-			 TTree * ff, TTree * gf,
+			 TTree * ff, TTree * gf, TTree * ee,
 			 TTree * sig_a, TTree * sig_b) {
 
   ggTree = gg;
   egTree = eg;
   ffTree = ff;
   gfTree = gf;
+  eeTree = ee;
   
   sigaTree = sig_a;
   sigbTree = sig_b;
@@ -907,6 +1057,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
   TH1D * qcd_ff = HistoFromTree(isAFloat, variable, ffTree, variable+"_ff_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
   TH1D * qcd_gf = HistoFromTree(isAFloat, variable, gfTree, variable+"_gf_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
+  TH1D * qcd_ee = HistoFromTree_ee(isAFloat, variable, eeTree, variable+"_ee_"+req, variable, nBinsX, bin_lo, bin_hi, metCut);
 
   TH1D * ewk_noNorm = (TH1D*)ewk->Clone("ewk_noNorm_"+variable+"_"+req);
   ewk->Scale(egScale);
@@ -944,12 +1095,27 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
       qcd_gf->SetBinError(i+1, new_err);
     }
   }
+  
+  if(eeWorks) {
+    TH1D * ee_noNorm = (TH1D*)qcd_ee->Clone("ee_noNorm_"+variable+"_"+req);
+    qcd_ee->Scale(eeScale);
+    
+    for(int i = 0; i < qcd_ee->GetNbinsX(); i++) {
+      Float_t normerr = eeScaleErr*(ee_noNorm->GetBinContent(i+1));
+      Float_t staterr = qcd_ee->GetBinError(i+1);
+      
+      Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+      
+      qcd_ee->SetBinError(i+1, new_err);
+    }
+  }
 
   out->cd();
   gg->Write();
   ewk->Write();
   qcd_ff->Write();
   qcd_gf->Write();
+  qcd_ee->Write();
 
   TH1D * bkg;
   if(useFF) {
@@ -1149,6 +1315,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, customBins, metCut);
   TH1D * qcd_ff = HistoFromTree(isAFloat, variable, ffTree, variable+"_ff_"+req, variable, nBinsX, customBins, metCut);
   TH1D * qcd_gf = HistoFromTree(isAFloat, variable, gfTree, variable+"_gf_"+req, variable, nBinsX, customBins, metCut);
+  TH1D * qcd_ee = HistoFromTree_ee(isAFloat, variable, gfTree, variable+"_ee_"+req, variable, nBinsX, customBins, metCut);
 
   TH1D * ewk_noNorm = (TH1D*)ewk->Clone("ewk_noNorm_"+variable+"_"+req);
   ewk->Scale(egScale);
@@ -1190,11 +1357,27 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   }
   qcd_gf = (TH1D*)DivideByBinWidth(qcd_gf);
 
+  if(eeWorks) {
+    TH1D * ee_noNorm = (TH1D*)qcd_ee->Clone("ee_noNorm_"+variable+"_"+req);
+    qcd_ee->Scale(eeScale);
+    
+    for(int i = 0; i < qcd_ee->GetNbinsX(); i++) {
+      Float_t normerr = eeScaleErr*(ee_noNorm->GetBinContent(i+1));
+      Float_t staterr = qcd_ee->GetBinError(i+1);
+      
+      Float_t new_err = sqrt(normerr*normerr + staterr*staterr);
+      
+      qcd_ee->SetBinError(i+1, new_err);
+    }
+  }
+  qcd_ee = (TH1D*)DivideByBinWidth(qcd_ee);
+
   out->cd();
   gg->Write();
   ewk->Write();
   qcd_ff->Write();
   qcd_gf->Write();
+  qcd_ee->Write();
 
   TH1D * bkg;
   if(useFF) {
