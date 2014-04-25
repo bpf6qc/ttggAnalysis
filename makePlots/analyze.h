@@ -988,7 +988,7 @@ class PlotMaker : public TObject {
   Float_t eeScale, eeScaleErr;
 
   bool ffWorks, gfWorks, eeWorks;
-  bool useQCDSystematic, useFF;
+  bool useQCDSystematic, useFF, useEE;
 
   TString req;
 
@@ -1002,7 +1002,7 @@ PlotMaker::PlotMaker(Int_t lumi,
 		     Float_t qcdScale_ff, Float_t qcdScaleErr_ff, bool ff_works,
 		     Float_t qcdScale_gf, Float_t qcdScaleErr_gf, bool gf_works,
 		     Float_t qcdScale_ee, Float_t qcdScaleErr_ee, bool ee_works,
-		     bool use_qcd_syst, bool use_ff,
+		     bool use_qcd_syst, bool use_ff, bool use_ee,
 		     TString requirement) :
   intLumi_int(lumi),
   egScale(ewkScale),
@@ -1018,6 +1018,7 @@ PlotMaker::PlotMaker(Int_t lumi,
   eeWorks(ee_works),
   useQCDSystematic(use_qcd_syst),
   useFF(use_ff),
+  useGG(use_gg),
   req(requirement)
 {
   char buffer[50];
@@ -1128,6 +1129,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
       }
     }
   }
+  else if(useEE) bkg = (TH1D*)qcd_ee->Clone("bkg");
   else {
     bkg = (TH1D*)qcd_gf->Clone("bkg");
     if(useQCDSystematic) {
@@ -1139,7 +1141,14 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
     }
   }
 
+  TH1D * bkg_ee = (TH1D*)qcd_ee->Clone("bkg_ee");
+  TH1D * bkg_gf = (TH1D*)qcd_gf->Clone("bkg_gf");
+  TH1D * bkg_ff = (TH1D*)qcd_ff->Clone("bkg_ff");
+
   bkg->Add(ewk);
+  bkg_ee->Add(ewk);
+  bkg_gf->Add(ewk);
+  bkg_ff->Add(ewk);
 
   Double_t kolm = gg->KolmogorovTest(bkg);
   TString kolmText = Form("KS test probability = %5.3g", kolm);
@@ -1264,6 +1273,36 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
 
   if(xmax > xmin) ratio->GetXaxis()->SetRangeUser(xmin, xmax);
 
+  TH1D * ratio_ee = (TH1D*)gg->Clone("ratio_ee");
+  ratio_ee->Reset();
+  for(int i = 0; i < ratio_ee->GetNbinsX(); i++) {
+    if(bkg_ee->GetBinContent(i+1) == 0.) continue;
+    ratio_ee->SetBinContent(i+1, gg->GetBinContent(i+1) / bkg_ee->GetBinContent(i+1));
+    ratio_ee->SetBinError(i+1, gg->GetBinError(i+1) / bkg_ee->GetBinContent(i+1));
+  }
+  ratio_ee->SetLineColor(kRed);
+  ratio_ee->SetMarkerColor(kRed);
+
+  TH1D * ratio_gf = (TH1D*)gg->Clone("ratio_gf");
+  ratio_gf->Reset();
+  for(int i = 0; i < ratio_gf->GetNbinsX(); i++) {
+    if(bkg_gf->GetBinContent(i+1) == 0.) continue;
+    ratio_gf->SetBinContent(i+1, gg->GetBinContent(i+1) / bkg_gf->GetBinContent(i+1));
+    ratio_gf->SetBinError(i+1, gg->GetBinError(i+1) / bkg_gf->GetBinContent(i+1));
+  }
+  ratio_gf->SetLineColor(kBlue);
+  ratio_gf->SetMarkerColor(kBlue);
+
+  TH1D * ratio_ff = (TH1D*)gg->Clone("ratio_ff");
+  ratio_ff->Reset();
+  for(int i = 0; i < ratio_ff->GetNbinsX(); i++) {
+    if(bkg_ff->GetBinContent(i+1) == 0.) continue;
+    ratio_ff->SetBinContent(i+1, gg->GetBinContent(i+1) / bkg_ff->GetBinContent(i+1));
+    ratio_ff->SetBinError(i+1, gg->GetBinError(i+1) / bkg_ff->GetBinContent(i+1));
+  }
+  ratio_ff->SetLineColor(kBlue);
+  ratio_ff->SetMarkerColor(kBlue);
+
   ratio_sys->SetFillStyle(1001);
   ratio_sys->SetFillColor(kGray);
   ratio_sys->SetLineColor(kGray);
@@ -1285,6 +1324,11 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   ratio->Draw("e1");
   ratio_sys->Draw("e2 same");
   ratio->Draw("e1 same");
+
+  if(useFF) ratio_gf->Draw("e1 same");
+  else ratio_ff->Draw("e1 same");
+  ratio_ee->Draw("e1 same");
+
   ratio->Draw("axis same");
 
   TLine * oneLine = new TLine(xmin, 1, xmax, 1);
@@ -1390,6 +1434,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
       }
     }
   }
+  else if(useEE) bkg = (TH1D*)qcd_ee->Clone("bkg");
   else {
     bkg = (TH1D*)qcd_gf->Clone("bkg");
     if(useQCDSystematic) {

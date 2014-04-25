@@ -320,7 +320,7 @@ void mvaTreeMaker(TString input, int channelNumber) {
   in->Close();
 }
 
-void analyze(TString input, bool addMC, int channel, TString intLumi, int intLumi_int, bool useFF, bool useDifferenceSystematic, double metCut, bool displayKStest) {
+void analyze(TString input, bool addMC, int channel, TString intLumi, int intLumi_int, bool useFF, bool useEE, bool useDifferenceSystematic, double metCut, bool displayKStest) {
 
   gROOT->Reset();
   gROOT->SetBatch(true);
@@ -434,7 +434,7 @@ void analyze(TString input, bool addMC, int channel, TString intLumi, int intLum
 				     ffScale, ffScaleErr, ffWorks,
 				     gfScale, gfScaleErr, gfWorks,
 				     eeScale, eeScaleErr, eeWorks,
-				     useDifferenceSystematic, useFF,
+				     useDifferenceSystematic, useFF, useEE,
 				     channels[channel]);
 
   pMaker->SetTrees(ggTree, egTree,

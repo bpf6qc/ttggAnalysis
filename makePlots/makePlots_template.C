@@ -11,6 +11,7 @@ void makePlots() {
   int intLumi_int = 19.712;
   
   bool useFF = true;
+  bool useEE = false;
   bool useDifferenceSystematic = false;
 
   double metCut = -1.;
@@ -19,7 +20,7 @@ void makePlots() {
 
   for(int i = 0; i < 8; i++) {
     mvaTreeMaker(input, i);
-    analyze(input, addMC, i, intLumi, intLumi_int, useFF, useDifferenceSystematic, metCut, displayKStest);
+    analyze(input, addMC, i, intLumi, intLumi_int, useFF, useEE, useDifferenceSystematic, metCut, displayKStest);
   }  
 
   ts.Stop();
