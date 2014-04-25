@@ -927,7 +927,7 @@ class PlotMaker : public TObject {
 	    Float_t qcdScale_ff, Float_t qcdScaleErr_ff, bool ff_works,
 	    Float_t qcdScale_gf, Float_t qcdScaleErr_gf, bool gf_works,
 	    Float_t qcdScale_ee, Float_t qcdScaleErr_ee, bool ee_works,
-	    bool use_qcd_syst, bool use_ff,
+	    bool use_qcd_syst, bool use_ff, bool use_ee,
 	    TString requirement);
   virtual ~PlotMaker() { 
     
@@ -1018,7 +1018,7 @@ PlotMaker::PlotMaker(Int_t lumi,
   eeWorks(ee_works),
   useQCDSystematic(use_qcd_syst),
   useFF(use_ff),
-  useGG(use_gg),
+  useEE(use_ee),
   req(requirement)
 {
   char buffer[50];
