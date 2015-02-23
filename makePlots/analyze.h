@@ -1361,7 +1361,7 @@ void PlotMaker::CreatePlot(TString variable, bool isAFloat,
   TH1D * ewk = HistoFromTree(isAFloat, variable, egTree, variable+"_eg_"+req, variable, nBinsX, customBins, metCut);
   TH1D * qcd_ff = HistoFromTree(isAFloat, variable, ffTree, variable+"_ff_"+req, variable, nBinsX, customBins, metCut);
   TH1D * qcd_gf = HistoFromTree(isAFloat, variable, gfTree, variable+"_gf_"+req, variable, nBinsX, customBins, metCut);
-  TH1D * qcd_ee = HistoFromTree_ee(isAFloat, variable, gfTree, variable+"_ee_"+req, variable, nBinsX, customBins, metCut);
+  TH1D * qcd_ee = HistoFromTree_ee(isAFloat, variable, eeTree, variable+"_ee_"+req, variable, nBinsX, customBins, metCut);
 
   TH1D * ewk_noNorm = (TH1D*)ewk->Clone("ewk_noNorm_"+variable+"_"+req);
   ewk->Scale(egScale);
