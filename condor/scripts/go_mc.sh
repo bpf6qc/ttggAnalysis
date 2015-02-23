@@ -15,7 +15,6 @@ scramv1 project CMSSW CMSSW_5_3_8_patch3
 cd CMSSW_5_3_8_patch3/src/
 mv $WORK_DIR/src.tgz .
 tar -xzf src.tgz
-cd SUSYPhotonAnalysis/SusyNtuplizer/ttggAnalysis/
 eval `scramv1 runtime -sh`
 make
 
