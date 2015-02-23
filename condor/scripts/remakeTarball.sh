@@ -25,5 +25,5 @@ then
     eval `scramv1 runtime -sh`
     root -b -q -l compileAnalyzer.C
 
-    tar -czf src.tgz libSusyEvent.so SusyEventAnalyzer_cc.so jan3_pileup Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt rootlogon.C
+    tar -czf src.tgz libSusyEvent.so SusyEventAnalyzer_cc.so jan3_pileup.root Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt rootlogon.C
 fi
