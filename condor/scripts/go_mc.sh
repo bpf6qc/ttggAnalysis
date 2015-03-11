@@ -16,7 +16,6 @@ cd CMSSW_5_3_8_patch3/src/
 mv $WORK_DIR/src.tgz .
 tar -xzf src.tgz
 eval `scramv1 runtime -sh`
-make
 
 mv $WORK_DIR/ANALYZER .
 mv $WORK_DIR/filelist_$JOB_NUMBER .
